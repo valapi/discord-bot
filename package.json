@@ -11,17 +11,24 @@
     "valorant-api-com": "^1.0.0",
     "valorant.js": "^1.6.5"
   },
-  "name": "ing-bot",
+  "name": "valorant-discord-bot",
   "version": "1.0.0",
+  "engines": {
+    "node": "17.x",
+    "npm": "8.x",
+    "yarn": "3.x"
+  },
   "main": "index.js",
   "devDependencies": {
     "eslint": "^8.6.0"
   },
   "scripts": {
-    "test": "index.js"
+    "test": "index.js",
+    "start": "node index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "packageManager": "yarn@3.1.1"
 }
