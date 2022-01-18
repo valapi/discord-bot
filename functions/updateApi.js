@@ -7,7 +7,7 @@ module.exports = (client) => {
         while (true) {
             const nowTime = `${new Date().getHours()}${new Date().getMinutes()}${new Date().getSeconds()}`;
 
-            if (nowTime === "72459") {
+            if (nowTime === "02459") {
                 //get version of api
                 let valorantApi = new valorantApiCom({
                     'language': 'en-US'
