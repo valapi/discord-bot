@@ -31,7 +31,7 @@ module.exports = {
                 const riotApi = new RiotApiClient({
                     username: _name, // your username
                     password: _password, // your password
-                    region: Region.AP // Available regions: EU, NA, AP
+                    region: Region.NA // Available regions: EU, NA, AP
                 });
 
                 await riotApi.login();
