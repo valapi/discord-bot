@@ -1,0 +1,27 @@
+{
+  "dependencies": {
+    "@discordjs/builders": "^0.11.0",
+    "@discordjs/rest": "^0.2.0-canary.0",
+    "@discordjs/voice": "^0.7.5",
+    "crypto-js": "^4.1.1",
+    "discord-api-types": "^0.26.1",
+    "discord.js": "^13.5.1",
+    "node-valorant-api": "^0.5.0",
+    "nodemon": "^2.0.15",
+    "valorant-api-com": "^1.0.0",
+    "valorant.js": "^1.6.5"
+  },
+  "name": "ing-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "devDependencies": {
+    "eslint": "^8.6.0"
+  },
+  "scripts": {
+    "test": "index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
