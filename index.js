@@ -1,4 +1,15 @@
-const CryptoJS = require('crypto-js');
+const express = require('express')
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.listen(port, () => {
+  console.log(`App Listening At http://localhost:${port}`)
+})
+
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('./config.json');
