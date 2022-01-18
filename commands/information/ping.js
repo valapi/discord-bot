@@ -9,12 +9,5 @@ module.exports = {
 			content: "Pong!",
 			ephemeral: false
 		});
-
-		const message = await interaction.fetchReply();
-		message.react("⚪");
-		message.reactions.removeAll()
-			.catch(error => console.error('Failed to clear reactions:', error));
-		message.react("🏓");
-		
 	}
 };
