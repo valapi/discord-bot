@@ -11,19 +11,19 @@ module.exports = {
         .addSubcommand(subcommand =>
             subcommand
                 .setName('weapon')
-                .setDescription("Add Your Private Key To Database")
+                .setDescription("Get Your Weapon Collection")
                 .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key'))
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('sprays')
-                .setDescription("Add Your Private Key To Database")
+                .setDescription("Get Your Sprays Collection")
                 .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key'))
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('more')
-                .setDescription("Add Your Private Key To Database")
+                .setDescription("Get Your Collection")
                 .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key'))
         ),
 

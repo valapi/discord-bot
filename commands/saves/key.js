@@ -3,7 +3,7 @@ const fs = require('fs');
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName('savekey')
+        .setName('key')
         .setDescription('NOT RECOMMENDED - Save Your Private Key In Database')
         .addSubcommand(subcommand => 
             subcommand
@@ -20,6 +20,11 @@ module.exports = {
             subcommand
                 .setName('remove')
                 .setDescription("Remove Your Private Key From Database.")
+        )
+        .addSubcommand(subcommand => 
+            subcommand
+                .setName('new')
+                .setDescription("Create New Private Key")
         ),
 
     async execute(interaction, client) {
@@ -90,6 +95,13 @@ module.exports = {
                         ephemeral: true
                     });
                 }
+            }else if (interaction.options.getSubcommand() === "new") {
+                var _key = await client.createSalt();
+
+                await interaction.editReply({
+                    content: `**" Keep It Secret "**\nAnd Saving Private Key At The Safest Spot !!!\n\nKey: **${_key}**`,
+                    ephemeral: true
+                });
             }
         } catch (err) {
             console.error(err);

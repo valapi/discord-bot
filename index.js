@@ -21,13 +21,14 @@ const commandFolders = fs.readdirSync('./commands');
 
 (async () => {
     for (file of functions) {
-        require(`./functions/${file}`)(client);
+        await require(`./functions/${file}`)(client);
     }
 
     // Login As Discord Bot
-    client.handleEvents(eventFiles, './events');
-    client.handleCommands(commandFolders, './commands');
-    client.login(token);
+    console.log(`----------------------------------------------------`);
+    await client.handleEvents(eventFiles, './events');
+    await client.handleCommands(commandFolders, './commands');
+    await client.login(token);
     client.updateApi(client);
 
 })();
