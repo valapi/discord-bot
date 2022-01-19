@@ -29,6 +29,7 @@ const commandFolders = fs.readdirSync('./commands');
     await client.handleEvents(eventFiles, './events');
     await client.handleCommands(commandFolders, './commands');
     await client.login(token);
+    await client.user.setActivity("ING PROJECT", {type: "PLAYING"});
     client.updateApi(client);
 
 })();
