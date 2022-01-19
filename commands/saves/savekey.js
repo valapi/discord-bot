@@ -30,7 +30,7 @@ module.exports = {
             });
 
             if (interaction.options.getSubcommand() === "add") {
-                const _key = interaction.options.getString("privatekey");
+                const _key = await interaction.options.getString("privatekey");
                 if (_key == null) {
                     await interaction.editReply({
                         content: `Sorry, You Must Type Your Private Key`,

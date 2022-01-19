@@ -16,7 +16,7 @@ module.exports = {
             });
 
             let get_key = await JSON.parse(fs.readFileSync("./data/json/key.json", "utf8"));
-            let _name = interaction.options.getString("name")
+            let _name = await interaction.options.getString("name")
 
             if(_name == null){
                 await interaction.editReply({

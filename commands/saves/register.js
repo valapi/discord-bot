@@ -17,9 +17,9 @@ module.exports = {
                 ephemeral: true
             });
     
-            const riot_user = interaction.options.getString("username");
-            const riot_password = interaction.options.getString("password");
-            const _key = interaction.options.getString("privatekey");
+            const riot_user = await interaction.options.getString("username");
+            const riot_password = await interaction.options.getString("password");
+            const _key = await interaction.options.getString("privatekey");
 
             if (riot_user == null || riot_password == null || _key == null) {
                 await interaction.editReply({

@@ -18,7 +18,7 @@ module.exports = {
             const riot_json = JSON.parse(fs.readFileSync("./data/json/account.json", "utf8"));
             const riot_api = riot_json[interaction.user.id];
 
-            const _key = interaction.options.getString("privatekey");
+            const _key = await interaction.options.getString("privatekey");
 
             if (_key == null) {
                 await interaction.editReply({
@@ -32,7 +32,7 @@ module.exports = {
                 const riotApi = new RiotApiClient({
                     username: _name, // your username
                     password: _password, // your password
-                    region: Region.NA // Available regions: EU, NA, AP
+                    region: Region.AP // Available regions: EU, NA, AP
                 });
 
                 await riotApi.login();
