@@ -1,6 +1,4 @@
 const valorantApiCom = require('valorant-api-com');
-const { RiotApiClient, Region } = require("valorant.js");
-const fs = require('fs');
 
 module.exports = (client) => {
     client.updateApi = async (client) => {
