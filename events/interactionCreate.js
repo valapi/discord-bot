@@ -6,39 +6,23 @@ module.exports = {
 
             if (!command) return;
 
+            await interaction.reply({
+                content: "Loading Message.. ",
+                ephemeral: true
+            });
+
             try {
+                if (command.permissions && command.permissions.length > 0){
+                    if (!interaction.member.permissions.has(command.permissions)){
+                        await interaction.editReply({ content: `You don't have permission to use this command.`, ephemeral: true });
+                        return;
+                    }
+                }
+
                 await command.execute(interaction, client);
             } catch (error) {
                 console.error(error);
-                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-            }
-        }else if (interaction.isSelectMenu()){
-            let colours = "";
-            await interaction.values.forEach(async value => {
-                colours += `${value} `;
-            });
-            await interaction.reply({
-                content: `Your Favorite Color Are : ${colours}`,
-                ephemeral: true
-            });
-        }else if (interaction.isButton()){
-            if (interaction.customId.includes("-button")){
-                if(interaction.customId.includes("danger")){
-                    await interaction.reply({
-                        content: `Color Danger: #ED4245`,
-                        ephemeral: true
-                    });
-                }else if(interaction.customId.includes("success")){
-                    await interaction.reply({
-                        content: `Color Success: #57F287`,
-                        ephemeral: true
-                    });
-                }else if(interaction.customId.includes("primary")){
-                    await interaction.reply({
-                        content: `Color Pimary: #5865F2`,
-                        ephemeral: true
-                    });
-                }
+                await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
             }
         }
     },

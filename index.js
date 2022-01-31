@@ -4,12 +4,13 @@ const { token } = require('./config.json');
 
 // Create Client
 const client = new Client(
-    { intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES, 
-        Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-        Intents.FLAGS.DIRECT_MESSAGES
-        ] 
+    {
+        intents: [
+            Intents.FLAGS.GUILDS,
+            Intents.FLAGS.GUILD_MESSAGES,
+            Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
+            Intents.FLAGS.DIRECT_MESSAGES
+        ]
     }
 );
 
@@ -26,10 +27,11 @@ const commandFolders = fs.readdirSync('./commands');
 
     // Login As Discord Bot
     console.log(`----------------------------------------------------`);
+    await client.dbLogin();
     await client.handleEvents(eventFiles, './events');
     await client.handleCommands(commandFolders, './commands');
     await client.login(token);
-    await client.user.setActivity("ING PROJECT", {type: "PLAYING"});
-    client.updateApi(client);
+    await client.user.setActivity("ING PROJECT", { type: "PLAYING" });
+    client.updateClient(client);
 
 })();

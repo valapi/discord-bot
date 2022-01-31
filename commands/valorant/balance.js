@@ -1,62 +1,68 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { RiotApiClient, Region } = require("valorant.js");
 const fs = require('fs');
+const mongoose = require(`mongoose`);
+const valorantApiCom = require('valorant-api-com');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('balance')
         .setDescription('Check Valorant In Game Money')
-        .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key')),
+        .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key').setRequired(true)),
 
     async execute(interaction, client) {
         try {
-            await interaction.reply({
-                content: "Loading Message.. ",
-                ephemeral: true
-            });
-
-            const riot_json = JSON.parse(fs.readFileSync("./data/json/account.json", "utf8"));
-            const riot_api = riot_json[interaction.user.id];
-
             const _key = await interaction.options.getString("privatekey");
+            await client.dbLogin().then(async () => {
+                // create
+                const valorantSchema = new mongoose.Schema({
+                    username: String,
+                    password: String,
+                    discordId: Number
+                })
+                try {
+                    const Account = await mongoose.model('valorants', valorantSchema);
+                    await interaction.editReply({
+                        content: `Something Went Wrong, Please Try Again Later`,
+                        ephemeral: true
+                    });
+                } catch (err) {
+                    const Account = await mongoose.model('valorants');
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
+                        await interaction.editReply({
+                            content: `Can't Find Your Account In Database`,
+                            ephemeral: true
+                        });
+                    } else {
+                        if (_key == null) {
+                            await interaction.editReply({
+                                content: `Sorry, You Must Type Your Private Key`,
+                                ephemeral: true
+                            });
+                        } else {
+                            const _name = await client.decryptBack(await user.username, _key);
+                            const _password = await client.decryptBack(await user.password, _key);
 
-            if (_key == null) {
-                await interaction.editReply({
-                    content: `Sorry, You Must Type Your Private Key`,
-                    ephemeral: true
-                });
-            } else {
-                var _name = await client.decryptBack(riot_api.name, _key);
-                var _password = await client.decryptBack(riot_api.password, _key);
+                            const Valorant = require('@liamcottle/valorant.js');
+                            const valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific);
+                            valorantApi.authorize(_name, _password).then(async () => {
 
-                const riotApi = new RiotApiClient({
-                    username: _name, // your username
-                    password: _password, // your password
-                    region: Region.AP // Available regions: EU, NA, AP
-                });
+                                valorantApi.getPlayerWallet(valorantApi.user_id).then(async (response) => {
+                                    const bAlanceE = await response.data.Balances
+                                    
+                                    await interaction.editReply({
+                                        content: `You Are Have\n\nValorant Points: **${await bAlanceE['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741']}**\nRadiant Points: **${await bAlanceE['e59aa87c-4cbf-517a-5983-6e81511be9b7']}**`,
+                                        ephemeral: true
+                                    });
+                                });
 
-                await riotApi.login();
-
-                const accountId = riotApi.user.Subject;
-
-                const balance = await riotApi.storeApi.getWallet(accountId);
-
-                let valorant_point = 0;
-                let radiant_point = 0;
-
-                for (i = 0; i < balance.length; i++) {
-                    if (balance[i].name === 'Valorant Points') {
-                        valorant_point += balance[i].amount;
-                    } else if (balance[i].name === 'Radiant Points') {
-                        radiant_point += balance[i].amount;
+                            }).catch((error) => {
+                                console.log(error);
+                            });
+                        }
                     }
-                };
-
-                await interaction.editReply({
-                    content: `You Are Have\n\n**${valorant_point}** Valorant Points\n**${radiant_point}** Radiant Points`,
-                    ephemeral: true
-                });
-            }
+                }
+            });
 
         } catch (err) {
             console.error(err);

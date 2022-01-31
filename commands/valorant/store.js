@@ -1,80 +1,103 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { RiotApiClient, Region } = require("valorant.js");
-const valorantApiCom = require('valorant-api-com');
 const fs = require('fs');
+const mongoose = require(`mongoose`);
+const valorantApiCom = require('valorant-api-com');
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('store')
         .setDescription('Valorant Daily Store')
-        .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key')),
+        .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key').setRequired(true)),
 
     async execute(interaction, client) {
         try {
-            await interaction.reply({
-                content: "Loading Message.. ",
-                ephemeral: true
-            });
-    
-            const riot_json = JSON.parse(fs.readFileSync("./data/json/account.json", "utf8"));
-            const riot_api = riot_json[interaction.user.id];
-
             const _key = await interaction.options.getString("privatekey");
+            await client.dbLogin().then(async () => {
+                // create
+                const valorantSchema = new mongoose.Schema({
+                    username: String,
+                    password: String,
+                    discordId: Number
+                })
+                try {
+                    const Account = await mongoose.model('valorants', valorantSchema);
+                    await interaction.editReply({
+                        content: `Something Went Wrong, Please Try Again Later`,
+                        ephemeral: true
+                    });
+                } catch (err) {
+                    const Account = await mongoose.model('valorants');
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
+                        await interaction.editReply({
+                            content: `Can't Find Your Account In Database`,
+                            ephemeral: true
+                        });
+                    } else {
+                        if (_key == null) {
+                            await interaction.editReply({
+                                content: `Sorry, You Must Type Your Private Key`,
+                                ephemeral: true
+                            });
+                        } else {
+                            const _name = await client.decryptBack(await user.username, _key);
+                            const _password = await client.decryptBack(await user.password, _key);
 
-            if (_key == null){
-                await interaction.editReply({
-                    content: `Sorry, You Must Type Your Private Key`,
-                    ephemeral: true
-                });
-            }else{
-                var _name = await client.decryptBack(riot_api.name, _key);
-                var _password = await client.decryptBack(riot_api.password, _key);
-                
-                const riotApi = new RiotApiClient({
-                    username: _name, // your username
-                    password: _password, // your password
-                    region: Region.AP // Available regions: EU, NA, AP
-                });
-    
-                await riotApi.login();
-    
-                const accountId = riotApi.user.Subject;
-    
-                const store = await riotApi.storeApi.getStorefront(accountId, false);
-    
-                let id_1 = store.SkinsPanelLayout.SingleItemOffers[0];
-                let id_2 = store.SkinsPanelLayout.SingleItemOffers[1];
-                let id_3 = store.SkinsPanelLayout.SingleItemOffers[2];
-                let id_4 = store.SkinsPanelLayout.SingleItemOffers[3];
-    
-                let shop_1 = "";
-                let shop_2 = "";
-                let shop_3 = "";
-                let shop_4 = "";
+                            const Valorant = require('@liamcottle/valorant.js');
+                            const valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific);
+                            valorantApi.authorize(_name, _password).then(async () => {
 
-                let valorantApi = new valorantApiCom({
-                    'language': 'en-US'
-                });
+                                await valorantApi.getPlayerStoreFront(valorantApi.user_id).then(async (response) => {
+                                    let sec = response.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds;
+                                    let min = 0;
+                                    let hour = 0;
+                    
+                                    while(sec >= 60) {
+                                        min++;
+                                        sec -= 60;
+                                    }
+                    
+                                    while(min >= 60) {
+                                        hour++;
+                                        min -= 60;
+                                    }
+                    
+                                    const timeLeft = `${hour} hour(s) ${min} minute(s) ${sec} second(s)`
 
-                let getWeapons = await valorantApi.getWeaponLevels();
-    
-                for (let i = 0; i < getWeapons.data.length; i++) {
-                    if (getWeapons.data[i].uuid === id_1) {
-                        shop_1 += getWeapons.data[i].displayName;
-                    } else if (getWeapons.data[i].uuid === id_2) {
-                        shop_2 += getWeapons.data[i].displayName;
-                    } else if (getWeapons.data[i].uuid === id_3) {
-                        shop_3 += getWeapons.data[i].displayName;
-                    } else if (getWeapons.data[i].uuid === id_4) {
-                        shop_4 += getWeapons.data[i].displayName;
+                                    let sendMessage = ``;
+
+                                    let valorantApiData = new valorantApiCom({
+                                        'language': 'en-US'
+                                    });
+                    
+                                    let getDatas = await valorantApiData.getWeaponLevels();
+                                    
+                                    for(let i = 0; i < response.data.SkinsPanelLayout.SingleItemOffers.length; i++) {
+                                        for (let l = 0; l < getDatas.data.length; l++) {
+                                            if (getDatas.data[l].uuid === response.data.SkinsPanelLayout.SingleItemOffers[i]) {
+                                                sendMessage += `Slot ${i + 1}: **${await getDatas.data[l].displayName}\n**`
+                                            }
+                                        }
+
+                                        if(response.data.SkinsPanelLayout.SingleItemOffers.length - 1 == i){
+                                            sendMessage += `\nTime Left: **${await timeLeft}**`
+                                        }
+                                    }
+
+                                    await interaction.editReply({
+                                        content: sendMessage,
+                                        ephemeral: true
+                                    });
+                                });
+
+                            }).catch((error) => {
+                                console.log(error);
+                            });
+                        }
                     }
                 }
-    
-                await interaction.editReply({
-                    content: `Slot 1: **${shop_1}**\nSlot 2: **${shop_2}**\nSlot 3: **${shop_3}**\nSlot 4: **${shop_4}**`,
-                    ephemeral: true
-                });
-            }
+            });
+
         } catch (err) {
             console.error(err);
         }

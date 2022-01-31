@@ -5,7 +5,7 @@ module.exports = {
 		.setName('invite')
 		.setDescription('Get Invite Link'),
 	async execute(interaction) {
-		await interaction.reply({
+		await interaction.editReply({
 			content: "https://discord.com/oauth2/authorize?client_id=930354659493822515&scope=bot&permissions=27648860222",
 			ephemeral: true
 		});

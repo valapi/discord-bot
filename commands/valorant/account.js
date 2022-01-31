@@ -1,49 +1,70 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { RiotApiClient, Region } = require("valorant.js");
 const fs = require('fs');
+const mongoose = require(`mongoose`);
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('account')
         .setDescription('Valorant Account Info')
-        .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key')),
+        .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key').setRequired(true)),
 
     async execute(interaction, client) {
         try {
-            await interaction.reply({
-                content: "Loading Message.. ",
-                ephemeral: true
-            });
-
-            const riot_json = JSON.parse(fs.readFileSync("./data/json/account.json", "utf8"));
-            const riot_api = riot_json[interaction.user.id];
             const _key = await interaction.options.getString("privatekey");
+            await client.dbLogin().then(async () => {
+                // create
+                const valorantSchema = new mongoose.Schema({
+                    username: String,
+                    password: String,
+                    discordId: Number
+                })
+                try {
+                    const Account = await mongoose.model('valorants', valorantSchema);
+                    await interaction.editReply({
+                        content: `Something Went Wrong, Please Try Again Later`,
+                        ephemeral: true
+                    });
+                } catch (err) {
+                    const Account = await mongoose.model('valorants');
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
+                        await interaction.editReply({
+                            content: `Can't Find Your Account In Database`,
+                            ephemeral: true
+                        });
+                    } else {
+                        if (_key == null) {
+                            await interaction.editReply({
+                                content: `Sorry, You Must Type Your Private Key`,
+                                ephemeral: true
+                            });
+                        } else {
+                            const _name = await client.decryptBack(await user.username, _key);
+                            const _password = await client.decryptBack(await user.password, _key);
 
-            if (_key == null) {
-                await interaction.editReply({
-                    content: `Sorry, You Must Type Your Private Key`,
-                    ephemeral: true
-                });
-            } else {
-                var _name = await client.decryptBack(riot_api.name, _key);
-                var _password = await client.decryptBack(riot_api.password, _key);
+                            const Valorant = require('@liamcottle/valorant.js');
+                            const valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific);
+                            valorantApi.authorize(_name, _password).then(async () => {
 
-                const riotApi = new RiotApiClient({
-                    username: _name, // your username
-                    password: _password, // your password
-                    region: Region.AP // Available regions: EU, NA, AP
-                });
+                                let sendReg = ``;
+                                if (await valorantApi.region == 'AP'){
+                                    sendReg += `Asia Pacific`;
+                                }else {
+                                    sendReg += `${await valorantApi.region} - Not Support`;
+                                }
 
-                await riotApi.login();
+                                await interaction.editReply({
+                                    content: `You Are Register Riot Account With \n\nUsername: **${await valorantApi.username}**\nId: **${await valorantApi.user_id}**\nRegion: **${await sendReg}**`,
+                                    ephemeral: true
+                                });
 
-                const name = riotApi.user.GameName
-                const tag = riotApi.user.TagLine
-
-                await interaction.editReply({
-                    content: `You Are Register Riot Account With \n\nName: **${name}**\nTag: **${tag}**`,
-                    ephemeral: true
-                });
-            }
+                            }).catch((error) => {
+                                console.log(error);
+                            });
+                        }
+                    }
+                }
+            });
 
         } catch (err) {
             console.error(err);
