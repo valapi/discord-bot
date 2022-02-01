@@ -9,7 +9,7 @@ module.exports = {
             const getStatus = await client.getStatus(await createdTime);
 
             let sendMessage = ``;
-            sendMessage += `Uptime: **${await getStatus.uptime.days} Days : ${await getStatus.uptime.hours} Hours : ${await getStatus.uptime.minutes} Minutes : ${await getStatus.uptime.seconds} Seconds**\n`;
+            //sendMessage += `Uptime: **${await getStatus.uptime.days} Days : ${await getStatus.uptime.hours} Hours : ${await getStatus.uptime.minutes} Minutes : ${await getStatus.uptime.seconds} Seconds**\n`;
             sendMessage += `Status: **${await getStatus.status}**\n`;
             sendMessage += `Ping: **${await getStatus.ping.average} ms**\n`;
             sendMessage += `\n`;
@@ -23,6 +23,10 @@ module.exports = {
             });
         } catch (err) {
             console.error(err);
+            await interaction.editReply({
+                content: `Something Went Wrong, Please Try Again Later`,
+                ephemeral: true
+            });
         }
     }
 };

@@ -66,6 +66,10 @@ module.exports = {
 
         } catch (err) {
             console.error(err);
+            await interaction.editReply({
+                content: `Something Went Wrong, Please Try Again Later`,
+                ephemeral: true
+            });
         }
     }
 }
