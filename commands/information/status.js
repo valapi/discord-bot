@@ -8,6 +8,11 @@ module.exports = {
         try {
             const getStatus = await client.getStatus(await createdTime);
             if (!getStatus || getStatus == null || getStatus == undefined) {
+                await interaction.editReply({
+                    content: `Something Went Wrong, Please Try Again Later`,
+                    ephemeral: true
+                });
+            }else {
                 let sendMessage = ``;
                 sendMessage += `Uptime: **${await getStatus.uptime.days} Days : ${await getStatus.uptime.hours} Hours : ${await getStatus.uptime.minutes} Minutes : ${await getStatus.uptime.seconds} Seconds**\n`;
                 sendMessage += `Status: **${await getStatus.status}**\n`;
@@ -19,11 +24,6 @@ module.exports = {
 
                 await interaction.editReply({
                     content: await sendMessage,
-                    ephemeral: true
-                });
-            }else {
-                await interaction.editReply({
-                    content: `Something Went Wrong, Please Try Again Later`,
                     ephemeral: true
                 });
             }
