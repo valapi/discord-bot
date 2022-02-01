@@ -1,6 +1,8 @@
 module.exports = {
     name: 'interactionCreate',
     async execute(interaction, client) {
+        const createdTime = new Date();
+        
         if (interaction.isCommand()){
             const command = client.commands.get(interaction.commandName);
 
@@ -19,7 +21,6 @@ module.exports = {
                     }
                 }
 
-                var createdTime = new Date();
 
                 await command.execute(interaction, client, createdTime);
             } catch (error) {

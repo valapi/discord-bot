@@ -2,7 +2,6 @@ const CryptoJS = require('crypto-js');
 const os = require("os");
 const mongoose = require('mongoose');
 const ping = require('ping');
-const ip = require('ip');
 
 module.exports = (client) => {
     client.getStatus = async (createdTime) => {
@@ -27,8 +26,6 @@ module.exports = (client) => {
                 up_day++
                 up_hour -= 24
             }
-
-            const UPTIME = `${await up_day + 0} Days : ${await up_hour + 0} Hours : ${await up_min + 0} Minutes : ${await up_sec + 0} Seconds`
 
             //status
             const status_now = await client.user.presence.status
@@ -55,7 +52,7 @@ module.exports = (client) => {
             const client_ping = await Math.round(await client.ws.ping)
 
             //return
-            return {uptime: UPTIME, status: STATUS, ping: {data: {mongodb: mongo_ping, discordApi: discord_ping, valorantApi: valorant_ping, client: client_ping}, average: await Math.round((mongo_ping + discord_ping + valorant_ping + client_ping) / 4)}}
+            return {uptime: {days: await up_day + 0, hours: await up_hour + 0, minutes: await up_min + 0, seconds: await up_sec + 0}, status: STATUS, ping: {data: {mongodb: mongo_ping, discordApi: discord_ping, valorantApi: valorant_ping, client: client_ping}, average: await Math.round((mongo_ping + discord_ping + valorant_ping + client_ping) / 4)}}
 
         }catch (error) {
             console.error(error)

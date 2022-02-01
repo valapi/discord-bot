@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { get } = require('mongoose');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -7,10 +6,10 @@ module.exports = {
         .setDescription('Bot Status'),
     async execute(interaction, client, createdTime) {
         try {
-            const getStatus = await client.getStatus(createdTime);
+            const getStatus = await client.getStatus(await createdTime);
 
             let sendMessage = ``;
-            sendMessage += `Uptime: **${await getStatus.uptime}**\n`;
+            sendMessage += `Uptime: **${await getStatus.uptime.days} Days : ${await getStatus.uptime.hours} Hours : ${await getStatus.uptime.minutes} Minutes : ${await getStatus.uptime.seconds} Seconds**\n`;
             sendMessage += `Status: **${await getStatus.status}**\n`;
             sendMessage += `Ping: **${await getStatus.ping.average} ms**\n`;
             sendMessage += `\n`;
