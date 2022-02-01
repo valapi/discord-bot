@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('./config.json');
+var CronJob = require('cron').CronJob;
 
 // Create Client
 const client = new Client(
@@ -32,6 +33,16 @@ const commandFolders = fs.readdirSync('./commands');
     await client.handleCommands(commandFolders, './commands');
     await client.login(token);
     await client.user.setActivity("ING PROJECT", { type: "PLAYING" });
-    client.updateClient(client);
+
+    //update Client
+    const popJob = new CronJob({
+        cronTime: '0 0 8 * * *',
+        onTick: async function () {
+            await client.updateClient(client);
+        },
+        start: false,
+        timeZone: 'Asia/Bangkok'
+    });
+    popJob.start();
 
 })();

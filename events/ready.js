@@ -5,6 +5,6 @@ module.exports = {
 
 		console.log(`Logged in as ${client.user.tag}`);
 
-		console.log(`Current Time >> ${new Date().getHours()} : ${new Date().getMinutes()} : ${new Date().getSeconds()}`)
+		console.log(`Server Time >> ${new Date().getHours()} : ${new Date().getMinutes()} : ${new Date().getSeconds()}`)
 	},
 };

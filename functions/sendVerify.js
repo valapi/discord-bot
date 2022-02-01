@@ -31,11 +31,6 @@ module.exports = (client) => {
 
             const verifyNumber = await Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
             const sendGmail = await Gmail
-            if (sendGmail.endsWith("@gmail.com")){
-
-            }else {
-                return {result: null, verifyNumber: null}
-            }
     
             const mailOptions = {
                 from: 'ING PROJECT <kawinth.ingproject@gmail.com>',

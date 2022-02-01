@@ -1,1 +1,1 @@
-Worker: nodemon -x 'node index.js || touch index.js'
+Worker: nodemon -x 'node index.js'

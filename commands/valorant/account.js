@@ -12,20 +12,18 @@ module.exports = {
         try {
             const _key = await interaction.options.getString("privatekey");
             await client.dbLogin().then(async () => {
-                // create
-                const valorantSchema = new mongoose.Schema({
-                    username: String,
-                    password: String,
-                    discordId: Number
-                })
+                var Account;
                 try {
-                    const Account = await mongoose.model('valorants', valorantSchema);
-                    await interaction.editReply({
-                        content: `Something Went Wrong, Please Try Again Later`,
-                        ephemeral: true
-                    });
-                } catch (err) {
-                    const Account = await mongoose.model('valorants');
+                    const valorantSchema = new mongoose.Schema({
+                        username: String,
+                        password: String,
+                        discordId: Number
+                    })
+
+                    Account = await mongoose.model('valorants', valorantSchema);
+                }catch(err) {
+                    Account = await mongoose.model('valorants');
+                    //script
                     const user = await Account.findOne({ discordId: await interaction.user.id });
                     if (user == null) {
                         await interaction.editReply({

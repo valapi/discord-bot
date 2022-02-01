@@ -19,7 +19,9 @@ module.exports = {
                     }
                 }
 
-                await command.execute(interaction, client);
+                var createdTime = new Date();
+
+                await command.execute(interaction, client, createdTime);
             } catch (error) {
                 console.error(error);
                 await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
