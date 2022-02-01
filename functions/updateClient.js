@@ -18,8 +18,12 @@ module.exports = (client) => {
         console.log(`Valorant Api Version: ${versionArgs}`);
 
         //status
-        const getStatus = await client.getStatus(new Date());
-        console.log(getStatus);
+        try {
+            const getStatus = await client.getStatus(new Date());
+            console.log(getStatus);
+        }catch (err){
+            console.log(err);
+        }
 
         //send today valorant shop data to gmail
 

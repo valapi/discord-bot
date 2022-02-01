@@ -7,9 +7,10 @@ module.exports = {
     async execute(interaction, client, createdTime) {
         try {
             const getStatus = await client.getStatus(await createdTime);
+            console.log(getStatus);
 
             let sendMessage = ``;
-            //sendMessage += `Uptime: **${await getStatus.uptime.days} Days : ${await getStatus.uptime.hours} Hours : ${await getStatus.uptime.minutes} Minutes : ${await getStatus.uptime.seconds} Seconds**\n`;
+            sendMessage += `Uptime: **${await getStatus.uptime.days} Days : ${await getStatus.uptime.hours} Hours : ${await getStatus.uptime.minutes} Minutes : ${await getStatus.uptime.seconds} Seconds**\n`;
             sendMessage += `Status: **${await getStatus.status}**\n`;
             sendMessage += `Ping: **${await getStatus.ping.average} ms**\n`;
             sendMessage += `\n`;
