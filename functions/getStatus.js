@@ -10,7 +10,7 @@ module.exports = (client) => {
             let up_day = 0;
 
             while (up_sec >= 60) {
-                up_hour++
+                up_min++
                 up_sec -= 60
             }
 
