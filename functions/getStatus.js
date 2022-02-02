@@ -1,7 +1,7 @@
-const CryptoJS = require('crypto-js');
-const os = require("os");
 const mongoose = require('mongoose');
 const ping = require('ping');
+const os = require('os');
+const process = require('process');
 
 module.exports = (client) => {
     client.getStatus = async (createdTime) => {

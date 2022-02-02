@@ -34,6 +34,9 @@ const commandFolders = fs.readdirSync('./commands');
     await client.login(token);
     await client.user.setActivity("ING PROJECT", { type: "PLAYING" });
 
+    //set maxListeners Limit
+    require('events').EventEmitter.defaultMaxListeners = 35;
+
     //update Client
     const popJob = new CronJob({
         cronTime: '0 0 8 * * *',

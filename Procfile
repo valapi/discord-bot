@@ -1,1 +1,1 @@
-Worker: nodemon -x 'node index.js'
+Worker: nodemon --ignore /data/json/gmail.json -x 'node index.js'

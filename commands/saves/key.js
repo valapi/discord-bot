@@ -39,102 +39,96 @@ module.exports = {
                     });
                 } else {
                     await client.dbLogin().then(async () => {
-                        // create
-                        const keySchema = new mongoose.Schema({
-                            key: String,
-                            discordId: Number
-                        })
+                        var Account;
                         try {
-                            const Account = await mongoose.model('keys', keySchema);
-                            await interaction.editReply({
-                                content: `Something Went Wrong, Please Try Again Later`,
-                                ephemeral: true
-                            });
+                            const keySchema = new mongoose.Schema({
+                                key: String,
+                                discordId: Number
+                            })
+
+                            Account = await mongoose.model('keys', keySchema);
                         } catch (err) {
-                            const Account = await mongoose.model('keys');
-                            const user = await Account.findOne({ discordId: await interaction.user.id });
-                            if (user == null) {
-                                //create new
-                                const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
-                                findAccount.save().then(async () => {
-                                    await interaction.editReply({
-                                        content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await _key}**`,
-                                        ephemeral: true
-                                    });
+                            Account = await mongoose.model('keys');
+                        }
+                        //script
+                        const user = await Account.findOne({ discordId: await interaction.user.id });
+                        if (user == null) {
+                            //create new
+                            const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
+                            findAccount.save().then(async () => {
+                                await interaction.editReply({
+                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await _key}**`,
+                                    ephemeral: true
                                 });
-                            } else {
-                                //delete 
-                                await Account.deleteOne({ discordId: await interaction.user.id });
-                                //create new
-                                const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
-                                findAccount.save().then(async () => {
-                                    await interaction.editReply({
-                                        content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await _key}**`,
-                                        ephemeral: true
-                                    });
+                            });
+                        } else {
+                            //delete 
+                            await Account.deleteOne({ discordId: await interaction.user.id });
+                            //create new
+                            const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
+                            findAccount.save().then(async () => {
+                                await interaction.editReply({
+                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await _key}**`,
+                                    ephemeral: true
                                 });
-                            }
+                            });
                         }
                     });
                 }
 
             } else if (interaction.options.getSubcommand() === "get") {
                 await client.dbLogin().then(async () => {
-                    // create
-                    const keySchema = new mongoose.Schema({
-                        key: String,
-                        discordId: Number
-                    })
+                    var Account;
                     try {
-                        const Account = await mongoose.model('keys', keySchema);
+                        const keySchema = new mongoose.Schema({
+                            key: String,
+                            discordId: Number
+                        })
+
+                        Account = await mongoose.model('keys', keySchema);
+                    } catch (err) {
+                        Account = await mongoose.model('keys');
+                    }
+                    //script
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
                         await interaction.editReply({
-                            content: `Something Went Wrong, Please Try Again Later`,
+                            content: `Can't Find Your Private Key In Database`,
                             ephemeral: true
                         });
-                    } catch (err) {
-                        const Account = await mongoose.model('keys');
-                        const user = await Account.findOne({ discordId: await interaction.user.id });
-                        if (user == null) {
-                            await interaction.editReply({
-                                content: `Can't Find Your Private Key In Database`,
-                                ephemeral: true
-                            });
-                        } else {
-                            await interaction.editReply({
-                                content: `__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await user.key}**`,
-                                ephemeral: true
-                            });
-                        }
+                    } else {
+                        await interaction.editReply({
+                            content: `__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await user.key}**`,
+                            ephemeral: true
+                        });
                     }
                 });
             } else if (interaction.options.getSubcommand() === "remove") {
                 await client.dbLogin().then(async () => {
-                    // create
-                    const keySchema = new mongoose.Schema({
-                        key: String,
-                        discordId: Number
-                    })
+                    var Account;
                     try {
-                        const Account = await mongoose.model('keys', keySchema);
+                        const keySchema = new mongoose.Schema({
+                            key: String,
+                            discordId: Number
+                        })
+
+                        Account = await mongoose.model('keys', keySchema);
+                    } catch (err) {
+                        Account = await mongoose.model('keys');
+                    }
+                    //script
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
                         await interaction.editReply({
-                            content: `Something Went Wrong, Please Try Again Later`,
+                            content: `Can't Find Your Private Key In Database`,
                             ephemeral: true
                         });
-                    } catch (err) {
-                        const Account = await mongoose.model('keys');
-                        const user = await Account.findOne({ discordId: await interaction.user.id });
-                        if (user == null) {
-                            await interaction.editReply({
-                                content: `Can't Find Your Private Key In Database`,
-                                ephemeral: true
-                            });
-                        } else {
-                            await Account.deleteOne({ discordId: await interaction.user.id });
-                            await interaction.editReply({
-                                content: `Delete Your Private Key From Database.`,
-                                ephemeral: true
-                            });
-                        }
+                    } else {
+                        await Account.deleteOne({ discordId: await interaction.user.id });
+                        await interaction.editReply({
+                            content: `Delete Your Private Key From Database.`,
+                            ephemeral: true
+                        });
                     }
 
                 });
