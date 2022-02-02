@@ -1,6 +1,3 @@
-const mongoose = require('mongoose');
-const ping = require('ping');
-const os = require('os');
 const process = require('process');
 
 module.exports = (client) => {
@@ -33,26 +30,17 @@ module.exports = (client) => {
 
             //ping
 
-            //mongoose ping
-            const mongo_host = await mongoose.connection.host
-            const mongo_res = await ping.promise.probe(mongo_host);
-            const mongo_ping = await mongo_res.avg | 0
-
             //discord.js ping
+            
             const discord_now = await Number(new Date())
             const discord_create = await Number(await createdTime);
             const discord_ping = await discord_now - discord_create
-
-            //valorant-api ping
-            const valorant_host = "valorant-api.com"
-            const valorant_res = await ping.promise.probe(valorant_host);
-            const valorant_ping = await valorant_res.avg | 0
 
             //client ping
             const client_ping = await Math.round(await client.ws.ping)
 
             //return
-            return {uptime: {days: await up_day + 0, hours: await up_hour + 0, minutes: await up_min + 0, seconds: await up_sec + 0}, status: STATUS, ping: {data: {mongodb: mongo_ping, discordApi: discord_ping, valorantApi: valorant_ping, client: client_ping}, average: await Math.round((mongo_ping + discord_ping + valorant_ping + client_ping) / 4)}}
+            return {uptime: {days: await up_day + 0, hours: await up_hour + 0, minutes: await up_min + 0, seconds: await up_sec + 0}, status: STATUS, ping: {data: {discordApi: discord_ping, client: client_ping}, average: await Math.round((discord_ping + client_ping) / 2)}}
 
         }catch (error) {
             console.error(error)
