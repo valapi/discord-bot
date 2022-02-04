@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const valorantApiCom = require('valorant-api-com');
 const fs = require('fs');
 const mongoose = require(`mongoose`);
+const { MessageAttachment, MessageEmbed } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()

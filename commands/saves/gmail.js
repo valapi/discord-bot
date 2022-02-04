@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
 const mongoose = require(`mongoose`);
+const { MessageAttachment, MessageEmbed } = require('discord.js');
 
 module.exports = {
     data: new SlashCommandBuilder()
