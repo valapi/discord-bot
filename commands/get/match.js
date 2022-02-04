@@ -11,8 +11,12 @@ module.exports = {
         .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key'))
         .addNumberOption(option => option.setName('index').setDescription('Type Match Index Id')),
 
-    async execute(interaction, client) {
+    async execute(interaction, client, createdTime) {
         try {
+            let valorantApiData = new valorantApiCom({
+                'language': 'en-US'
+            });
+
             var _key = await interaction.options.getString("privatekey");
             await client.dbLogin().then(async () => {
                 var Account;
@@ -88,6 +92,7 @@ module.exports = {
                                     });
                                 } else {
                                     let sendMessage = ``;
+                                    var player_played_agent_display;
                                     //MATCH INFO
                                     sendMessage += `__Match Info__ -->\n\n`;
                                     //match id
@@ -113,6 +118,10 @@ module.exports = {
                                         duration_hour++;
                                     }
                                     sendMessage += `Duration: **${await duration_hour} Hours : ${await duration_min} Minutes : ${await duration_sec | 0} Seconds**\n`;
+                                    //match played in season
+                                    const get_season_id = await getMatch.data.matchInfo.seasonId;
+                                    const getSeasons = await valorantApiData.getSeasons(get_season_id)
+                                    sendMessage += `Season: **${await getSeasons.data.displayName}**\n`;
                                     //game start time
                                     const get_match_start_time = await getMatch.data.matchInfo.gameStartMillis;
                                     const start_time = new Date(await get_match_start_time);
@@ -162,18 +171,27 @@ module.exports = {
                                             sendMessage += `Assists: **${await get_all_player[i].stats.assists}**\n`;
 
                                             const player_played_agent_id = await get_all_player[i].characterId;
-                                            let valorantApiData = new valorantApiCom({
-                                                'language': 'en-US'
-                                            });
                                             const find_played_agent = await valorantApiData.getAgents(await player_played_agent_id);
                                             const player_played_agent_name = await find_played_agent.data.displayName;
-                                            const player_played_agent_role = await find_played_agent.data.role.displayName;
+                                            const player_played_agent_role = await find_played_agent.data.role.displayName
+                                            player_played_agent_display = await find_played_agent.data.displayIcon
                                             sendMessage += `Agent: **[ ${await player_played_agent_name} - ${player_played_agent_role} ]**\n`;
                                         }
                                     }
                                     //send message
+                                    const createEmbed = new MessageEmbed()
+                                        .setColor(`#0099ff`)
+                                        .setTitle(`/${await interaction.commandName}`)
+                                        .setURL(`https://ingkth.wordpress.com`)
+                                        .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                        .setDescription(await sendMessage)
+                                        .setThumbnail(await player_played_agent_display)
+                                        .setTimestamp(createdTime)
+                                        .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                                     await interaction.editReply({
-                                        content: sendMessage,
+                                        content: ` `,
+                                        embeds: [createEmbed],
                                         ephemeral: true
                                     });
                                 }

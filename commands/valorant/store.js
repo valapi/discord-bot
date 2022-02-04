@@ -53,12 +53,12 @@ module.exports = {
                         }
                     }
 
-                    if (_key == null){
+                    if (_key == null) {
                         await interaction.editReply({
                             content: `Sorry, You Must Type Your Private Key`,
                             ephemeral: true
                         });
-                    }else {
+                    } else {
                         const _name = await client.decryptBack(await user.username, _key);
                         const _password = await client.decryptBack(await user.password, _key);
 
@@ -103,8 +103,18 @@ module.exports = {
                                     }
                                 }
 
+                                const createEmbed = new MessageEmbed()
+                                    .setColor(`#0099ff`)
+                                    .setTitle(`/${await interaction.commandName}`)
+                                    .setURL(`https://ingkth.wordpress.com`)
+                                    .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                    .setDescription(await sendMessage)
+                                    .setTimestamp(createdTime)
+                                    .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                                 await interaction.editReply({
-                                    content: sendMessage,
+                                    content: ` `,
+                                    embeds: [createEmbed],
                                     ephemeral: true
                                 });
                             });

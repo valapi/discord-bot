@@ -67,7 +67,7 @@ module.exports = {
                         await valorantApi.authorize(_name, _password).then(async () => {
 
                             let sendMessage = ``;
-                            
+
                             await valorantApi.getPlayerLoadout(valorantApi.user_id).then(async (response) => {
                                 const getDatas = await response.data;
                                 const valorantApiData = new valorantApiCom({
@@ -76,13 +76,13 @@ module.exports = {
 
                                 //Guns
                                 const getGuns = await getDatas.Guns;
-                                sendMessage += `Guns: **[`;
-                                for (let i = 0; i < getGuns.length; i++){
+                                sendMessage += `Weapons: **[`;
+                                for (let i = 0; i < getGuns.length; i++) {
                                     const skinLevel = await getDatas.Guns[i].SkinID;
-    
+
                                     const getSkinApi = await valorantApiData.getWeaponSkins(await skinLevel);
                                     const getSkinName = await getSkinApi.data.displayName;
-                                    
+
                                     sendMessage += ` ${getSkinName}, `;
                                 }
                                 sendMessage += `]**\n\n`;
@@ -90,12 +90,12 @@ module.exports = {
                                 //Sprays
                                 const getSprays = await getDatas.Sprays;
                                 sendMessage += `Sprays: **[`;
-                                for (let i = 0; i < getSprays.length; i++){
+                                for (let i = 0; i < getSprays.length; i++) {
                                     const sprayId = await getDatas.Sprays[i].SprayID;
-    
+
                                     const getSprayApi = await valorantApiData.getSprays(await sprayId)
                                     const getSprayName = await getSprayApi.data.displayName;
-                                    
+
                                     sendMessage += ` ${getSprayName}, `;
                                 }
                                 sendMessage += `]**\n\n`;
@@ -115,10 +115,20 @@ module.exports = {
                                 if (player_title_display != null) {
                                     sendMessage += `\n\nPlayer Title: **[ ${player_title_name} - ${player_title_display} ]**`;
                                 }
-                            })  
-                            
+                            })
+
+                            const createEmbed = new MessageEmbed()
+                                .setColor(`#0099ff`)
+                                .setTitle(`/${await interaction.commandName}`)
+                                .setURL(`https://ingkth.wordpress.com`)
+                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                .setDescription(await sendMessage)
+                                .setTimestamp(createdTime)
+                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                             await interaction.editReply({
-                                content: sendMessage,
+                                content: ` `,
+                                embeds: [createEmbed],
                                 ephemeral: true
                             });
 

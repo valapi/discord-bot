@@ -21,11 +21,14 @@ module.exports = {
                     }
                 }
 
-
-                await command.execute(interaction, client, createdTime);
+                try {
+                    await command.execute(interaction, client, createdTime);
+                }catch (err){
+                    await interaction.editReply({ content: 'There was an error while executing this command.', ephemeral: true });
+                }
             } catch (error) {
                 console.error(error);
-                await interaction.editReply({ content: 'There was an error while executing this command!', ephemeral: true });
+                await interaction.editReply({ content: 'There was an error while executing this command.', ephemeral: true });
             }
         }
     },

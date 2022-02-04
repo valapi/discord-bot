@@ -72,8 +72,18 @@ module.exports = {
                                 sendReg += `${await valorantApi.region} - Not Support`;
                             }
 
+                            const createEmbed = new MessageEmbed()
+                                .setColor(`#0099ff`)
+                                .setTitle(`/${await interaction.commandName}`)
+                                .setURL(`https://ingkth.wordpress.com`)
+                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                .setDescription(`Username: **${await valorantApi.username}**\nId: **${await valorantApi.user_id}**\nRegion: **${await sendReg}**`)
+                                .setTimestamp(createdTime)
+                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                             await interaction.editReply({
-                                content: `You Are Register Riot Account With \n\nUsername: **${await valorantApi.username}**\nId: **${await valorantApi.user_id}**\nRegion: **${await sendReg}**`,
+                                content: `You Are Register Riot Account With`,
+                                embeds: [createEmbed],
                                 ephemeral: true
                             });
 

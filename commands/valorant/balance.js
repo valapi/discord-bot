@@ -69,8 +69,18 @@ module.exports = {
                             valorantApi.getPlayerWallet(valorantApi.user_id).then(async (response) => {
                                 const bAlanceE = await response.data.Balances
 
+                                const createEmbed = new MessageEmbed()
+                                    .setColor(`#0099ff`)
+                                    .setTitle(`/${await interaction.commandName}`)
+                                    .setURL(`https://ingkth.wordpress.com`)
+                                    .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                    .setDescription(`Valorant Points: **${await bAlanceE['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741']}**\nRadiant Points: **${await bAlanceE['e59aa87c-4cbf-517a-5983-6e81511be9b7']}**`)
+                                    .setTimestamp(createdTime)
+                                    .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                                 await interaction.editReply({
-                                    content: `You Are Have\n\nValorant Points: **${await bAlanceE['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741']}**\nRadiant Points: **${await bAlanceE['e59aa87c-4cbf-517a-5983-6e81511be9b7']}**`,
+                                    content: `You Are Have`,
+                                    embeds: [createEmbed],
                                     ephemeral: true
                                 });
                             });

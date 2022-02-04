@@ -46,18 +46,24 @@ module.exports = {
                         ephemeral: true
                     });
                 } else {
-                    const sendMail = await client.sendVerify(await _gmail);
+                    const verifyNumber = await Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+                    
+                    const sendMail = await client.sendMailTo({
+                        gmail: await _gmail, 
+                        title: `Verify Code: ${await verifyNumber}`, 
+                        message: `Hi. ${await interaction.user.username}#${await interaction.user.discriminator}  -  Run With /${interaction.commandName}\n\nYour verify code is\n\n\n${await verifyNumber}\n\n\nWebsite: https://ingkth.wordpress.com/\nDiscord: https://discord.gg/pbyWbUYjyt\n\nING PROJECT.`
+                    });
 
-                    if (await sendMail.result == null || await sendMail.verifyNumber == null) {
+                    if (await sendMail == null) {
                         await interaction.editReply({
-                            content: `Please Type Your Mail Correctly`,
+                            content: `**Please Type Your Mail Correctly,**\nSomething Went Wrong, Please Try Again Later`,
                             ephemeral: true
                         });
                     } else {
                         let needed_json = await JSON.parse(fs.readFileSync("./data/json/gmail.json", "utf8"));
                         needed_json[interaction.user.id] = {
                             mail: _gmail,
-                            verify: await sendMail.verifyNumber
+                            verify: verifyNumber
                         };
 
                         fs.writeFile("./data/json/gmail.json", JSON.stringify(needed_json), (err) => {
