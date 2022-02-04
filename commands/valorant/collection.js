@@ -10,7 +10,7 @@ module.exports = {
         .setDescription('Get My Valorant Items Collection From Account')
         .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key')),
 
-    async execute(interaction, client) {
+    async execute(interaction, client, createdTime) {
         try {
             var _key = await interaction.options.getString("privatekey");
             await client.dbLogin().then(async () => {

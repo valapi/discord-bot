@@ -9,7 +9,7 @@ module.exports = {
         .setDescription('Valorant Account Info')
         .addStringOption(option => option.setName('privatekey').setDescription('Type Your Private Key')),
 
-    async execute(interaction, client) {
+    async execute(interaction, client, createdTime) {
         try {
             var _key = await interaction.options.getString("privatekey");
             await client.dbLogin().then(async () => {

@@ -29,7 +29,7 @@ module.exports = {
                 .setDescription("Create New Private Key")
         ),
 
-    async execute(interaction, client) {
+    async execute(interaction, client, createdTime) {
         try {
             if (interaction.options.getSubcommand() === "add") {
                 const _key = await interaction.options.getString("privatekey");
@@ -56,9 +56,20 @@ module.exports = {
                         if (user == null) {
                             //create new
                             const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
+
+                            const createEmbed = new MessageEmbed()
+                                .setColor(`#0099ff`)
+                                .setTitle(`/${await interaction.commandName}`)
+                                .setURL(`https://ingkth.wordpress.com`)
+                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                .setDescription(`**${await _key}**`)
+                                .setTimestamp(createdTime)
+                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                             findAccount.save().then(async () => {
                                 await interaction.editReply({
-                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await _key}**`,
+                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__`,
+                                    embeds: [createEmbed],
                                     ephemeral: true
                                 });
                             });
@@ -67,9 +78,20 @@ module.exports = {
                             await Account.deleteOne({ discordId: await interaction.user.id });
                             //create new
                             const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
+
+                            const createEmbed = new MessageEmbed()
+                                .setColor(`#0099ff`)
+                                .setTitle(`/${await interaction.commandName}`)
+                                .setURL(`https://ingkth.wordpress.com`)
+                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                .setDescription(`**${await _key}**`)
+                                .setTimestamp(createdTime)
+                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                             findAccount.save().then(async () => {
                                 await interaction.editReply({
-                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await _key}**`,
+                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__`,
+                                    embeds: [createEmbed],
                                     ephemeral: true
                                 });
                             });
@@ -98,8 +120,18 @@ module.exports = {
                             ephemeral: true
                         });
                     } else {
+                        const createEmbed = new MessageEmbed()
+                            .setColor(`#0099ff`)
+                            .setTitle(`/${await interaction.commandName}`)
+                            .setURL(`https://ingkth.wordpress.com`)
+                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                            .setDescription(`**${await user.key}**`)
+                            .setTimestamp(createdTime)
+                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                         await interaction.editReply({
-                            content: `__**Hacker Can Use Your Private Key To Get Username And Password From Database**__\n\nKey: **${await user.key}**`,
+                            content: `__**Hacker Can Use Your Private Key To Get Username And Password From Database**__`,
+                            embeds: [createEmbed],
                             ephemeral: true
                         });
                     }
@@ -125,19 +157,40 @@ module.exports = {
                             ephemeral: true
                         });
                     } else {
-                        await Account.deleteOne({ discordId: await interaction.user.id });
+                        const createEmbed = new MessageEmbed()
+                            .setColor(`#0099ff`)
+                            .setTitle(`/${await interaction.commandName}`)
+                            .setURL(`https://ingkth.wordpress.com`)
+                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                            .setDescription(`**${await user.key}**`)
+                            .setTimestamp(createdTime)
+                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                         await interaction.editReply({
                             content: `Delete Your Private Key From Database.`,
+                            embeds: [createEmbed],
                             ephemeral: true
                         });
+
+                        await Account.deleteOne({ discordId: await interaction.user.id });
                     }
 
                 });
             } else if (interaction.options.getSubcommand() === "new") {
                 var _key = await client.createSalt();
 
+                const createEmbed = new MessageEmbed()
+                    .setColor(`#0099ff`)
+                    .setTitle(`/${await interaction.commandName}`)
+                    .setURL(`https://ingkth.wordpress.com`)
+                    .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                    .setDescription(`**${await _key}**`)
+                    .setTimestamp(createdTime)
+                    .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
                 await interaction.editReply({
-                    content: `**" Keep It Secret "**\nAnd Saving Private Key At The Safest Spot !!!\n\nKey: **${_key}**`,
+                    content: `**" Keep It Secret "**\nAnd Saving Private Key At The Safest Spot !!!`,
+                    embeds: [createEmbed],
                     ephemeral: true
                 });
             }
