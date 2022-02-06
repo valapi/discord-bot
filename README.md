@@ -1,7 +1,7 @@
 # Valorant Discord Bot
 website: [https://ingkth.wordpress.com/](https://ingkth.wordpress.com/)
 
-##script
+## index.js
 ```javascript
 console.log("Hi!")
 ```
