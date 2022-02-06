@@ -15,4 +15,4 @@ module.exports = {
 	},
 };
 ```
-Path --> [ready.js](events/ready.js) <--
+File --> [ready.js](events/ready.js) <-- Path
