@@ -18,19 +18,24 @@ const client = new Client(
 
 client.commands = new Collection();
 
-const functions = fs.readdirSync('./functions').filter(file => file.endsWith('.js'));
+const functionFolders = fs.readdirSync('./functions')
 const eventFiles = fs.readdirSync('./events').filter(file => file.endsWith('.js'));
 const commandFolders = fs.readdirSync('./commands');
 
 (async () => {
-    for (file of functions) {
-        await require(`./functions/${file}`)(client);
+    //handleFunctions
+    for (const folder of functionFolders) {
+        const functionsFiles = fs.readdirSync(`./functions/${folder}`).filter(file => file.endsWith('.js'));
+
+        for (const file of functionsFiles) {
+            await require(`./functions/${folder}/${file}`)(client);
+        }
     }
 
     // Login As Discord Bot
     console.log(`----------------------------------------------------`);
     await client.dbLogin();
-    await client.handleEvents(eventFiles, './events');
+    await client.handleEvents(eventFiles);
     await client.handleCommands(commandFolders, './commands');
     await client.login(token);
     await client.user.setActivity("ING PROJECT", { type: "PLAYING" });

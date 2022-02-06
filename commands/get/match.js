@@ -71,21 +71,23 @@ module.exports = {
                         const valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific);
                         valorantApi.authorize(_name, _password).then(async () => {
 
-                            await valorantApi.getPlayerMatchHistory(valorantApi.user_id, 0, 25).then(async (response) => {
+                            await valorantApi.getPlayerMatchHistory(valorantApi.user_id, 0, 20).then(async (response) => {
                                 const getDatas = await response.data.History;
                                 const matchIndex = await interaction.options.getNumber("index");
                                 var _matchId;
                                 try {
                                     _matchId = await getDatas[matchIndex + 0].MatchID;
                                 } catch (err) {
-                                    _matchId = await getDatas[0].MatchID;
+                                    const _random = await client.random(0, 20)
                                     await interaction.editReply({
-                                        content: `0 __>__ **Index** __>__ 25\n\nThis Time Will Use Default Index = 0`,
+                                        content: `**This Time Will Use Index = ${await _random},**\nSomething Went Wrong, Please Try Again Later`,
                                         ephemeral: true
                                     });
+                                    _matchId = await getDatas[await _random].MatchID;
+                                    await new Promise(res => setTimeout(res, 2500));
                                 }
                                 const getMatch = await valorantApi.getMatch(_matchId);
-                                if (await getMatch.isComplete == false) {
+                                if (await getMatch.data.matchInfo.isCompleted == false) {
                                     await interaction.editReply({
                                         content: `Something Went Wrong, Please Try Again Later`,
                                         ephemeral: true
@@ -93,15 +95,29 @@ module.exports = {
                                 } else {
                                     let sendMessage = ``;
                                     var player_played_agent_display;
+                                    var player_played_map_display;
+                                    var player_played_is_won;
                                     //MATCH INFO
                                     sendMessage += `__Match Info__ -->\n\n`;
                                     //match id
                                     const match_id = await getMatch.data.matchInfo.matchId;
                                     sendMessage += `ID: **${await match_id}**\n`;
+                                    //map name
+                                    const map_id = await getMatch.data.matchInfo.mapId;
+                                    const getMaps_data = await client.getMaps();
+                                    const getMaps = getMaps_data.data
+                                    for (let i = 0; i < getMaps.length; i++) {
+                                        if (getMaps[i].mapUrl == map_id) {
+                                            sendMessage += `Map: **${await getMaps[i].displayName}**\n`;
+                                            player_played_map_display = await getMaps[i].listViewIcon; //".splash"  //".listViewIcon"
+                                        }
+                                    }
                                     //match type
                                     var match_mode = await getMatch.data.matchInfo.queueID;
                                     if (match_mode == '') {
                                         match_mode = 'custom'
+                                    }else if (match_mode == 'ggteam') {
+                                        match_mode = 'escalation'
                                     }
                                     sendMessage += `Mode: **${await match_mode}**\n`;
                                     //match duration
@@ -126,13 +142,6 @@ module.exports = {
                                     const get_match_start_time = await getMatch.data.matchInfo.gameStartMillis;
                                     const start_time = new Date(await get_match_start_time);
                                     sendMessage += `Start At: **${await start_time.toString()}**\n`;
-                                    //all player in match
-                                    const get_all_player = await getMatch.data.players;
-                                    sendMessage += `Players: **[`;
-                                    for (let i = 0; i < get_all_player.length; i++) {
-                                        sendMessage += ` ${await get_all_player[i].subject}, `;
-                                    }
-                                    sendMessage += `]**\n`;
                                     //all round in match
                                     const get_all_round = await getMatch.data.roundResults;
                                     const get_round = await get_all_round[await get_all_round.length - 1];
@@ -148,36 +157,72 @@ module.exports = {
 
                                         sendMessage += `Score: **${await scoreTeamMessage}**\n`;
                                     }
-                                    //PLAYER STATUS
-                                    sendMessage += `\n__Player Status__ -->\n\n`;
-                                    for (let i = 0; i < get_all_player.length; i++) {
-                                        if (get_all_player[i].subject == valorantApi.user_id){
-                                            sendMessage += `ID: **${await get_all_player[i].subject}**\n`;
-                                            sendMessage += `Name: **${await get_all_player[i].gameName}#${await get_all_player[i].tagLine}**\n`;
-                                            sendMessage += `Level: **${await get_all_player[i].accountLevel}**\n`;
-
-                                            try {
-                                                let total_damage = 0;
-                                                for (let l = 0; l < get_all_player[i].roundDamage.length; l++) {
-                                                    total_damage += await get_all_player[i].roundDamage[l].damage;
+                                    //LEADERBAORD
+                                    sendMessage += `\n__Leaderboard__ -->\n\n`;
+                                    const get_all_player = await getMatch.data.players;
+                                    const sort_player = await get_all_player.sort((a, b) => {
+                                        if (a.stats.kills > b.stats.kills) {
+                                            return -1;
+                                        } else if (a.stats.kills < b.stats.kills) {
+                                            return 1;
+                                        } else {
+                                            if (a.stats.deaths > b.stats.deaths) {
+                                                return -1;
+                                            } else if (a.stats.deaths < b.stats.deaths) {
+                                                return 1;
+                                            } else {
+                                                if (a.stats.assists > b.stats.assists) {
+                                                    return -1;
+                                                } else if (a.stats.assists < b.stats.assists) {
+                                                    return 1;
+                                                } else {
+                                                    return 0;
                                                 }
-                                                sendMessage += `Total Damage: **${await total_damage}**\n`;
-                                            }catch (err) {
-
                                             }
+                                        }
+                                    });
+                                    //get_all_player[i].stats of kills then get_all_player[i].stats of deaths then get_all_player[i].stats of assists
+                                    for (let i = 0; i < sort_player.length; i++) {
+                                        sendMessage += `${i + 1}. **${await sort_player[i].gameName} # ${await sort_player[i].tagLine}** \n `;
+                                        sendMessage += `Kills: **${await sort_player[i].stats.kills}**  /  `;
+                                        sendMessage += `Deaths: **${await sort_player[i].stats.deaths}**  /  `;
+                                        sendMessage += `Assists: **${await sort_player[i].stats.assists}**  /  `;
+                                        sendMessage += `Level: **${sort_player[i].accountLevel}**  \n  `;
 
-                                            sendMessage += `Kill: **${await get_all_player[i].stats.kills}**\n`;
-                                            sendMessage += `Death: **${await get_all_player[i].stats.deaths}**\n`;
-                                            sendMessage += `Assists: **${await get_all_player[i].stats.assists}**\n`;
+                                        const player_played_in_team_id = await sort_player[i].teamId;
+                                        const get_teams = await getMatch.data.teams;
+                                        for(let l = 0; l < get_teams.length; l++){
+                                            if(get_teams[l].teamId == player_played_in_team_id){
+                                                sendMessage += `Team: **${get_teams[l].teamId}**  /  `;
 
-                                            const player_played_agent_id = await get_all_player[i].characterId;
-                                            const find_played_agent = await valorantApiData.getAgents(await player_played_agent_id);
-                                            const player_played_agent_name = await find_played_agent.data.displayName;
-                                            const player_played_agent_role = await find_played_agent.data.role.displayName
-                                            player_played_agent_display = await find_played_agent.data.displayIcon
-                                            sendMessage += `Agent: **[ ${await player_played_agent_name} - ${player_played_agent_role} ]**\n`;
+                                                if(sort_player[i].subject == valorantApi.user_id){
+                                                    player_played_is_won = get_teams[l].won
+                                                }
+                                            }
+                                        }
+
+                                        const player_played_agent_id = await sort_player[i].characterId;
+                                        const find_played_agent = await client.getAgent(await player_played_agent_id);
+                                        const player_played_agent_name = await find_played_agent.data.displayName;
+                                        const player_played_agent_role = await find_played_agent.data.role.displayName;
+                                        sendMessage += `Agent: **[ ${await player_played_agent_name} - ${player_played_agent_role} ]**\n`;
+
+                                        if(sort_player[i].subject == valorantApi.user_id){
+                                            player_played_agent_display = find_played_agent.data.displayIcon //".displayIconSmall"  //".displayIcon"
+                                        }
+
+                                        if (sort_player != i) {
+                                            sendMessage += `\n\n`;
                                         }
                                     }
+
+                                    //TEAM
+                                    sendMessage += `__Team__ -->\n\n`;
+                                    const get_all_team = await getMatch.data.teams;
+                                    for (let i = 0; i < get_all_team.length; i++) {
+                                        sendMessage += `${get_all_team[i].teamId} : **[ Point: ${get_all_team[i].numPoints} - Won: ${get_all_team[i].won.toString()}]**\n`;
+                                    }
+
                                     //send message
                                     const createEmbed = new MessageEmbed()
                                         .setColor(`#0099ff`)
@@ -186,8 +231,15 @@ module.exports = {
                                         .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                                         .setDescription(await sendMessage)
                                         .setThumbnail(await player_played_agent_display)
+                                        .setImage(await player_played_map_display)
                                         .setTimestamp(createdTime)
                                         .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
+                                    if (player_played_is_won == true) {
+                                        await createEmbed.setColor('#00ff00')
+                                    }else if (player_played_is_won == false) {
+                                        await createEmbed.setColor('#ff0000')
+                                    }
 
                                     await interaction.editReply({
                                         content: ` `,

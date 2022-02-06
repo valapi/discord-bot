@@ -1,4 +1,3 @@
-const valorantApiCom = require('valorant-api-com');
 const fs = require('fs');
 const mongoose = require(`mongoose`);
 
@@ -7,11 +6,7 @@ module.exports = (client) => {
 
         // valorant api
 
-        let valorantApi = new valorantApiCom({
-            'language': 'en-US'
-        });
-
-        const getVersion = await valorantApi.getVersion();
+        const getVersion = await client.getVersion();
         const dataArgs = await getVersion.data;
         const versionArgs = await dataArgs.branch;
 
@@ -103,11 +98,7 @@ module.exports = (client) => {
                         let sendMessage = ``;
                         sendMessage += `Valorant Shop - ${new Date().toString()}\n\n`;
 
-                        let valorantApiData = new valorantApiCom({
-                            'language': 'en-US'
-                        });
-
-                        let getDatas = await valorantApiData.getWeaponLevels();
+                        let getDatas = await client.getWeaponSkinLevels()
 
                         sendMessage += `----------------------------------------------------\n\n`;
 

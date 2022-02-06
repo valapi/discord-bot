@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { dbToken } = require('../config.json');
+const { dbToken } = require('../../config.json');
 const fs = require('fs');
 
 module.exports = (client) => {
@@ -7,7 +7,7 @@ module.exports = (client) => {
         try {
             const mongoEventFiles = await fs.readdirSync('./mongoEvents').filter(file => file.endsWith('.js'));
             for (file of mongoEventFiles) {
-                const event = require(`../mongoEvents/${file}`);
+                const event = require(`../../mongoEvents/${file}`);
                 if (event.once) {
                     mongoose.connection.once(event.name, (...args) => event.execute(...args));
                 } else {

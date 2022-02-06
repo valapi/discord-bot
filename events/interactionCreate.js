@@ -20,8 +20,9 @@ module.exports = {
                         return;
                     }
                 }
-
                 try {
+                    console.log(`\x1b[36m[${new Date().toLocaleTimeString()}] : ${await interaction.user.username}#${await interaction.user.discriminator} used /${await interaction.commandName}\x1b[0m`)
+
                     await command.execute(interaction, client, createdTime);
                 }catch (err){
                     await interaction.editReply({ content: 'There was an error while executing this command.', ephemeral: true });

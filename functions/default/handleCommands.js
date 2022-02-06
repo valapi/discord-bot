@@ -1,6 +1,6 @@
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { token, guild_id, client_id } = require('../config.json');
+const { token, guild_id, client_id } = require('../../config.json');
 const rest = new REST({ version: '9' }).setToken(token);
 const fs = require('fs');
 
@@ -11,7 +11,7 @@ module.exports = (client) => {
             const commandFiles = fs.readdirSync(`${path}/${folder}`).filter(file => file.endsWith('.js'));
 
              for (const file of commandFiles) {
-                 const command = require(`../commands/${folder}/${file}`);
+                 const command = require(`../../commands/${folder}/${file}`);
                  client.commands.set(command.data.name, command);
                  client.commandArray.push(command.data.toJSON());
              }

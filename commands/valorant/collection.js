@@ -1,5 +1,4 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const valorantApiCom = require('valorant-api-com');
 const fs = require('fs');
 const mongoose = require(`mongoose`);
 const { MessageAttachment, MessageEmbed } = require('discord.js');
@@ -70,9 +69,6 @@ module.exports = {
 
                             await valorantApi.getPlayerLoadout(valorantApi.user_id).then(async (response) => {
                                 const getDatas = await response.data;
-                                const valorantApiData = new valorantApiCom({
-                                    'language': 'en-US'
-                                });
 
                                 //Guns
                                 const getGuns = await getDatas.Guns;
@@ -80,7 +76,7 @@ module.exports = {
                                 for (let i = 0; i < getGuns.length; i++) {
                                     const skinLevel = await getDatas.Guns[i].SkinID;
 
-                                    const getSkinApi = await valorantApiData.getWeaponSkins(await skinLevel);
+                                    const getSkinApi = await client.getWeaponSkins(await skinLevel);
                                     const getSkinName = await getSkinApi.data.displayName;
 
                                     sendMessage += ` ${getSkinName}, `;
@@ -93,7 +89,7 @@ module.exports = {
                                 for (let i = 0; i < getSprays.length; i++) {
                                     const sprayId = await getDatas.Sprays[i].SprayID;
 
-                                    const getSprayApi = await valorantApiData.getSprays(await sprayId)
+                                    const getSprayApi = await client.getSprays(await sprayId)
                                     const getSprayName = await getSprayApi.data.displayName;
 
                                     sendMessage += ` ${getSprayName}, `;
@@ -104,12 +100,12 @@ module.exports = {
                                 const getIdentity = await getDatas.Identity;
 
                                 const get_card_id = await getIdentity.PlayerCardID
-                                const find_card = await valorantApiData.getPlayerCards(await get_card_id)
+                                const find_card = await client.getPlayerCards(await get_card_id)
                                 const player_card = await find_card.data.displayName;
                                 sendMessage += `Player Card: **${player_card}**`;
 
                                 const get_title_id = await getIdentity.PlayerTitleID
-                                const find_title = await valorantApiData.getPlayerTitles(await get_title_id)
+                                const find_title = await client.getPlayerTitles(await get_title_id)
                                 const player_title_name = await find_title.data.displayName;
                                 const player_title_display = await find_title.data.titleText;
                                 if (player_title_display != null) {

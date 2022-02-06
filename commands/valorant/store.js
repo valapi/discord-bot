@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
 const mongoose = require(`mongoose`);
-const valorantApiCom = require('valorant-api-com');
 const { MessageAttachment, MessageEmbed } = require('discord.js');
 
 module.exports = {
@@ -85,11 +84,7 @@ module.exports = {
 
                                 let sendMessage = ``;
 
-                                let valorantApiData = new valorantApiCom({
-                                    'language': 'en-US'
-                                });
-
-                                let getDatas = await valorantApiData.getWeaponLevels();
+                                let getDatas = await client.getWeaponSkinLevels();
 
                                 for (let i = 0; i < response.data.SkinsPanelLayout.SingleItemOffers.length; i++) {
                                     for (let l = 0; l < getDatas.data.length; l++) {
