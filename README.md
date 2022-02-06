@@ -1,8 +1,9 @@
 # Valorant Discord Bot
 website: [https://ingkth.wordpress.com/](https://ingkth.wordpress.com/)
 
-## ready.js
+## Event
 Event: [ready.js](docs/CONTRIBUTING.md)
+### ready.js
 ```javascript
 module.exports = {
 	name: 'ready',
