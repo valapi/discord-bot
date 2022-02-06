@@ -3,7 +3,6 @@ website: [https://ingkth.wordpress.com/](https://ingkth.wordpress.com/)
 
 ## Event
 ### ready.js
-[ready.js](events/ready.js)
 ```javascript
 module.exports = {
 	name: 'ready',
@@ -16,3 +15,4 @@ module.exports = {
 	},
 };
 ```
+[ready.js](events/ready.js)
