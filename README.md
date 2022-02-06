@@ -1,2 +1,2 @@
 # valorant-discord-bot
-[Contribution guidelines for this project](docs/CONTRIBUTING.md)
+website: [https://ingkth.wordpress.com/](docs/CONTRIBUTING.md)
