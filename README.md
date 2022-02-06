@@ -1,3 +1,7 @@
-# valorant-discord-bot
-![GitHub Light](https://github.com/github-light.png#gh-dark-mode-only)
+# Valorant Discord Bot
 website: [https://ingkth.wordpress.com/](https://ingkth.wordpress.com/)
+
+##script
+```javascript
+console.log("Hi!")
+```
