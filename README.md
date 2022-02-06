@@ -3,7 +3,7 @@ website: [https://ingkth.wordpress.com/](https://ingkth.wordpress.com/)
 
 ## Event
 ### ready.js
-[ready.js](docs/CONTRIBUTING.md)
+[ready.js](events/ready.js)
 ```javascript
 module.exports = {
 	name: 'ready',
