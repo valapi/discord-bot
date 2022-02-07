@@ -116,7 +116,7 @@ module.exports = {
                                     var match_mode = await getMatch.data.matchInfo.queueID;
                                     if (match_mode == '') {
                                         match_mode = 'custom'
-                                    }else if (match_mode == 'ggteam') {
+                                    } else if (match_mode == 'ggteam') {
                                         match_mode = 'escalation'
                                     }
                                     sendMessage += `Mode: **${await match_mode}**\n`;
@@ -191,11 +191,13 @@ module.exports = {
 
                                         const player_played_in_team_id = await sort_player[i].teamId;
                                         const get_teams = await getMatch.data.teams;
-                                        for(let l = 0; l < get_teams.length; l++){
-                                            if(get_teams[l].teamId == player_played_in_team_id){
-                                                sendMessage += `Team: **${get_teams[l].teamId}**  /  `;
+                                        for (let l = 0; l < get_teams.length; l++) {
+                                            if (get_teams[l].teamId == player_played_in_team_id) {
+                                                if (match_mode != 'deathmatch') {
+                                                    sendMessage += `Team: **${get_teams[l].teamId}**  /  `;
+                                                }
 
-                                                if(sort_player[i].subject == valorantApi.user_id){
+                                                if (sort_player[i].subject == valorantApi.user_id) {
                                                     player_played_is_won = get_teams[l].won
                                                 }
                                             }
@@ -207,20 +209,24 @@ module.exports = {
                                         const player_played_agent_role = await find_played_agent.data.role.displayName;
                                         sendMessage += `Agent: **[ ${await player_played_agent_name} - ${player_played_agent_role} ]**\n`;
 
-                                        if(sort_player[i].subject == valorantApi.user_id){
+                                        if (sort_player[i].subject == valorantApi.user_id) {
                                             player_played_agent_display = find_played_agent.data.displayIcon //".displayIconSmall"  //".displayIcon"
                                         }
 
-                                        if (sort_player != i) {
+                                        if (sort_player.length - 1 != i) {
                                             sendMessage += `\n\n`;
+                                        }else {
+                                            sendMessage += `\n`;
                                         }
                                     }
 
                                     //TEAM
-                                    sendMessage += `__Team__ -->\n\n`;
-                                    const get_all_team = await getMatch.data.teams;
-                                    for (let i = 0; i < get_all_team.length; i++) {
-                                        sendMessage += `${get_all_team[i].teamId} : **[ Point: ${get_all_team[i].numPoints} - Won: ${get_all_team[i].won.toString()}]**\n`;
+                                    if (match_mode != 'deathmatch') {
+                                        sendMessage += `__Team__ -->\n\n`;
+                                        const get_all_team = await getMatch.data.teams;
+                                        for (let i = 0; i < get_all_team.length; i++) {
+                                            sendMessage += `${get_all_team[i].teamId} : **[ Point: ${get_all_team[i].numPoints} - Won: ${get_all_team[i].won.toString()}]**\n`;
+                                        }
                                     }
 
                                     //send message
@@ -235,10 +241,12 @@ module.exports = {
                                         .setTimestamp(createdTime)
                                         .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
 
-                                    if (player_played_is_won == true) {
-                                        await createEmbed.setColor('#00ff00')
-                                    }else if (player_played_is_won == false) {
-                                        await createEmbed.setColor('#ff0000')
+                                    if (match_mode != 'deathmatch') {
+                                        if (player_played_is_won == true) {
+                                            await createEmbed.setColor('#00ff00')
+                                        } else if (player_played_is_won == false) {
+                                            await createEmbed.setColor('#ff0000')
+                                        }
                                     }
 
                                     await interaction.editReply({

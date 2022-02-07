@@ -72,12 +72,23 @@ module.exports = {
                                 sendReg += `${await valorantApi.region} - Not Support`;
                             }
 
+                            var get_player_card
+                            await valorantApi.getPlayerLoadout(valorantApi.user_id).then(async (response) => {
+                                const getDatas = await response.data;
+                                const getIdentity = await getDatas.Identity;
+
+                                const get_card_id = await getIdentity.PlayerCardID
+                                const find_card = await client.getPlayerCards(await get_card_id)
+                                get_player_card = await find_card.data.displayIcon;  //".wideArt"  //".largeArt"  //".displayIcon"  //".smallArt"
+                            });
+
                             const createEmbed = new MessageEmbed()
                                 .setColor(`#0099ff`)
                                 .setTitle(`/${await interaction.commandName}`)
                                 .setURL(`https://ingkth.wordpress.com`)
                                 .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                                 .setDescription(`Username: **${await valorantApi.username}**\nId: **${await valorantApi.user_id}**\nRegion: **${await sendReg}**`)
+                                .setThumbnail(await get_player_card)
                                 .setTimestamp(createdTime)
                                 .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
 

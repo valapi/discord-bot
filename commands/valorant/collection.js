@@ -66,6 +66,8 @@ module.exports = {
                         await valorantApi.authorize(_name, _password).then(async () => {
 
                             let sendMessage = ``;
+                            var player_display_icon;
+                            var player_card_long;
 
                             await valorantApi.getPlayerLoadout(valorantApi.user_id).then(async (response) => {
                                 const getDatas = await response.data;
@@ -92,6 +94,10 @@ module.exports = {
                                     const getSprayApi = await client.getSprays(await sprayId)
                                     const getSprayName = await getSprayApi.data.displayName;
 
+                                    if (getSprays.length - 1 == i){
+                                        player_display_icon = await getSprayApi.data.fullTransparentIcon;  //".displayIcon"  //".fullIcon"  //".fullTransparentIcon"
+                                    }
+
                                     sendMessage += ` ${getSprayName}, `;
                                 }
                                 sendMessage += `]**\n\n`;
@@ -101,6 +107,7 @@ module.exports = {
 
                                 const get_card_id = await getIdentity.PlayerCardID
                                 const find_card = await client.getPlayerCards(await get_card_id)
+                                player_card_long = await find_card.data.wideArt;  //".wideArt"  //".largeArt"  //".displayIcon"  //".smallArt"
                                 const player_card = await find_card.data.displayName;
                                 sendMessage += `Player Card: **${player_card}**`;
 
@@ -119,6 +126,8 @@ module.exports = {
                                 .setURL(`https://ingkth.wordpress.com`)
                                 .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                                 .setDescription(await sendMessage)
+                                .setThumbnail(await player_display_icon)
+                                .setImage(await player_card_long)
                                 .setTimestamp(createdTime)
                                 .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
 

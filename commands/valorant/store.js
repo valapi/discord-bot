@@ -80,36 +80,29 @@ module.exports = {
                                     min -= 60;
                                 }
 
-                                const timeLeft = `${hour} hour(s) ${min} minute(s) ${sec} second(s)`
+                                const timeLeft = `Time Left: **${hour} hour(s) ${min} minute(s) ${sec} second(s)**`
 
-                                let sendMessage = ``;
+                                var sendArray = [];
 
-                                let getDatas = await client.getWeaponSkinLevels();
+                                const getDatas = await client.getWeaponSkinLevels();
 
                                 for (let i = 0; i < response.data.SkinsPanelLayout.SingleItemOffers.length; i++) {
                                     for (let l = 0; l < getDatas.data.length; l++) {
                                         if (getDatas.data[l].uuid === response.data.SkinsPanelLayout.SingleItemOffers[i]) {
-                                            sendMessage += `Slot ${i + 1}: **${await getDatas.data[l].displayName}\n**`
+                                            const createEmbed = new MessageEmbed()
+                                                .setColor(`#0099ff`)
+                                                .setTitle(`Slot: ${i + 1}  /  Name: ${await getDatas.data[l].displayName}`)
+                                                .setImage(await getDatas.data[l].displayIcon)
+
+                                            sendArray.push(createEmbed);
                                         }
                                     }
 
-                                    if (response.data.SkinsPanelLayout.SingleItemOffers.length - 1 == i) {
-                                        sendMessage += `\nTime Left: **${await timeLeft}**`
-                                    }
                                 }
 
-                                const createEmbed = new MessageEmbed()
-                                    .setColor(`#0099ff`)
-                                    .setTitle(`/${await interaction.commandName}`)
-                                    .setURL(`https://ingkth.wordpress.com`)
-                                    .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                    .setDescription(await sendMessage)
-                                    .setTimestamp(createdTime)
-                                    .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
                                 await interaction.editReply({
-                                    content: ` `,
-                                    embeds: [createEmbed],
+                                    content: await timeLeft,
+                                    embeds: await sendArray,
                                     ephemeral: true
                                 });
                             });
