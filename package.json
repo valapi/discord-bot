@@ -25,12 +25,16 @@
     "npm": "8.x"
   },
   "scripts": {
-    "test": "index.js",
-    "start": "node index.js",
+    "test": "node index.js",
+    "start": "node nodemon.js",
     "dev": "nodemon --ignore /data/json/gmail.json -x 'node index.js'"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "nodemonConfig": {
+    "ignore": ["/data/*"],
+    "delay": 100
+  }
 }
