@@ -47,7 +47,12 @@ const commandFolders = fs.readdirSync('./commands');
     const popJob = new CronJob({
         cronTime: '0 0 8 * * *',
         onTick: async function () {
-            await client.updateClient(client);
+            try {
+                await client.updateClient(client);
+            }catch(err){
+                await new Promise(res => setTimeout(res, 1000));
+                throw new Error(err);
+            }
         },
         start: false,
         timeZone: 'Asia/Bangkok'
