@@ -4,7 +4,8 @@ const { google } = require('googleapis');
 const CLIENT_ID = '1009662548013-oog4bla5put37cma3a9qh1otvp9lkso0.apps.googleusercontent.com';
 const CLIENT_SECRET = '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';
 const REDIRECT_URL = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = '1//04k6nUkNfLF42CgYIARAAGAQSNwF-L9Ir6tPs8Mrooddt50Qa20ECjsquQ81xgzSppYQHpc3YTWHSq-Or1ZNWB6lvSAg05arZT_A';
+const REFRESH_TOKEN = '1//046tMoQOZuisjCgYIARAAGAQSNwF-L9IrCgvEG4Kzim0ifEAGlbNJ2iuN0Ta3bHCTCp87c5tnhlvWfEjShaubfaSzOTHfzJ-4ffw';
+const SETTINGS_URL = 'https://developers.google.com/oauthplayground/#step3&scopes=https%3A%2F%2Fmail.google.com&url=https%3A%2F%2Fdevelopers.google.com%2Foauthplayground&content_type=application%2Fjson&http_method=GET&useDefaultOauthCred=checked&oauthEndpointSelect=Google&oauthAuthEndpointValue=https%3A%2F%2Faccounts.google.com%2Fo%2Foauth2%2Fv2%2Fauth&oauthTokenEndpointValue=https%3A%2F%2Foauth2.googleapis.com%2Ftoken&includeCredentials=unchecked&accessTokenType=bearer&autoRefreshToken=unchecked&accessType=offline&prompt=consent&response_type=code&wrapLines=on'
 
 module.exports = (client) => {
     client.sendMailTo = async ({gmail, title, message}) => {
