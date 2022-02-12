@@ -1,1 +1,1 @@
-Worker: nodemon --ignore /data/* -x 'node nodemon.js'
+worker: nodemon --ignore /data/* -x 'node index.js'

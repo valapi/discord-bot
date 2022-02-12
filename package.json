@@ -24,13 +24,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "engines": {
-    "node": "17.x",
-    "npm": "8.x"
+    "node": "17.4.0",
+    "npm": "8.3.2"
   },
   "scripts": {
-    "test": "node index.js",
-    "start": "node nodemon.js",
-    "dev": "nodemon --ignore /data/json/gmail.json -x 'node index.js'"
+    "test": "node nodemon.js",
+    "start": "node index.js",
+    "server": "nodemon --ignore /data/* -x 'node index.js'"
   },
   "keywords": [],
   "author": "",
