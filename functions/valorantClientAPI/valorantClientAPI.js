@@ -51,10 +51,7 @@ module.exports = (client) => {
 
         var asscessToken_params = new URLSearchParams(removeSharpTag);
 
-        const asscessToken = asscessToken_params.get('access_token')
-
-        //country
-        const _playerUrl = main_response.data.country;
+        const asscessToken = asscessToken_params.get('access_token');
 
         //ENTITLEMENTS
         const jwt_response = await axiosClient.post('https://entitlements.auth.riotgames.com/api/token/v1', {}, {
@@ -105,8 +102,7 @@ module.exports = (client) => {
             },
             user: {
                 username: _username,
-                id: _userid,
-                country: _playerUrl
+                id: _userid
             }
         };
     };
