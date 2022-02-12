@@ -5,6 +5,7 @@
     "@discordjs/voice": "^0.7.5",
     "@liamcottle/valorant.js": "^1.2.1",
     "axios": "^0.25.0",
+    "axios-cookiejar-support": "^2.0.3",
     "cron": "^1.8.2",
     "crypto-js": "^4.1.1",
     "discord-api-types": "^0.26.1",
@@ -14,6 +15,8 @@
     "node-valorant-api": "^0.5.0",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
+    "tough-cookie": "^4.0.0",
+    "url": "^0.11.0",
     "valorant-api-com": "^1.0.0",
     "valorant.js": "^1.6.5"
   },
@@ -34,7 +37,9 @@
   "license": "ISC",
   "description": "",
   "nodemonConfig": {
-    "ignore": ["/data/*"],
+    "ignore": [
+      "/data/*"
+    ],
     "delay": 100
   }
 }

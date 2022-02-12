@@ -1,7 +1,6 @@
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('./config.json');
-const { send } = require('process');
 var CronJob = require('cron').CronJob;
 
 // Create Client
@@ -35,9 +34,12 @@ const commandFolders = fs.readdirSync('./commands');
     // Login As Discord Bot
     console.log(`----------------------------------------------------`);
     await client.dbLogin();
+    await client.wait(3);
     await client.handleEvents(eventFiles);
     await client.handleCommands(commandFolders, './commands');
+    await client.wait(1);
     await client.login(token);
+    await client.wait(3);
     await client.user.setActivity("ING PROJECT", { type: "PLAYING" });
 
     //set maxListeners Limit
@@ -49,9 +51,9 @@ const commandFolders = fs.readdirSync('./commands');
         onTick: async function () {
             try {
                 await client.updateClient(client);
-            }catch(err){
-                await new Promise(res => setTimeout(res, 1000));
-                throw new Error(err);
+            } catch (err) {
+                await client.wait(1);
+                console.log(err);
             }
         },
         start: false,

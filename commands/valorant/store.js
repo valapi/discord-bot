@@ -61,54 +61,100 @@ module.exports = {
                         const _name = await client.decryptBack(await user.username, _key);
                         const _password = await client.decryptBack(await user.password, _key);
 
-                        const Valorant = require('@liamcottle/valorant.js');
-                        const valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific);
-                        valorantApi.authorize(_name, _password).then(async () => {
+                        const ValorantAccount = await client.valorantClientAPI(_name, _password);
+                        const ValorantStore = await client.getStoreFront(ValorantAccount);
 
-                            await valorantApi.getPlayerStoreFront(valorantApi.user_id).then(async (response) => {
-                                let sec = response.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds;
-                                let min = 0;
-                                let hour = 0;
+                        let sec = ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds;
+                        let min = 0;
+                        let hour = 0;
 
-                                while (sec >= 60) {
-                                    min++;
-                                    sec -= 60;
+                        while (sec >= 60) {
+                            min++;
+                            sec -= 60;
+                        }
+
+                        while (min >= 60) {
+                            hour++;
+                            min -= 60;
+                        }
+
+                        const timeLeft = `Time Left: **${hour} hour(s) ${min} minute(s) ${sec} second(s)**`
+
+                        var sendArray = [];
+
+                        const getDatas = await client.getWeaponSkinLevels();
+
+                        for (let i = 0; i < ValorantStore.data.SkinsPanelLayout.SingleItemOffers.length; i++) {
+                            //Cost
+                            var Store_ItemID;
+                            var Store_Cost;
+                            var Store_ID;
+
+                            const ItemsId = ValorantStore.data.SkinsPanelLayout.SingleItemOffers[i];
+                            const ValorantOffers = await client.getOfferId(ValorantAccount);
+
+                            for (let j = 0; j < await ValorantOffers.data.Offers.length; j++) {
+                                const _ForJ = await ValorantOffers.data.Offers[j];
+                                for (let k = 0; k < _ForJ.Rewards.length; k++) {
+                                    const _ForK = _ForJ.Rewards[k];
+
+                                    Store_ItemID = _ForK.ItemID;
+
+                                    if (Store_ItemID == ItemsId) {
+                                        Store_ID = _ForJ.OfferID;
+                                        Store_Cost = _ForJ.Cost['85ad13f7-3d1b-5128-9eb2-7cd8ee0b5741'];
+                                    }
                                 }
+                            }
+                            //Content Tiers
+                            var _contentTierUuid;
+                            const getAllWeapons = await client.getWeapons();
 
-                                while (min >= 60) {
-                                    hour++;
-                                    min -= 60;
-                                }
-
-                                const timeLeft = `Time Left: **${hour} hour(s) ${min} minute(s) ${sec} second(s)**`
-
-                                var sendArray = [];
-
-                                const getDatas = await client.getWeaponSkinLevels();
-
-                                for (let i = 0; i < response.data.SkinsPanelLayout.SingleItemOffers.length; i++) {
-                                    for (let l = 0; l < getDatas.data.length; l++) {
-                                        if (getDatas.data[l].uuid === response.data.SkinsPanelLayout.SingleItemOffers[i]) {
-                                            const createEmbed = new MessageEmbed()
-                                                .setColor(`#0099ff`)
-                                                .setTitle(`Slot: ${i + 1}  /  Name: ${await getDatas.data[l].displayName}`)
-                                                .setImage(await getDatas.data[l].displayIcon)
-
-                                            sendArray.push(createEmbed);
+                            for (let j = 0; j < getAllWeapons.data.length; j++) {
+                                const _ForJ = getAllWeapons.data[j];
+                                for (let k = 0; k < _ForJ.skins.length; k++) {
+                                    const _ForK = _ForJ.skins[k];
+                                    for (let m = 0; m < _ForK.levels.length; m++) {
+                                        const _ForM = _ForK.levels[m];
+                                        if (ItemsId == _ForM.uuid) {
+                                            _contentTierUuid = _ForK.contentTierUuid;
                                         }
                                     }
-
                                 }
+                            }
 
-                                await interaction.editReply({
-                                    content: await timeLeft,
-                                    embeds: await sendArray,
-                                    ephemeral: true
-                                });
-                            });
+                            const getContentTier = await client.getContentTiers(_contentTierUuid);
+                            const ContentTier_display = getContentTier.data.displayIcon;
+                            const ContentTier_name = getContentTier.data.devName;
 
-                        }).catch((error) => {
-                            console.log(error);
+                            const color_firstString = getContentTier.data.highlightColor;
+                            const color_midString = color_firstString.substring(0, color_firstString.length - 1);
+                            const color_endString = color_midString.substring(0, color_midString.length - 1);
+                            //Send Message
+                            for (let l = 0; l < getDatas.data.length; l++) {
+                                if (getDatas.data[l].uuid === ValorantStore.data.SkinsPanelLayout.SingleItemOffers[i]) {
+                                    let sendMessage = ``;
+                                    sendMessage += `ID: **${await ItemsId}**\n`;
+                                    sendMessage += `Price: **${await Store_Cost}**\n`;
+                                    sendMessage += `Slot: **${i + 1}**\n`;
+
+                                    const createEmbed = new MessageEmbed()
+                                        .setColor(`#${color_endString}`)
+                                        .setTitle(await getDatas.data[l].displayName)
+                                        .setDescription(sendMessage)
+                                        .setThumbnail(await getDatas.data[l].displayIcon)
+                                        .setAuthor({ name: ContentTier_name, iconURL: ContentTier_display, url: ContentTier_display })
+
+                                    sendArray.push(createEmbed);
+                                }
+                            }
+
+                        }
+
+                        await interaction.editReply({
+                            content: await timeLeft,
+                            embeds: await sendArray,
+                            ephemeral: true
                         });
                     }
                 }

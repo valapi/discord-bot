@@ -61,45 +61,37 @@ module.exports = {
                         const _name = await client.decryptBack(await user.username, _key);
                         const _password = await client.decryptBack(await user.password, _key);
 
-                        const Valorant = require('@liamcottle/valorant.js');
-                        const valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific);
-                        valorantApi.authorize(_name, _password).then(async () => {
+                        //client
+                        const ValorantAccount = await client.valorantClientAPI(_name, _password);
+                        const ValorantUser = await client.getUsernameFromID(ValorantAccount)
+                        const ValorantInventory = await client.getPlayerInventory(ValorantAccount)
 
-                            let sendReg = ``;
-                            if (await valorantApi.region == 'AP') {
-                                sendReg += `Asia Pacific`;
-                            } else {
-                                sendReg += `${await valorantApi.region} - Not Support`;
-                            }
+                        //player card
+                        const ValorantPlayerCard_ID = await ValorantInventory.data.Identity.PlayerCardID
+                        const getCards = await client.getPlayerCards(await ValorantPlayerCard_ID)
+                        const ValorantPlayerCard_Display = await getCards.data.displayIcon;  //".wideArt"  //".largeArt"  //".displayIcon"  //".smallArt"
 
-                            var get_player_card
-                            await valorantApi.getPlayerLoadout(valorantApi.user_id).then(async (response) => {
-                                const getDatas = await response.data;
-                                const getIdentity = await getDatas.Identity;
+                        //sendMessage
+                        let sendMessage = "";
+                        sendMessage += `Name: **${ValorantUser.data[0].GameName}**\n`;
+                        sendMessage += `Tag: **${ValorantUser.data[0].TagLine}**\n`;
+                        sendMessage += `ID: **${ValorantAccount.user.id}**\n`;
+                        sendMessage += `Country: **${ValorantAccount.user.country}**\n`;
 
-                                const get_card_id = await getIdentity.PlayerCardID
-                                const find_card = await client.getPlayerCards(await get_card_id)
-                                get_player_card = await find_card.data.displayIcon;  //".wideArt"  //".largeArt"  //".displayIcon"  //".smallArt"
-                            });
+                        const createEmbed = new MessageEmbed()
+                            .setColor(`#0099ff`)
+                            .setTitle(ValorantAccount.user.username)
+                            .setURL(`https://ingkth.wordpress.com`)
+                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                            .setDescription(sendMessage)
+                            .setThumbnail(ValorantPlayerCard_Display)
+                            .setTimestamp(createdTime)
+                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
 
-                            const createEmbed = new MessageEmbed()
-                                .setColor(`#0099ff`)
-                                .setTitle(`/${await interaction.commandName}`)
-                                .setURL(`https://ingkth.wordpress.com`)
-                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                .setDescription(`Username: **${await valorantApi.username}**\nId: **${await valorantApi.user_id}**\nRegion: **${await sendReg}**`)
-                                .setThumbnail(await get_player_card)
-                                .setTimestamp(createdTime)
-                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
-                            await interaction.editReply({
-                                content: `You Are Register Riot Account With`,
-                                embeds: [createEmbed],
-                                ephemeral: true
-                            });
-
-                        }).catch((error) => {
-                            console.log(error);
+                        await interaction.editReply({
+                            content: `You Are Register Riot Account With`,
+                            embeds: [createEmbed],
+                            ephemeral: true
                         });
                     }
                 }

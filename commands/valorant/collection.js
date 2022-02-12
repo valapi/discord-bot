@@ -74,20 +74,20 @@ module.exports = {
 
                                 //Guns
                                 const getGuns = await getDatas.Guns;
-                                sendMessage += `Weapons: **[`;
+                                sendMessage += `Weapons: **[\n`;
                                 for (let i = 0; i < getGuns.length; i++) {
                                     const skinLevel = await getDatas.Guns[i].SkinID;
 
                                     const getSkinApi = await client.getWeaponSkins(await skinLevel);
                                     const getSkinName = await getSkinApi.data.displayName;
 
-                                    sendMessage += ` ${getSkinName}, `;
+                                    sendMessage += ` ${getSkinName}, \n`;
                                 }
                                 sendMessage += `]**\n\n`;
 
                                 //Sprays
                                 const getSprays = await getDatas.Sprays;
-                                sendMessage += `Sprays: **[`;
+                                sendMessage += `Sprays: **[\n`;
                                 for (let i = 0; i < getSprays.length; i++) {
                                     const sprayId = await getDatas.Sprays[i].SprayID;
 
@@ -98,7 +98,7 @@ module.exports = {
                                         player_display_icon = await getSprayApi.data.fullTransparentIcon;  //".displayIcon"  //".fullIcon"  //".fullTransparentIcon"
                                     }
 
-                                    sendMessage += ` ${getSprayName}, `;
+                                    sendMessage += ` ${getSprayName}, \n`;
                                 }
                                 sendMessage += `]**\n\n`;
 
