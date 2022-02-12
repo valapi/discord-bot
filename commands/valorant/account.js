@@ -76,7 +76,6 @@ module.exports = {
                         sendMessage += `Name: **${ValorantUser.data[0].GameName}**\n`;
                         sendMessage += `Tag: **${ValorantUser.data[0].TagLine}**\n`;
                         sendMessage += `ID: **${ValorantAccount.user.id}**\n`;
-                        sendMessage += `Country: **${ValorantAccount.user.country}**\n`;
 
                         const createEmbed = new MessageEmbed()
                             .setColor(`#0099ff`)
