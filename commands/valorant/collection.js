@@ -61,84 +61,77 @@ module.exports = {
                         const _name = await client.decryptBack(await user.username, _key);
                         const _password = await client.decryptBack(await user.password, _key);
 
-                        const Valorant = require('@liamcottle/valorant.js');
-                        const valorantApi = new Valorant.API(Valorant.Regions.AsiaPacific);
-                        await valorantApi.authorize(_name, _password).then(async () => {
+                        const ValorantAccount = await client.valorantClientAPI(_name, _password);
+                        const getPlayerInventory = await client.getPlayerInventory(ValorantAccount);
 
-                            let sendMessage = ``;
-                            var player_display_icon;
-                            var player_card_long;
+                        let sendMessage = ``;
+                        var player_display_icon;
+                        var player_card_long;
 
-                            await valorantApi.getPlayerLoadout(valorantApi.user_id).then(async (response) => {
-                                const getDatas = await response.data;
+                        const getDatas = await getPlayerInventory.data;
 
-                                //Guns
-                                const getGuns = await getDatas.Guns;
-                                sendMessage += `Weapons: **[\n`;
-                                for (let i = 0; i < getGuns.length; i++) {
-                                    const skinLevel = await getDatas.Guns[i].SkinID;
+                        //Guns
+                        const getGuns = await getDatas.Guns;
+                        sendMessage += `Weapons: **[\n`;
+                        for (let i = 0; i < getGuns.length; i++) {
+                            const skinLevel = await getDatas.Guns[i].SkinID;
 
-                                    const getSkinApi = await client.getWeaponSkins(await skinLevel);
-                                    const getSkinName = await getSkinApi.data.displayName;
+                            const getSkinApi = await client.getWeaponSkins(await skinLevel);
+                            const getSkinName = await getSkinApi.data.displayName;
 
-                                    sendMessage += ` ${getSkinName}, \n`;
-                                }
-                                sendMessage += `]**\n\n`;
+                            sendMessage += ` ${getSkinName}, \n`;
+                        }
+                        sendMessage += `]**\n\n`;
 
-                                //Sprays
-                                const getSprays = await getDatas.Sprays;
-                                sendMessage += `Sprays: **[\n`;
-                                for (let i = 0; i < getSprays.length; i++) {
-                                    const sprayId = await getDatas.Sprays[i].SprayID;
+                        //Sprays
+                        const getSprays = await getDatas.Sprays;
+                        sendMessage += `Sprays: **[\n`;
+                        for (let i = 0; i < getSprays.length; i++) {
+                            const sprayId = await getDatas.Sprays[i].SprayID;
 
-                                    const getSprayApi = await client.getSprays(await sprayId)
-                                    const getSprayName = await getSprayApi.data.displayName;
+                            const getSprayApi = await client.getSprays(await sprayId)
+                            const getSprayName = await getSprayApi.data.displayName;
 
-                                    if (getSprays.length - 1 == i){
-                                        player_display_icon = await getSprayApi.data.fullTransparentIcon;  //".displayIcon"  //".fullIcon"  //".fullTransparentIcon"
-                                    }
+                            if (getSprays.length - 1 == i) {
+                                player_display_icon = await getSprayApi.data.fullTransparentIcon;  //".displayIcon"  //".fullIcon"  //".fullTransparentIcon"
+                            }
 
-                                    sendMessage += ` ${getSprayName}, \n`;
-                                }
-                                sendMessage += `]**\n\n`;
+                            sendMessage += ` ${getSprayName}, \n`;
+                        }
+                        sendMessage += `]**\n\n`;
 
-                                //Identity
-                                const getIdentity = await getDatas.Identity;
+                        //Identity
+                        const getIdentity = await getDatas.Identity;
 
-                                const get_card_id = await getIdentity.PlayerCardID
-                                const find_card = await client.getPlayerCards(await get_card_id)
-                                player_card_long = await find_card.data.wideArt;  //".wideArt"  //".largeArt"  //".displayIcon"  //".smallArt"
-                                const player_card = await find_card.data.displayName;
-                                sendMessage += `Player Card: **${player_card}**`;
+                        const get_card_id = await getIdentity.PlayerCardID
+                        const find_card = await client.getPlayerCards(await get_card_id)
+                        player_card_long = await find_card.data.wideArt;  //".wideArt"  //".largeArt"  //".displayIcon"  //".smallArt"
+                        const player_card = await find_card.data.displayName;
+                        sendMessage += `Player Card: **${player_card}**`;
 
-                                const get_title_id = await getIdentity.PlayerTitleID
-                                const find_title = await client.getPlayerTitles(await get_title_id)
-                                const player_title_name = await find_title.data.displayName;
-                                const player_title_display = await find_title.data.titleText;
-                                if (player_title_display != null) {
-                                    sendMessage += `\n\nPlayer Title: **[ ${player_title_name} - ${player_title_display} ]**`;
-                                }
-                            })
+                        const get_title_id = await getIdentity.PlayerTitleID
+                        const find_title = await client.getPlayerTitles(await get_title_id)
+                        const player_title_name = await find_title.data.displayName;
+                        const player_title_display = await find_title.data.titleText;
+                        if (player_title_display != null) {
+                            sendMessage += `\n\nPlayer Title: **[ ${player_title_name} - ${player_title_display} ]**`;
+                        }
 
-                            const createEmbed = new MessageEmbed()
-                                .setColor(`#0099ff`)
-                                .setTitle(`/${await interaction.commandName}`)
-                                .setURL(`https://ingkth.wordpress.com`)
-                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                .setDescription(await sendMessage)
-                                .setThumbnail(await player_display_icon)
-                                .setImage(await player_card_long)
-                                .setTimestamp(createdTime)
-                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+                        const createEmbed = new MessageEmbed()
+                            .setColor(`#0099ff`)
+                            .setTitle(`/${await interaction.commandName}`)
+                            .setURL(`https://ingkth.wordpress.com`)
+                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                            .setDescription(await sendMessage)
+                            .setThumbnail(await player_display_icon)
+                            .setImage(await player_card_long)
+                            .setTimestamp(createdTime)
+                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
 
-                            await interaction.editReply({
-                                content: ` `,
-                                embeds: [createEmbed],
-                                ephemeral: true
-                            });
-
-                        }).catch((error) => {
-                            console.log(error);
+                        await interaction.editReply({
+                            content: ` `,
+                            embeds: [createEmbed],
+                            ephemeral: true
                         });
                     }
                 }

@@ -11,7 +11,7 @@ module.exports = (client) => {
             const response = await axiosClient.put(Account.url.playerData + `/name-service/v2/players`, [
             `${Account.user.id}`,
         ], {
-            headers: Account.requestHeaders,
+            headers: Account.request.headers,
         })
             return {data: response.data, isError: false};
         }catch(err){

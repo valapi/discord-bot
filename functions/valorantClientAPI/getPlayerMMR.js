@@ -9,7 +9,7 @@ module.exports = (client) => {
             const axiosClient = wrapper(axios.create({ cookieJar }));
 
             const response = await axiosClient.get(Account.url.playerData + `/mmr/v1/players/${Account.user.id}/`, {
-                headers: Account.requestHeaders
+                headers: Account.request.headers
             });
             return {data: response.data, isError: false};
         }catch(err){

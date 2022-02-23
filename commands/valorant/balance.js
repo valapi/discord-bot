@@ -82,7 +82,7 @@ module.exports = {
                             .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
 
                         await interaction.editReply({
-                            content: `You Are Have`,
+                            content: ` `,
                             embeds: [createEmbed],
                             ephemeral: true
                         });

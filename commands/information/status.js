@@ -30,7 +30,7 @@ module.exports = {
                     .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}`});
 
                 await interaction.editReply({
-                    content: `Invite Link: **https://discord.com/oauth2/authorize?client_id=930354659493822515&scope=bot&permissions=27648860222**\nWebsite: **https://ingkth.wordpress.com/**\nDiscord: **https://discord.gg/pbyWbUYjyt**\n`,
+                    content: `Invite Link: **https://discord.com/api/oauth2/authorize?client_id=930354659493822515&permissions=8&scope=bot%20applications.commands**\nWebsite: **https://ingkth.wordpress.com/**\nDiscord: **https://discord.gg/pbyWbUYjyt**\n`,
                     embeds: [createEmbed],
                     ephemeral: true
                 });

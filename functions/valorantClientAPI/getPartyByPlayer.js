@@ -9,12 +9,12 @@ module.exports = (client) => {
             const axiosClient = wrapper(axios.create({ cookieJar }));
 
             const responseByPlayer = await axiosClient.get(Account.url.partyService + `/parties/v1/players/${Account.user.id}`,{
-                headers: Account.requestHeaders
+                headers: Account.request.headers
             });
 
             const partyId = responseByPlayer.data.CurrentPartyID;
             const responseById = await axiosClient.get(Account.url.partyService + `/parties/v1/parties/${partyId}`,{
-                headers: Account.requestHeaders,
+                headers: Account.request.headers,
             });
 
             return {data: responseById.data, isError: false};

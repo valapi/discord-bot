@@ -3,7 +3,6 @@
     "@discordjs/builders": "^0.11.0",
     "@discordjs/rest": "^0.2.0-canary.0",
     "@discordjs/voice": "^0.7.5",
-    "@liamcottle/valorant.js": "^1.2.1",
     "axios": "^0.25.0",
     "axios-cookiejar-support": "^2.0.3",
     "cron": "^1.8.2",
@@ -12,13 +11,11 @@
     "discord.js": "^13.5.1",
     "googleapis": "^92.0.0",
     "mongoose": "^6.1.8",
-    "node-valorant-api": "^0.5.0",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.15",
+    "request": "^2.88.2",
     "tough-cookie": "^4.0.0",
-    "url": "^0.11.0",
-    "valorant-api-com": "^1.0.0",
-    "valorant.js": "^1.6.5"
+    "url": "^0.11.0"
   },
   "name": "valorant-discord-bot",
   "version": "1.0.0",

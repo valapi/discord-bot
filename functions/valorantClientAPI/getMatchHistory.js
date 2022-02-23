@@ -11,14 +11,14 @@ module.exports = (client) => {
             var response;
             if(!startIndex && !endIndex){
                 response = await axiosClient.get(Account.url.playerData + `/match-history/v1/history/${Account.user.id}`, {
-                    headers: Account.requestHeaders
+                    headers: Account.request.headers
                 });
             }else {
                 const _startIndex = startIndex + 0;
                 const _endIndex = endIndex + 0;
 
                 response = await axiosClient.get(Account.url.playerData + `/match-history/v1/history/${Account.user.id}?startIndex=${_startIndex}&endIndex=${_endIndex}`, {
-                    headers: Account.requestHeaders
+                    headers: Account.request.headers
                 });
             }
             return {data: response.data, isError: false};

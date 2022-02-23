@@ -135,7 +135,7 @@ module.exports = {
                                 if (getDatas.data[l].uuid === ValorantStore.data.SkinsPanelLayout.SingleItemOffers[i]) {
                                     let sendMessage = ``;
                                     sendMessage += `ID: **${await ItemsId}**\n`;
-                                    sendMessage += `Price: **${await Store_Cost}**\n`;
+                                    sendMessage += `Price: **${await Store_Cost} Valorant Points**\n`;
                                     sendMessage += `Slot: **${i + 1}**\n`;
 
                                     const createEmbed = new MessageEmbed()

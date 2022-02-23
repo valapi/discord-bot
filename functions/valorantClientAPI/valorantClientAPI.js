@@ -39,6 +39,10 @@ module.exports = (client) => {
             withCredentials: true,
         })
 
+        if(main_response.data.type == 'multifactor') {
+            return await main_response  //main_response.request._headers
+        }
+
         // check for error
         if (main_response.data.error) {
             throw new Error(main_response.data.error);
@@ -89,11 +93,15 @@ module.exports = (client) => {
         const _clientVersion = getVersion.data.riotClientVersion;
 
         return {
-            requestHeaders: {
-                'Authorization': `Bearer ${asscessToken}`,
-                'X-Riot-Entitlements-JWT': _entitlements,
-                'X-Riot-ClientVersion': _clientVersion,
-                'X-Riot-ClientPlatform': 'ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9',
+            request: {
+                headers: {
+                    'Authorization': `Bearer ${asscessToken}`,
+                    'X-Riot-Entitlements-JWT': _entitlements,
+                    'X-Riot-ClientVersion': _clientVersion,
+                    'X-Riot-ClientPlatform': 'ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9',
+                },
+                cookie: cookieJar,
+                axios: axiosClient
             },
             url: {
                 playerData: playerDataUrl,

@@ -31,6 +31,11 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
+                .setName('get')
+                .setDescription("Get Your Gmail Account")
+        )
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName('remove')
                 .setDescription("Remove Gmail Account")
         ),
@@ -47,10 +52,10 @@ module.exports = {
                     });
                 } else {
                     const verifyNumber = await Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
-                    
+
                     const sendMail = await client.sendMailTo({
-                        gmail: await _gmail, 
-                        title: `Verify Code: ${await verifyNumber}`, 
+                        gmail: await _gmail,
+                        title: `Verify Code: ${await verifyNumber}`,
                         message: `Hi. ${await interaction.user.username}#${await interaction.user.discriminator}  -  Run With /${interaction.commandName}\n\nYour verify code is\n\n\n${await verifyNumber}\n\n\nWebsite: https://ingkth.wordpress.com/\nDiscord: https://discord.gg/pbyWbUYjyt\n\nING PROJECT.`
                     });
 
@@ -72,7 +77,7 @@ module.exports = {
 
                         const createEmbed = new MessageEmbed()
                             .setColor(`#0099ff`)
-                            .setTitle(`/${await interaction.commandName}`)
+                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                             .setURL(`https://ingkth.wordpress.com`)
                             .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                             .setDescription(`**${await _gmail}**`)
@@ -126,7 +131,7 @@ module.exports = {
                                 findAccount.save().then(async () => {
                                     const createEmbed = new MessageEmbed()
                                         .setColor(`#0099ff`)
-                                        .setTitle(`/${await interaction.commandName}`)
+                                        .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                                         .setURL(`https://ingkth.wordpress.com`)
                                         .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                                         .setDescription(`Gmail: **${await account.mail}**\nVerify Code: **${await account.verify}**`)
@@ -147,7 +152,7 @@ module.exports = {
                                 findAccount.save().then(async () => {
                                     const createEmbed = new MessageEmbed()
                                         .setColor(`#0099ff`)
-                                        .setTitle(`/${await interaction.commandName}`)
+                                        .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                                         .setURL(`https://ingkth.wordpress.com`)
                                         .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                                         .setDescription(`Gmail: **${await account.mail}**\nVerify Code: **${await account.verify}**`)
@@ -165,37 +170,83 @@ module.exports = {
                         });
                     }
                 }
-            } else if (interaction.options.getSubcommand() === "remove") {
+            } else if (interaction.options.getSubcommand() === "get") {
                 await client.dbLogin().then(async () => {
                     // create
                     const gmailSchema = new mongoose.Schema({
                         mail: String,
                         discordId: Number
                     })
+                    var Account;
                     try {
-                        const Account = await mongoose.model('gmails', gmailSchema);
-                        await interaction.editReply({
-                            content: `Something Went Wrong, Please Try Again Later`,
-                            ephemeral: true
-                        });
+                        Account = await mongoose.model('gmails', gmailSchema);
                     } catch (err) {
-                        const Account = await mongoose.model('gmails');
-                        const user = await Account.findOne({ discordId: await interaction.user.id });
-                        if (user == null) {
-                            await interaction.editReply({
-                                content: `Can't Find Your Gmail Account in Database`,
-                                ephemeral: true
-                            });
-                        } else {
-                            //delete 
-                            await Account.deleteOne({ discordId: await interaction.user.id });
-                            await interaction.editReply({
-                                content: `Deleted Gmail Account From Database`,
-                                ephemeral: true
-                            });
-                        }
+                        Account = await mongoose.model('gmails');
                     }
 
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
+                        await interaction.editReply({
+                            content: `Can't Find Your Gmail Account in Database`,
+                            ephemeral: true
+                        });
+                    } else {
+                        const createEmbed = new MessageEmbed()
+                            .setColor(`#0099ff`)
+                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
+                            .setURL(`https://ingkth.wordpress.com`)
+                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                            .setDescription(`Gmail: **${await user.mail}**`)
+                            .setTimestamp(createdTime)
+                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
+                        await interaction.editReply({
+                            content: ` `,
+                            embeds: [createEmbed],
+                            ephemeral: true
+                        });
+                    }
+                });
+            } else if (interaction.options.getSubcommand() === "remove") {
+                await client.dbLogin().then(async () => {
+                    // create
+                    var Account;
+                    try {
+                        const gmailSchema = new mongoose.Schema({
+                            mail: String,
+                            discordId: Number
+                        })
+                        
+                        Account = await mongoose.model('gmails', gmailSchema);
+                    } catch (err) {
+                        Account = await mongoose.model('gmails');
+                    }
+
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
+                        await interaction.editReply({
+                            content: `Can't Find Your Gmail Account in Database`,
+                            ephemeral: true
+                        });
+                    } else {
+                        //send message
+                        const createEmbed = new MessageEmbed()
+                            .setColor(`#0099ff`)
+                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
+                            .setURL(`https://ingkth.wordpress.com`)
+                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                            .setDescription(`Gmail: **${await user.mail}**`)
+                            .setTimestamp(createdTime)
+                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
+                        await interaction.editReply({
+                            content: `Deleted Gmail Account From Database`,
+                            embeds: [createEmbed],
+                            ephemeral: true
+                        });
+                        //delete 
+                        await Account.deleteOne({ discordId: await interaction.user.id });
+                    }
                 });
             }
         } catch (err) {

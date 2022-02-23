@@ -2,7 +2,6 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const fs = require('fs');
 const mongoose = require(`mongoose`);
 const { MessageAttachment, MessageEmbed } = require('discord.js');
-const { send } = require('process');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -114,23 +113,30 @@ module.exports = {
                             const color_midString = color_firstString.substring(0, color_firstString.length - 1);
                             const color_endString = color_midString.substring(0, color_midString.length - 1);
 
-                            const createEmbed = new MessageEmbed()
-                                .setColor(`#${color_endString}`)
-                                .setTitle(tier_name)
-                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                .setDescription(await sendMessage)
-                                .setThumbnail(`${tier_smallIconUrl}`)  //"tier_smallIconUrl"  //"tier_largeIconUrl"
-                                .setTimestamp(createdTime)
-                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+                            if (_tier == 0 && CompetitiveUpdate.RankedRatingAfterUpdate == 0) {
+                                await interaction.editReply({
+                                    content: `**Sorry, Can't Find Your Latest Competitive Update,**\nSomething Went Wrong, Please Try Again Later`,
+                                    ephemeral: true
+                                });
+                            } else {
+                                const createEmbed = new MessageEmbed()
+                                    .setColor(`#${color_endString}`)
+                                    .setTitle(tier_name)
+                                    .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                    .setDescription(await sendMessage)
+                                    .setThumbnail(`${tier_smallIconUrl}`)  //"tier_smallIconUrl"  //"tier_largeIconUrl"
+                                    .setTimestamp(createdTime)
+                                    .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
 
-                            await interaction.editReply({
-                                content: ` `,
-                                embeds: [createEmbed],
-                                ephemeral: true
-                            });
+                                await interaction.editReply({
+                                    content: ` `,
+                                    embeds: [createEmbed],
+                                    ephemeral: true
+                                });
+                            }
                         } else {
                             await interaction.editReply({
-                                content: `Sorry, Can't Find Your Latest Competitive Update`,
+                                content: `**Sorry, Can't Find Your Latest Competitive Update,**\nSomething Went Wrong, Please Try Again Later`,
                                 ephemeral: true
                             });
                         }

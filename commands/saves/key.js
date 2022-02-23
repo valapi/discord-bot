@@ -59,7 +59,7 @@ module.exports = {
 
                             const createEmbed = new MessageEmbed()
                                 .setColor(`#0099ff`)
-                                .setTitle(`/${await interaction.commandName}`)
+                                .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                                 .setURL(`https://ingkth.wordpress.com`)
                                 .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                                 .setDescription(`**${await _key}**`)
@@ -81,7 +81,7 @@ module.exports = {
 
                             const createEmbed = new MessageEmbed()
                                 .setColor(`#0099ff`)
-                                .setTitle(`/${await interaction.commandName}`)
+                                .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                                 .setURL(`https://ingkth.wordpress.com`)
                                 .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                                 .setDescription(`**${await _key}**`)
@@ -122,7 +122,7 @@ module.exports = {
                     } else {
                         const createEmbed = new MessageEmbed()
                             .setColor(`#0099ff`)
-                            .setTitle(`/${await interaction.commandName}`)
+                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                             .setURL(`https://ingkth.wordpress.com`)
                             .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                             .setDescription(`**${await user.key}**`)
@@ -159,7 +159,7 @@ module.exports = {
                     } else {
                         const createEmbed = new MessageEmbed()
                             .setColor(`#0099ff`)
-                            .setTitle(`/${await interaction.commandName}`)
+                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                             .setURL(`https://ingkth.wordpress.com`)
                             .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                             .setDescription(`**${await user.key}**`)
@@ -181,7 +181,7 @@ module.exports = {
 
                 const createEmbed = new MessageEmbed()
                     .setColor(`#0099ff`)
-                    .setTitle(`/${await interaction.commandName}`)
+                    .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
                     .setURL(`https://ingkth.wordpress.com`)
                     .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
                     .setDescription(`**${await _key}**`)
