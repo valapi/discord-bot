@@ -1,7 +1,6 @@
 const fs = require('fs');
 const { Client, Intents, Collection } = require('discord.js');
 const { token } = require('./config.json');
-const { doesNotMatch } = require('assert');
 var CronJob = require('cron').CronJob;
 
 // Create Client
