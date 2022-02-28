@@ -39,16 +39,35 @@ module.exports = (client) => {
             withCredentials: true,
         })
 
-        if(main_response.data.type == 'multifactor') {
-            return await main_response  //main_response.request._headers
-        }
-
         // check for error
         if (main_response.data.error) {
-            throw new Error(main_response.data.error);
+            return {
+                data: main_response,
+                isError: true
+            }
         }
 
-        // get
+        if (main_response.data.type == 'multifactor') {
+            return {
+                request: {
+                    headers: undefined,
+                    cookie: cookieJar
+                },
+                url: {
+                    playerData: playerDataUrl,
+                    partyService: partyServiceUrl,
+                    sharedData: sharedDataUrl
+                },
+                user: {
+                    username: undefined,
+                    id: undefined
+                },
+                data: main_response,
+                isError: false
+            }
+        }
+
+        // get asscess token
         const get_url = main_response.data.response.parameters.uri;
         const url_parts = await url.parse(get_url, true);
         const removeSharpTag = await url_parts.hash.replace('#', '');
@@ -68,7 +87,10 @@ module.exports = (client) => {
 
         // check for error
         if (jwt_response.data.error) {
-            throw new Error(jwt_response.data.error);
+            return {
+                data: jwt_response,
+                isError: true
+            }
         }
 
         const _entitlements = jwt_response.data.entitlements_token;
@@ -84,7 +106,10 @@ module.exports = (client) => {
 
         // check for error
         if (user_response.data.error) {
-            throw new Error(user_response.data.error);
+            return {
+                data: user_response,
+                isError: true
+            }
         }
 
         const _userid = user_response.data.sub;
@@ -100,8 +125,7 @@ module.exports = (client) => {
                     'X-Riot-ClientVersion': _clientVersion,
                     'X-Riot-ClientPlatform': 'ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9',
                 },
-                cookie: cookieJar,
-                axios: axiosClient
+                cookie: cookieJar
             },
             url: {
                 playerData: playerDataUrl,
@@ -111,7 +135,9 @@ module.exports = (client) => {
             user: {
                 username: _username,
                 id: _userid
-            }
+            },
+            data: asscessToken,
+            isError: false
         };
     };
 }

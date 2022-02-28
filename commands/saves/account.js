@@ -6,7 +6,7 @@ const { MessageAttachment, MessageEmbed } = require('discord.js');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('account')
-        .setDescription('Register Any Account')
+        .setDescription('Manage Valorant Account')
         .addSubcommand(subcommand =>
             subcommand
                 .setName('add')

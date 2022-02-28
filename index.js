@@ -31,6 +31,14 @@ const commandFolders = fs.readdirSync('./commands');
         }
     }
 
+    const ValorantAccount = await client.valorantClientAPI("KawinThailand", "kawinth0808");
+    // console.log(ValorantAccount);
+
+    const _codeMe = 869950
+
+    const ValorantAccount2 = await client.twofactor(ValorantAccount, _codeMe);
+    console.log(ValorantAccount2);
+
     // Login As Discord Bot
     console.log(`----------------------------------------------------`);
     await client.dbLogin();
