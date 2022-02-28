@@ -7,8 +7,8 @@ module.exports = (client) => {
     client.valorantClientAPI = async (username, password) => {
 
         const playerDataUrl = "https://pd.ap.a.pvp.net";
-        const partyServiceUrl = "https://glz-ap-1.ap.a.pvp.net"
-        const sharedDataUrl = "https://shared.ap.a.pvp.net"
+        const partyServiceUrl = "https://glz-ap-1.ap.a.pvp.net";
+        const sharedDataUrl = "https://shared.ap.a.pvp.net";
 
         //credit.. "@liamcottle\valorant.js"
 
@@ -50,17 +50,12 @@ module.exports = (client) => {
         if (main_response.data.type == 'multifactor') {
             return {
                 request: {
-                    headers: undefined,
                     cookie: cookieJar
                 },
                 url: {
                     playerData: playerDataUrl,
                     partyService: partyServiceUrl,
                     sharedData: sharedDataUrl
-                },
-                user: {
-                    username: undefined,
-                    id: undefined
                 },
                 data: main_response,
                 isError: false
@@ -125,7 +120,9 @@ module.exports = (client) => {
                     'X-Riot-ClientVersion': _clientVersion,
                     'X-Riot-ClientPlatform': 'ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQyLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9',
                 },
-                cookie: cookieJar
+                cookie: cookieJar,
+                accessToken: asscessToken,
+                entitlement: _entitlements,
             },
             url: {
                 playerData: playerDataUrl,
@@ -136,7 +133,7 @@ module.exports = (client) => {
                 username: _username,
                 id: _userid
             },
-            data: asscessToken,
+            data: user_response.data,
             isError: false
         };
     };

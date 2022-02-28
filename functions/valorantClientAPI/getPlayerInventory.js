@@ -5,7 +5,7 @@ const tough = require('tough-cookie');
 module.exports = (client) => {
     client.getPlayerInventory = async (Account) => {
         try {
-            const cookieJar = new tough.CookieJar();
+            const cookieJar = Account.request.cookie;
             const axiosClient = wrapper(axios.create({ cookieJar }));
 
             const response = await axiosClient.get(Account.url.playerData + `/personalization/v2/players/${Account.user.id}/playerloadout`, {

@@ -125,48 +125,29 @@ module.exports = {
                             });
 
                             const user = await Account.findOne({ discordId: await interaction.user.id });
-                            if (user == null) {
-                                //create new
-                                const findAccount = await new Account({ mail: await account.mail, discordId: await interaction.user.id });
-                                findAccount.save().then(async () => {
-                                    const createEmbed = new MessageEmbed()
-                                        .setColor(`#0099ff`)
-                                        .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
-                                        .setURL(`https://ingkth.wordpress.com`)
-                                        .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                        .setDescription(`Gmail: **${await account.mail}**\nVerify Code: **${await account.verify}**`)
-                                        .setTimestamp(createdTime)
-                                        .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
-                                    await interaction.editReply({
-                                        content: `Your Gmail Account Has Been Verified`,
-                                        embeds: [createEmbed],
-                                        ephemeral: true
-                                    });
-                                });
-                            } else {
+                            if (user != null) {
                                 //delete 
                                 await Account.deleteOne({ discordId: await interaction.user.id });
-                                //create new
-                                const findAccount = await new Account({ mail: await account.mail, discordId: await interaction.user.id });
-                                findAccount.save().then(async () => {
-                                    const createEmbed = new MessageEmbed()
-                                        .setColor(`#0099ff`)
-                                        .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
-                                        .setURL(`https://ingkth.wordpress.com`)
-                                        .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                        .setDescription(`Gmail: **${await account.mail}**\nVerify Code: **${await account.verify}**`)
-                                        .setTimestamp(createdTime)
-                                        .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
-                                    await interaction.editReply({
-                                        content: `Your Gmail Account Has Been Verified`,
-                                        embeds: [createEmbed],
-                                        ephemeral: true
-                                    });
-                                });
                             }
 
+                            //create new
+                            const findAccount = await new Account({ mail: await account.mail, discordId: await interaction.user.id });
+                            findAccount.save().then(async () => {
+                                const createEmbed = new MessageEmbed()
+                                    .setColor(`#0099ff`)
+                                    .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
+                                    .setURL(`https://ingkth.wordpress.com`)
+                                    .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                    .setDescription(`Gmail: **${await account.mail}**\nVerify Code: **${await account.verify}**`)
+                                    .setTimestamp(createdTime)
+                                    .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
+                                await interaction.editReply({
+                                    content: `Your Gmail Account Has Been Verified`,
+                                    embeds: [createEmbed],
+                                    ephemeral: true
+                                });
+                            });
                         });
                     }
                 }
@@ -216,7 +197,7 @@ module.exports = {
                             mail: String,
                             discordId: Number
                         })
-                        
+
                         Account = await mongoose.model('gmails', gmailSchema);
                     } catch (err) {
                         Account = await mongoose.model('gmails');

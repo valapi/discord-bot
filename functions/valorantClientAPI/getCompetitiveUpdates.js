@@ -5,7 +5,7 @@ const tough = require('tough-cookie');
 module.exports = (client) => {
     client.getCompetitiveUpdates = async (Account) => {
         try {
-            const cookieJar = new tough.CookieJar();
+            const cookieJar = Account.request.cookie;
             const axiosClient = wrapper(axios.create({ cookieJar }));
 
             const response = await axiosClient.get(Account.url.playerData + `/mmr/v1/players/${Account.user.id}/competitiveupdates`, {

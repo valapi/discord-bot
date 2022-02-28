@@ -53,49 +53,30 @@ module.exports = {
                         }
                         //script
                         const user = await Account.findOne({ discordId: await interaction.user.id });
-                        if (user == null) {
-                            //create new
-                            const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
-
-                            const createEmbed = new MessageEmbed()
-                                .setColor(`#0099ff`)
-                                .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
-                                .setURL(`https://ingkth.wordpress.com`)
-                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                .setDescription(`**${await _key}**`)
-                                .setTimestamp(createdTime)
-                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
-                            findAccount.save().then(async () => {
-                                await interaction.editReply({
-                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__`,
-                                    embeds: [createEmbed],
-                                    ephemeral: true
-                                });
-                            });
-                        } else {
+                        if (user != null) {
                             //delete 
                             await Account.deleteOne({ discordId: await interaction.user.id });
-                            //create new
-                            const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
-
-                            const createEmbed = new MessageEmbed()
-                                .setColor(`#0099ff`)
-                                .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
-                                .setURL(`https://ingkth.wordpress.com`)
-                                .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                .setDescription(`**${await _key}**`)
-                                .setTimestamp(createdTime)
-                                .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
-                            findAccount.save().then(async () => {
-                                await interaction.editReply({
-                                    content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__`,
-                                    embeds: [createEmbed],
-                                    ephemeral: true
-                                });
-                            });
                         }
+
+                        //create new
+                        const findAccount = await new Account({ key: _key, discordId: await interaction.user.id });
+
+                        const createEmbed = new MessageEmbed()
+                            .setColor(`#0099ff`)
+                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
+                            .setURL(`https://ingkth.wordpress.com`)
+                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                            .setDescription(`**${await _key}**`)
+                            .setTimestamp(createdTime)
+                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
+                        findAccount.save().then(async () => {
+                            await interaction.editReply({
+                                content: `Save Your Private Key In Database, \n__**Hacker Can Use Your Private Key To Get Username And Password From Database**__`,
+                                embeds: [createEmbed],
+                                ephemeral: true
+                            });
+                        });
                     });
                 }
 

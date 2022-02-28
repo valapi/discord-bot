@@ -11,7 +11,6 @@ module.exports = {
 
             //get all command
             const getAllCommand = await client.commandArray;
-            console.log(getAllCommand)
 
             for (const PerCommand of getAllCommand) {
                 sendMessage += `\n**/${PerCommand.name}**\n`;

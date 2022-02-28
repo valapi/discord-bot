@@ -31,6 +31,22 @@ module.exports = {
         )
         .addSubcommand(subcommand =>
             subcommand
+                .setName('mfa')
+                .setDescription("Get Your Valorant Account From Database")
+                .addNumberOption(option =>
+                    option
+                        .setName('code')
+                        .setDescription('Type Your Verify Code')
+                        .setRequired(true)
+                )
+                .addStringOption(option =>
+                    option
+                        .setName('privatekey')
+                        .setDescription('Type Your Private Key')
+                ),
+        )
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName('get')
                 .setDescription("Get Your Valorant Account From Database")
                 .addStringOption(option =>
@@ -58,7 +74,127 @@ module.exports = {
                         ephemeral: true
                     });
                 } else {
-                    await client.valorantClientAPI(_user, _pass).then(async () => {
+                    if (_key == null) {
+                        //try to find key in database
+                        var tryToFindKey;
+                        try {
+                            const keySchema = new mongoose.Schema({
+                                key: String,
+                                discordId: Number
+                            })
+
+                            tryToFindKey = await mongoose.model('keys', keySchema);
+                        } catch (err) {
+                            tryToFindKey = await mongoose.model('keys');
+                        }
+                        getKeyUser = await tryToFindKey.findOne({ discordId: await interaction.user.id });
+                        if (getKeyUser || getKeyUser != null || getKeyUser != undefined) {
+                            _key = await getKeyUser.key;
+                        }
+                    }
+
+                    if (_key == null) {
+                        await interaction.editReply({
+                            content: `Sorry, You Must Type Your Private Key`,
+                            ephemeral: true
+                        });
+                    } else {
+                        const _username = await client.encryptTo(_user, _key);
+                        const _password = await client.encryptTo(_pass, _key);
+
+                        //check
+                        const ValorantAccount = await client.valorantClientAPI(_user, _pass);
+                        if (ValorantAccount.isError) {
+                            await interaction.editReply({
+                                content: `**Username or Password Is Wrong,**\nSomething Went Wrong, Please Try Again Later`,
+                                ephemeral: true
+                            });
+                        } else {
+                            if (ValorantAccount.data.data.type == 'multifactor') {
+                                await interaction.editReply({
+                                    content: `**Riot Will Send You Verify Code In Your Mail,**\nThen Type The Code In __**/account mfa**__\n\nIf You Don't Get The Code, Please Try Again Later`,
+                                    ephemeral: true
+                                });
+                                //save cookie
+                                let needed_json = await JSON.parse(fs.readFileSync("./data/json/mfa.json", "utf8"));
+                                needed_json[interaction.user.id] = ValorantAccount.request.cookie;
+
+                                fs.writeFile("./data/json/mfa.json", JSON.stringify(needed_json), (err) => {
+                                    if (err) console.error(err)
+                                });
+                                //wait 5 minutes then remove cookie (timeout)
+                                await client.wait(100);
+                                await delete needed_json[interaction.user.id];
+                                await fs.writeFile("./data/json/mfa.json", JSON.stringify(needed_json), (err) => {
+                                    if (err) console.error(err)
+                                });
+                            } else {
+                                //save account
+                                await client.dbLogin().then(async () => {
+                                    // create
+                                    const valorantSchema = new mongoose.Schema({
+                                        username: String,
+                                        password: String,
+                                        discordId: Number
+                                    })
+
+                                    var Account;
+                                    try {
+                                        Account = await mongoose.model('valorants', valorantSchema);
+                                    } catch (err) {
+                                        Account = await mongoose.model('valorants');
+                                    }
+                                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                                    if (user != null) {
+                                        //delete 
+                                        await Account.deleteOne({ discordId: await interaction.user.id });
+                                    }
+
+                                    const findAccount = await new Account({ username: _username, password: _password, discordId: await interaction.user.id });
+                                    findAccount.save().then(async () => {
+                                        const createEmbed = new MessageEmbed()
+                                            .setColor(`#0099ff`)
+                                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
+                                            .setURL(`https://ingkth.wordpress.com`)
+                                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+                                            .setDescription(`Name: **${await client.decryptBack(_username, _key)}**\nPassword: **${await client.decryptBack(_password, _key)}**\nPrivate Key: **${_key}**`)
+                                            .setTimestamp(createdTime)
+                                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+
+                                        await interaction.editReply({
+                                            content: `Register Riot Account With`,
+                                            embeds: [createEmbed],
+                                            ephemeral: true
+                                        });
+                                    });
+                                });
+                            }
+                        }
+                    }
+                }
+            } else if (interaction.options.getSubcommand() === "mfa") {
+                var _key = await interaction.options.getString("privatekey");
+                await client.dbLogin().then(async () => {
+                    var Account;
+                    try {
+                        const valorantSchema = new mongoose.Schema({
+                            username: String,
+                            password: String,
+                            discordId: Number
+                        })
+
+                        Account = await mongoose.model('valorants', valorantSchema);
+                    } catch (err) {
+                        Account = await mongoose.model('valorants');
+                    }
+                    //script
+                    const user = await Account.findOne({ discordId: await interaction.user.id });
+                    if (user == null) {
+                        await interaction.editReply({
+                            content: `Can't Find Your Account In Database`,
+                            ephemeral: true
+                        });
+                    } else {
                         if (_key == null) {
                             //try to find key in database
                             var tryToFindKey;
@@ -72,7 +208,7 @@ module.exports = {
                             } catch (err) {
                                 tryToFindKey = await mongoose.model('keys');
                             }
-                            getKeyUser = await tryToFindKey.findOne({ discordId: await interaction.user.id });
+                            const getKeyUser = await tryToFindKey.findOne({ discordId: await interaction.user.id });
                             if (getKeyUser || getKeyUser != null || getKeyUser != undefined) {
                                 _key = await getKeyUser.key;
                             }
@@ -84,74 +220,47 @@ module.exports = {
                                 ephemeral: true
                             });
                         } else {
-                            const _username = await client.encryptTo(_user, _key);
-                            const _password = await client.encryptTo(_pass, _key);
+                            //get cookie
+                            let needed_json = await JSON.parse(fs.readFileSync("./data/json/mfa.json", "utf8"));
+                            const _cookie = needed_json[interaction.user.id];
 
-                            await client.dbLogin().then(async () => {
-                                // create
-                                const valorantSchema = new mongoose.Schema({
-                                    username: String,
-                                    password: String,
-                                    discordId: Number
-                                })
-
-                                var Account;
-                                try {
-                                    Account = await mongoose.model('valorants', valorantSchema);
-                                } catch (err) {
-                                    Account = await mongoose.model('valorants');
-                                }
-                                const user = await Account.findOne({ discordId: await interaction.user.id });
-                                if (user == null) {
-                                    //create new
-                                    const findAccount = await new Account({ username: _username, password: _password, discordId: await interaction.user.id });
-                                    findAccount.save().then(async () => {
-                                        const createEmbed = new MessageEmbed()
-                                            .setColor(`#0099ff`)
-                                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
-                                            .setURL(`https://ingkth.wordpress.com`)
-                                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                            .setDescription(`Name: **${await client.decryptBack(_username, _key)}**\nPassword: **${await client.decryptBack(_password, _key)}**\nPrivate Key: **${_key}**`)
-                                            .setTimestamp(createdTime)
-                                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
+                            if (!_cookie) {
+                                await interaction.editReply({
+                                    content: `**Please Use __" /account add "__ First**\nSomething Went Wrong, Please Try Again Later`,
+                                    ephemeral: true
+                                });
+                            } else {
+                                //client
+                                const _code = await interaction.options.getNumber("code");
+                                const ValorantAccount = await client.twofactor(_cookie, _code);
+                                if (ValorantAccount.isError) {
+                                    await interaction.editReply({
+                                        content: `**Verify Code Is Wrong,**\nSomething Went Wrong, Please Try Again Later`,
+                                        ephemeral: true
+                                    });
+                                }else {
+                                    if(ValorantAccount.request.accessToken){
                                         await interaction.editReply({
-                                            content: `Register Riot Account With`,
-                                            embeds: [createEmbed],
+                                            content: `**Sorry, This Bot Is Not Support Two Factor Authentication**\n\nTurn Off Your MFA Or Waiting Until Support`,
                                             ephemeral: true
                                         });
-                                    });
-                                } else {
-                                    //delete 
-                                    await Account.deleteOne({ discordId: await interaction.user.id });
-                                    //create new
-                                    const findAccount = await new Account({ username: _username, password: _password, discordId: await interaction.user.id });
-                                    findAccount.save().then(async () => {
-                                        const createEmbed = new MessageEmbed()
-                                            .setColor(`#0099ff`)
-                                            .setTitle(`/${await interaction.commandName} ${await interaction.options.getSubcommand()}`)
-                                            .setURL(`https://ingkth.wordpress.com`)
-                                            .setAuthor({ name: `${await client.user.tag}`, iconURL: await client.user.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                                            .setDescription(`Name: **${await client.decryptBack(_username, _key)}**\nPassword: **${await client.decryptBack(_password, _key)}**\nPrivate Key: **${_key}**`)
-                                            .setTimestamp(createdTime)
-                                            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
-
+                                    }else {
                                         await interaction.editReply({
-                                            content: `Register Riot Account With`,
-                                            embeds: [createEmbed],
+                                            content: `Something Went Wrong, Please Try Again Later`,
                                             ephemeral: true
                                         });
+                                    }
+
+                                    //remove cookie
+                                    delete needed_json[interaction.user.id];
+                                    fs.writeFile("./data/json/mfa.json", JSON.stringify(needed_json), (err) => {
+                                        if (err) console.error(err)
                                     });
                                 }
-                            });
+                            }
                         }
-                    }).catch(async (error) => {
-                        await interaction.editReply({
-                            content: `**Username or Password Is Wrong,**\n**Turn Off MFA** (Riot Will Send You Mail),\nSomething Went Wrong, Please Try Again Later`,
-                            ephemeral: true
-                        });
-                    });
-                }
+                    }
+                });
             } else if (interaction.options.getSubcommand() === "get") {
                 var _key = await interaction.options.getString("privatekey");
                 await client.dbLogin().then(async () => {

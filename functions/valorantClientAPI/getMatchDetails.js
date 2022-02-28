@@ -5,7 +5,7 @@ const tough = require('tough-cookie');
 module.exports = (client) => {
     client.getMatchDetails = async (Account, MatchID) => {
         try {
-            const cookieJar = new tough.CookieJar();
+            const cookieJar = Account.request.cookie;
             const axiosClient = wrapper(axios.create({ cookieJar }));
 
             const response = await axiosClient.get(Account.url.playerData + `/match-details/v1/matches/${MatchID}`, {
