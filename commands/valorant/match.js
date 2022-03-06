@@ -179,8 +179,25 @@ module.exports = {
                                 sendMessage += `${i + 1}. **${await sort_player[i].gameName} # ${await sort_player[i].tagLine}** \n `;
                                 sendMessage += `Kills: **${await sort_player[i].stats.kills}**  /  `;
                                 sendMessage += `Deaths: **${await sort_player[i].stats.deaths}**  /  `;
-                                sendMessage += `Assists: **${await sort_player[i].stats.assists}**  /  `;
-                                sendMessage += `Level: **${sort_player[i].accountLevel}**  \n  `;
+                                sendMessage += `Assists: **${await sort_player[i].stats.assists}** \n `;
+
+                                sendMessage += `Level: **${sort_player[i].accountLevel}**  /  `;
+                                const thisPlayer_subject = sort_player[i].subject
+                                const GetPlayerMMR = await client.getPlayerMMR(ValorantAccount, thisPlayer_subject);
+                                let PLAYER_tier = GetPlayerMMR.data.LatestCompetitiveUpdate.TierAfterUpdate
+                                let PLAYER_progress = GetPlayerMMR.data.LatestCompetitiveUpdate.RankedRatingAfterUpdate
+
+                                var PLAYER_elo;
+                                if(PLAYER_tier == 0){
+                                    if (PLAYER_tier >= 21) {
+                                        PLAYER_elo = 1800 + PLAYER_progress
+                                    } else {
+                                        PLAYER_elo = ((PLAYER_tier * 100) - 300) + PLAYER_progress;
+                                    }
+                                }else {
+                                    PLAYER_elo = "Unknown"
+                                }
+                                sendMessage += `MMR: **${PLAYER_elo}** \n `;
 
                                 const player_played_in_team_id = await sort_player[i].teamId;
                                 const get_teams = await getMatch.data.teams;
