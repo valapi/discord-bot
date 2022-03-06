@@ -57,7 +57,7 @@ module.exports = (client) => {
                     partyService: partyServiceUrl,
                     sharedData: sharedDataUrl
                 },
-                data: main_response,
+                data: main_response.data,
                 isError: false
             }
         }
@@ -133,7 +133,7 @@ module.exports = (client) => {
                 username: _username,
                 id: _userid
             },
-            data: user_response.data,
+            data: main_response.data,
             isError: false
         };
     };

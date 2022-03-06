@@ -20,16 +20,17 @@ const Account = mongoose.model('valorants', valorantSchema);
 
 //save
 
-const findAccount = new Account({ username: 'KawinThailand', password: 'kawinth0808', discordId: 549231132382855189 });
+const findAccount = new Account({ username: 'USERNAME', password: 'PASSWORD', discordId: 549231132382855189 });
 findAccount.save().then(async () => {
     //message
 });
 
 //find
 
-const user = await Account.findOne({ username: 'KawinThailand' });
+const user = await Account.findOne({ username: 'USERNAME' });
 console.log(user);
 
-//delete 
-const edelete = await Account.deleteOne({ username: 'KawinThailand' });
+//delete
+
+const edelete = await Account.deleteOne({ username: 'USERNAME' });
 console.log(edelete.deletedCount);

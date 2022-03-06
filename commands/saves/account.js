@@ -110,7 +110,7 @@ module.exports = {
                                 ephemeral: true
                             });
                         } else {
-                            if (ValorantAccount.data.data.type == 'multifactor') {
+                            if (ValorantAccount.data.type == 'multifactor') {
                                 await interaction.editReply({
                                     content: `**Riot Will Send You Verify Code In Your Mail,**\nThen Type The Code In __**/account mfa**__\n\nIf You Don't Get The Code, Please Try Again Later`,
                                     ephemeral: true
