@@ -64,6 +64,9 @@ const core_1 = require("@ing3kth/core");
         const commandFiles = fs.readdirSync(process.cwd() + `/dist/commands/${folder}`).filter(file => file.endsWith('.js'));
         for (const file of commandFiles) {
             const command = require(`./commands/${folder}/${file}`).default;
+            if (!command) {
+                continue;
+            }
             _commands.set(command.data.name, command);
             _commandArray.push(command.data.toJSON());
         }
@@ -82,6 +85,9 @@ const core_1 = require("@ing3kth/core");
     const eventFiles = fs.readdirSync(process.cwd() + '/dist/events').filter(file => file.endsWith('.js'));
     for (const file of eventFiles) {
         const event = require(`./events/${file}`).default;
+        if (!event) {
+            continue;
+        }
         const _extraData = {
             client: DiscordClient,
             commands: _commands,

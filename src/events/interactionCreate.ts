@@ -12,7 +12,9 @@ export default {
 		if (interaction.isCommand()) {
 			const command = _extraData.commands.get(interaction.commandName);
 
-			if (!command) return;
+			if (!command) {
+				return;
+			};
 
 			await interaction.reply({
 				content: "Loading Message.. ",

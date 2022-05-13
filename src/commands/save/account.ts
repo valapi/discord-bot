@@ -13,35 +13,45 @@ import { Client as ValAPI } from '@valapi/valorant-api.com';
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('login')
+        .setName('account')
         .setDescription('Manage Valorant Account')
         .addSubcommand(subcommand =>
             subcommand
                 .setName('add')
-                .setDescription("Add Your Valorant Account To Database")
+                .setDescription("Add Your Valorant Account")
                 .addStringOption(option =>
                     option
                         .setName('username')
-                        .setDescription('Type Your Riot Account Username')
+                        .setDescription('Riot Account Username')
                         .setRequired(true)
                 )
                 .addStringOption(option =>
                     option
                         .setName('password')
-                        .setDescription('Type Your Riot Account Password')
+                        .setDescription('Riot Account Password')
                         .setRequired(true)
                 )
         )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('mfa')
-                .setDescription("Get Your Valorant Account From Database")
+                .setDescription('Multi-Factor Authentication')
                 .addNumberOption(option =>
                     option
                         .setName('code')
-                        .setDescription('Type Your Verify Code')
+                        .setDescription('Verify Code')
                         .setRequired(true)
                 )
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('remove')
+                .setDescription("Remove Your Valorant Account")
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('get')
+                .setDescription("Get Your Valorant Account")
         ),
     async execute(interaction: CommandInteraction, DiscordClient: DisClient, createdTime: Date): Promise<void> {
         //script
@@ -133,12 +143,23 @@ export default {
             //auth
             const _MFA_CODE = Number(interaction.options.getNumber("code"));
 
-            let _save = await _cache.output(_userId);
+            const _save = await _cache.output(_userId);
 
             ValClient.fromJSONAuth(_save);
             await ValClient.verify(_MFA_CODE);
 
             //success
+            await success(ValClient);
+        } else if (_subCommand === 'remove') {
+            await _cache.clear(_userId);
+
+            await interaction.editReply({
+                content: `Your Account Has Been Removed`,
+            });
+        } else if (_subCommand === 'get') {
+            const _save = await _cache.output(_userId);
+            ValClient.fromJSONAuth(_save);
+
             await success(ValClient);
         }
     }

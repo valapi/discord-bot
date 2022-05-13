@@ -18,8 +18,10 @@ exports.default = {
             const createdTime = new Date();
             if (interaction.isCommand()) {
                 const command = _extraData.commands.get(interaction.commandName);
-                if (!command)
+                if (!command) {
                     return;
+                }
+                ;
                 yield interaction.reply({
                     content: "Loading Message.. ",
                     ephemeral: true
