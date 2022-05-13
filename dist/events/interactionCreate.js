@@ -14,6 +14,7 @@ exports.default = {
     name: 'interactionCreate',
     once: false,
     execute(interaction, _extraData) {
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const createdTime = new Date();
             if (interaction.isCommand()) {
@@ -22,19 +23,18 @@ exports.default = {
                     return;
                 }
                 ;
-                yield interaction.reply({
-                    content: "Loading Message.. ",
-                    ephemeral: true
-                });
                 try {
-                    // if (command.permissions && command.permissions.length > 0) {
-                    // 	if (!interaction.member.permissions.has(command.permissions)) {
-                    // 		await interaction.editReply({
-                    // 			content: `You don't have permission to use this command.`,
-                    // 		});
-                    // 		return;
-                    // 	}
-                    // }
+                    yield interaction.deferReply({
+                        ephemeral: Boolean(command.privateMessage),
+                    });
+                    if (command.permissions && Array(command.permissions).length > 0) {
+                        if (!((_a = interaction.memberPermissions) === null || _a === void 0 ? void 0 : _a.has(command.permissions))) {
+                            yield interaction.editReply({
+                                content: `You don't have permission to use this command.`,
+                            });
+                            return;
+                        }
+                    }
                     //log interaction
                     yield core_1.Logs.log(`${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName}\x1b[0m`, 'info');
                     //run commands

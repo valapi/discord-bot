@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import {
-    type Client as DisClient, type CommandInteraction,
-    MessageAttachment, MessageEmbed
+    type Client as DisClient, type CommandInteraction, Permissions,
+    MessageAttachment, MessageEmbed,
 } from 'discord.js';
 
 import getStatusFunction from '../../utils/getStatus';
@@ -10,6 +10,10 @@ export default {
     data: new SlashCommandBuilder()
         .setName(`status`)
         .setDescription(`Bot Status`),
+    permissions: [
+        Permissions.ALL,
+    ],
+    privateMessage: false,
     async execute(interaction: CommandInteraction, DiscordClient: DisClient, createdTime: Date): Promise<void> {
         const getStatus = await getStatusFunction(DiscordClient, createdTime.getTime());
 

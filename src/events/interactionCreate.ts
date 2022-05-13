@@ -1,4 +1,4 @@
-import type { Interaction } from "discord.js";
+import { type Interaction, Permissions } from "discord.js";
 
 import { Logs } from '@ing3kth/core';
 import type { EventExtraData } from "../interface/EventData";
@@ -16,21 +16,20 @@ export default {
 				return;
 			};
 
-			await interaction.reply({
-				content: "Loading Message.. ",
-				ephemeral: true
-			});
-
 			try {
 
-				// if (command.permissions && command.permissions.length > 0) {
-				// 	if (!interaction.member.permissions.has(command.permissions)) {
-				// 		await interaction.editReply({
-				// 			content: `You don't have permission to use this command.`,
-				// 		});
-				// 		return;
-				// 	}
-				// }
+				await interaction.deferReply({
+					ephemeral: Boolean(command.privateMessage),
+				});
+
+				if (command.permissions && Array(command.permissions).length > 0) {
+					if (!interaction.memberPermissions?.has(command.permissions as Array<Permissions>)) {
+						await interaction.editReply({
+							content: `You don't have permission to use this command.`,
+						});
+						return;
+					}
+				}
 
 				//log interaction
 				await Logs.log(`${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName}\x1b[0m`, 'info')

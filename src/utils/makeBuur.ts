@@ -6,7 +6,7 @@ function makeBuur(message: string, replaceWithString:string= '?'): string {
 
     for (let i = 0; i < split_message.length; i++) {
         const _random = Random(0, 100);
-        if (_random <= 60) {
+        if (_random <= 45) {
             _buur.push(replaceWithString);
         } else {
             _buur.push(split_message[i]);

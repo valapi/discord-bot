@@ -35,18 +35,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 const process = __importStar(require("process"));
 const fs = __importStar(require("fs"));
+const events = __importStar(require("events"));
 const rest_1 = require("@discordjs/rest");
 const v10_1 = require("discord-api-types/v10");
 const discord_js_1 = require("discord.js");
 const core_1 = require("@ing3kth/core");
+const database_1 = require("./utils/database");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    //set maxListeners Limit
+    events.EventEmitter.defaultMaxListeners = 35;
     //dotenv
     dotenv.config({
         path: process.cwd() + '/.env'
     });
-    //set maxListeners Limit
-    require('events').EventEmitter.defaultMaxListeners = 35;
+    //database
+    yield database_1.ValData.verify(process.env['MONGO_TOKEN']);
+    //client
     const DiscordClient = new discord_js_1.Client({
         intents: [
             discord_js_1.Intents.FLAGS.GUILDS,

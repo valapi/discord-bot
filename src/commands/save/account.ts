@@ -1,12 +1,13 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import {
-    type Client as DisClient, type CommandInteraction,
-    MessageAttachment, MessageEmbed
+    type Client as DisClient, type CommandInteraction, Permissions,
+    MessageAttachment, MessageEmbed,
 } from 'discord.js';
 
 import * as IngCore from '@ing3kth/core';
-import genarateApiKey from '../../utils/genarateApiKey';
+import { decrypt, encrypt, genarateApiKey } from '../../utils/crypto';
 import makeBuur from '../../utils/makeBuur';
+import { ValData, type IValorantAccount } from '../../utils/database';
 
 import { Client as ApiWrapper } from '@valapi/api-wrapper';
 import { Client as ValAPI } from '@valapi/valorant-api.com';
@@ -17,7 +18,7 @@ export default {
         .setDescription('Manage Valorant Account')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('add')
+                .setName('login')
                 .setDescription("Add Your Valorant Account")
                 .addStringOption(option =>
                     option
@@ -34,11 +35,11 @@ export default {
         )
         .addSubcommand(subcommand =>
             subcommand
-                .setName('mfa')
+                .setName('verify')
                 .setDescription('Multi-Factor Authentication')
                 .addNumberOption(option =>
                     option
-                        .setName('code')
+                        .setName('verify_code')
                         .setDescription('Verify Code')
                         .setRequired(true)
                 )
@@ -53,11 +54,18 @@ export default {
                 .setName('get')
                 .setDescription("Get Your Valorant Account")
         ),
+    permissions: [
+        Permissions.ALL,
+    ],
+    privateMessage: true,
     async execute(interaction: CommandInteraction, DiscordClient: DisClient, createdTime: Date): Promise<void> {
         //script
         const _subCommand = interaction.options.getSubcommand();
         const _userId = interaction.user.id;
         const _guildId = interaction.guildId
+
+        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
+        const isAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: _userId });
 
         const _cache = await new IngCore.Cache('valorant');
         const _apiKey = genarateApiKey(_userId, interaction.user.createdTimestamp, _guildId);
@@ -105,12 +113,28 @@ export default {
                 embeds: [ createEmbed ],
             });
 
+            //clear
+            _cache.clear(_userId);
+
             //save
-            await _cache.input(ValClient.toJSONAuth(), _userId);
+            if(_subCommand === 'get'){
+                return;
+            }
+
+            if(isAccountInDatabase){
+                await ValDatabase.deleteMany({ discordId: _userId });
+            }
+
+            const SaveAccount = new ValDatabase({
+                account: encrypt(JSON.stringify(ValClient.toJSONAuth()), _apiKey),
+                discordId: _userId,
+                update: createdTime,
+            });
+            await SaveAccount.save();
         }
 
         //sub command
-        if (_subCommand === 'add') {
+        if (_subCommand === 'login') {
             //auth
             const _USERNAME = String(interaction.options.getString('username'));
             const _PASSWORD = String(interaction.options.getString('password'));
@@ -130,35 +154,56 @@ export default {
                 await success(ValClient);
             } else {
                 //multifactor
-                await _cache.input(ValClient.toJSONAuth(), _userId);
+                await _cache.input(encrypt(JSON.stringify(ValClient.toJSONAuth()), _apiKey), _userId);
 
                 await interaction.editReply({
-                    content: `Please Verify Your Account\nBy Using: **/login mfa {VerifyCode}**`,
+                    content: `Please Verify Your Account\nBy Using: **/login verify {VerifyCode}**`,
                     embeds: [
                         createEmbed,
                     ],
                 });
             }
-        } else if (_subCommand === 'mfa') {
+        } else if (_subCommand === 'verify') {
             //auth
-            const _MFA_CODE = Number(interaction.options.getNumber("code"));
+            const _MFA_CODE = Number(interaction.options.getNumber("verify_code"));
 
             const _save = await _cache.output(_userId);
 
-            ValClient.fromJSONAuth(_save);
+            ValClient.fromJSONAuth(JSON.parse(decrypt(_save, _apiKey)));
             await ValClient.verify(_MFA_CODE);
 
             //success
             await success(ValClient);
         } else if (_subCommand === 'remove') {
+            //from cache
             await _cache.clear(_userId);
 
+            //from database
+            if(!isAccountInDatabase) {
+                await interaction.editReply({
+                    content: `Couldn't Find Your Account`,
+                });
+                return;
+            }
+
+            await ValDatabase.deleteOne({ discordId: _userId });
+
+            //response
             await interaction.editReply({
                 content: `Your Account Has Been Removed`,
             });
         } else if (_subCommand === 'get') {
-            const _save = await _cache.output(_userId);
-            ValClient.fromJSONAuth(_save);
+            if(!isAccountInDatabase) {
+                await interaction.editReply({
+                    content: `Couldn't Find Your Account`,
+                });
+                return;
+            }
+
+            const _save = await ValDatabase.findOne({ discordId: _userId });
+            const SaveAccount = (_save.toJSON() as IValorantAccount).account;
+
+            ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, _apiKey)));
 
             await success(ValClient);
         }

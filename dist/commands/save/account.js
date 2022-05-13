@@ -38,8 +38,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
 const IngCore = __importStar(require("@ing3kth/core"));
-const genarateApiKey_1 = __importDefault(require("../../utils/genarateApiKey"));
+const crypto_1 = require("../../utils/crypto");
 const makeBuur_1 = __importDefault(require("../../utils/makeBuur"));
+const database_1 = require("../../utils/database");
 const api_wrapper_1 = require("@valapi/api-wrapper");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
 exports.default = {
@@ -47,7 +48,7 @@ exports.default = {
         .setName('account')
         .setDescription('Manage Valorant Account')
         .addSubcommand(subcommand => subcommand
-        .setName('add')
+        .setName('login')
         .setDescription("Add Your Valorant Account")
         .addStringOption(option => option
         .setName('username')
@@ -58,10 +59,10 @@ exports.default = {
         .setDescription('Riot Account Password')
         .setRequired(true)))
         .addSubcommand(subcommand => subcommand
-        .setName('mfa')
+        .setName('verify')
         .setDescription('Multi-Factor Authentication')
         .addNumberOption(option => option
-        .setName('code')
+        .setName('verify_code')
         .setDescription('Verify Code')
         .setRequired(true)))
         .addSubcommand(subcommand => subcommand
@@ -70,14 +71,20 @@ exports.default = {
         .addSubcommand(subcommand => subcommand
         .setName('get')
         .setDescription("Get Your Valorant Account")),
+    permissions: [
+        discord_js_1.Permissions.ALL,
+    ],
+    privateMessage: true,
     execute(interaction, DiscordClient, createdTime) {
         return __awaiter(this, void 0, void 0, function* () {
             //script
             const _subCommand = interaction.options.getSubcommand();
             const _userId = interaction.user.id;
             const _guildId = interaction.guildId;
+            const ValDatabase = (yield database_1.ValData.verify()).getCollection();
+            const isAccountInDatabase = yield database_1.ValData.checkIfExist(ValDatabase, { discordId: _userId });
             const _cache = yield new IngCore.Cache('valorant');
-            const _apiKey = (0, genarateApiKey_1.default)(_userId, interaction.user.createdTimestamp, _guildId);
+            const _apiKey = (0, crypto_1.genarateApiKey)(_userId, interaction.user.createdTimestamp, _guildId);
             //valorant
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
@@ -115,12 +122,25 @@ exports.default = {
                         content: `You Are Register Riot Account With`,
                         embeds: [createEmbed],
                     });
+                    //clear
+                    _cache.clear(_userId);
                     //save
-                    yield _cache.input(ValClient.toJSONAuth(), _userId);
+                    if (_subCommand === 'get') {
+                        return;
+                    }
+                    if (isAccountInDatabase) {
+                        yield ValDatabase.deleteMany({ discordId: _userId });
+                    }
+                    const SaveAccount = new ValDatabase({
+                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), _apiKey),
+                        discordId: _userId,
+                        update: createdTime,
+                    });
+                    yield SaveAccount.save();
                 });
             }
             //sub command
-            if (_subCommand === 'add') {
+            if (_subCommand === 'login') {
                 //auth
                 const _USERNAME = String(interaction.options.getString('username'));
                 const _PASSWORD = String(interaction.options.getString('password'));
@@ -138,33 +158,50 @@ exports.default = {
                 }
                 else {
                     //multifactor
-                    yield _cache.input(ValClient.toJSONAuth(), _userId);
+                    yield _cache.input((0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), _apiKey), _userId);
                     yield interaction.editReply({
-                        content: `Please Verify Your Account\nBy Using: **/login mfa {VerifyCode}**`,
+                        content: `Please Verify Your Account\nBy Using: **/login verify {VerifyCode}**`,
                         embeds: [
                             createEmbed,
                         ],
                     });
                 }
             }
-            else if (_subCommand === 'mfa') {
+            else if (_subCommand === 'verify') {
                 //auth
-                const _MFA_CODE = Number(interaction.options.getNumber("code"));
+                const _MFA_CODE = Number(interaction.options.getNumber("verify_code"));
                 const _save = yield _cache.output(_userId);
-                ValClient.fromJSONAuth(_save);
+                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(_save, _apiKey)));
                 yield ValClient.verify(_MFA_CODE);
                 //success
                 yield success(ValClient);
             }
             else if (_subCommand === 'remove') {
+                //from cache
                 yield _cache.clear(_userId);
+                //from database
+                if (!isAccountInDatabase) {
+                    yield interaction.editReply({
+                        content: `Couldn't Find Your Account`,
+                    });
+                    return;
+                }
+                yield ValDatabase.deleteOne({ discordId: _userId });
+                //response
                 yield interaction.editReply({
                     content: `Your Account Has Been Removed`,
                 });
             }
             else if (_subCommand === 'get') {
-                const _save = yield _cache.output(_userId);
-                ValClient.fromJSONAuth(_save);
+                if (!isAccountInDatabase) {
+                    yield interaction.editReply({
+                        content: `Couldn't Find Your Account`,
+                    });
+                    return;
+                }
+                const _save = yield ValDatabase.findOne({ discordId: _userId });
+                const SaveAccount = _save.toJSON().account;
+                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(SaveAccount, _apiKey)));
                 yield success(ValClient);
             }
         });

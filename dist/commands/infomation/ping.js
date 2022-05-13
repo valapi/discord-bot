@@ -10,10 +10,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
+const discord_js_1 = require("discord.js");
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
         .setName('ping')
         .setDescription('Replies with Pong!'),
+    permissions: [
+        discord_js_1.Permissions.ALL,
+    ],
+    privateMessage: false,
     execute(interaction) {
         return __awaiter(this, void 0, void 0, function* () {
             yield interaction.editReply('Pong!');

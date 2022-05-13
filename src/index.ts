@@ -1,6 +1,7 @@
 import * as dotenv from 'dotenv';
 import * as process from 'process';
 import * as fs from 'fs';
+import * as events from 'events'
 
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
 import { REST } from '@discordjs/rest';
@@ -9,16 +10,21 @@ import { Client as DisClient, Collection, Intents } from 'discord.js';
 
 import { Logs } from '@ing3kth/core';
 import { EventExtraData } from './interface/EventData';
+import { ValData } from './utils/database';
 
 (async () => {
+    //set maxListeners Limit
+    events.EventEmitter.defaultMaxListeners = 35;
+
     //dotenv
     dotenv.config({
         path: process.cwd() + '/.env'
     })
 
-    //set maxListeners Limit
-    require('events').EventEmitter.defaultMaxListeners = 35;
+    //database
+    await ValData.verify(process.env['MONGO_TOKEN']);
 
+    //client
     const DiscordClient:DisClient = new DisClient({
         intents: [
             Intents.FLAGS.GUILDS,
