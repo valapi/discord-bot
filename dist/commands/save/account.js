@@ -75,23 +75,22 @@ exports.default = {
         discord_js_1.Permissions.ALL,
     ],
     privateMessage: true,
-    execute(interaction, DiscordClient, createdTime) {
+    execute({ interaction, DiscordClient, createdTime, language, apiKey }) {
         return __awaiter(this, void 0, void 0, function* () {
             //script
             const _subCommand = interaction.options.getSubcommand();
-            const _userId = interaction.user.id;
-            const _guildId = interaction.guildId;
+            const userId = interaction.user.id;
+            const CommandLanguage = language.data.command['account'];
             const ValDatabase = (yield database_1.ValData.verify()).getCollection();
-            const isAccountInDatabase = yield database_1.ValData.checkIfExist(ValDatabase, { discordId: _userId });
+            const ValAccountInDatabase = yield database_1.ValData.checkIfExist(ValDatabase, { discordId: userId });
             const _cache = yield new IngCore.Cache('valorant');
-            const _apiKey = (0, crypto_1.genarateApiKey)(_userId, interaction.user.createdTimestamp, _guildId);
             //valorant
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
-                    content: `Something Went Wrong, Please Try Again Later`,
+                    content: language.data.error,
                 });
                 return;
             })));
@@ -119,21 +118,21 @@ exports.default = {
                         .setTimestamp(createdTime)
                         .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
                     yield interaction.editReply({
-                        content: `You Are Register Riot Account With`,
+                        content: CommandLanguage['succes'],
                         embeds: [createEmbed],
                     });
                     //clear
-                    _cache.clear(_userId);
+                    _cache.clear(userId);
                     //save
                     if (_subCommand === 'get') {
                         return;
                     }
-                    if (isAccountInDatabase) {
-                        yield ValDatabase.deleteMany({ discordId: _userId });
+                    if (ValAccountInDatabase.isFind) {
+                        yield ValDatabase.deleteMany({ discordId: userId });
                     }
                     const SaveAccount = new ValDatabase({
-                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), _apiKey),
-                        discordId: _userId,
+                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), apiKey),
+                        discordId: userId,
                         update: createdTime,
                     });
                     yield SaveAccount.save();
@@ -158,9 +157,9 @@ exports.default = {
                 }
                 else {
                     //multifactor
-                    yield _cache.input((0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), _apiKey), _userId);
+                    yield _cache.input((0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), apiKey), userId);
                     yield interaction.editReply({
-                        content: `Please Verify Your Account\nBy Using: **/login verify {VerifyCode}**`,
+                        content: CommandLanguage.verify,
                         embeds: [
                             createEmbed,
                         ],
@@ -170,38 +169,37 @@ exports.default = {
             else if (_subCommand === 'verify') {
                 //auth
                 const _MFA_CODE = Number(interaction.options.getNumber("verify_code"));
-                const _save = yield _cache.output(_userId);
-                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(_save, _apiKey)));
+                const _save = yield _cache.output(userId);
+                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(_save, apiKey)));
                 yield ValClient.verify(_MFA_CODE);
                 //success
                 yield success(ValClient);
             }
             else if (_subCommand === 'remove') {
                 //from cache
-                yield _cache.clear(_userId);
+                yield _cache.clear(userId);
                 //from database
-                if (!isAccountInDatabase) {
+                if (!ValAccountInDatabase.isFind) {
                     yield interaction.editReply({
-                        content: `Couldn't Find Your Account`,
+                        content: CommandLanguage['not_account'],
                     });
                     return;
                 }
-                yield ValDatabase.deleteOne({ discordId: _userId });
+                yield ValDatabase.deleteOne({ discordId: userId });
                 //response
                 yield interaction.editReply({
-                    content: `Your Account Has Been Removed`,
+                    content: CommandLanguage['remove'],
                 });
             }
             else if (_subCommand === 'get') {
-                if (!isAccountInDatabase) {
+                if (!ValAccountInDatabase.isFind) {
                     yield interaction.editReply({
-                        content: `Couldn't Find Your Account`,
+                        content: CommandLanguage['not_account'],
                     });
                     return;
                 }
-                const _save = yield ValDatabase.findOne({ discordId: _userId });
-                const SaveAccount = _save.toJSON().account;
-                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(SaveAccount, _apiKey)));
+                const SaveAccount = ValAccountInDatabase.once.account;
+                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
                 yield success(ValClient);
             }
         });

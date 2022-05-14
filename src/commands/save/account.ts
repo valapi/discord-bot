@@ -1,11 +1,9 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import {
-    type Client as DisClient, type CommandInteraction, Permissions,
-    MessageAttachment, MessageEmbed,
-} from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
+import type { SlashCommandExtendData } from '../../interface/SlashCommand';
 
 import * as IngCore from '@ing3kth/core';
-import { decrypt, encrypt, genarateApiKey } from '../../utils/crypto';
+import { decrypt, encrypt } from '../../utils/crypto';
 import makeBuur from '../../utils/makeBuur';
 import { ValData, type IValorantAccount } from '../../utils/database';
 
@@ -58,17 +56,17 @@ export default {
         Permissions.ALL,
     ],
     privateMessage: true,
-    async execute(interaction: CommandInteraction, DiscordClient: DisClient, createdTime: Date): Promise<void> {
+    async execute({ interaction, DiscordClient, createdTime, language, apiKey }: SlashCommandExtendData ): Promise<void> {
         //script
         const _subCommand = interaction.options.getSubcommand();
-        const _userId = interaction.user.id;
-        const _guildId = interaction.guildId
+        const userId = interaction.user.id;
+
+        const CommandLanguage = language.data.command['account'];
 
         const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
-        const isAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: _userId });
+        const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
 
         const _cache = await new IngCore.Cache('valorant');
-        const _apiKey = genarateApiKey(_userId, interaction.user.createdTimestamp, _guildId);
 
         //valorant
         const ValClient = new ApiWrapper({
@@ -77,7 +75,7 @@ export default {
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
-                content: `Something Went Wrong, Please Try Again Later`,
+                content: language.data.error,
             });
 
             return;
@@ -109,25 +107,25 @@ export default {
                 .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
 
             await interaction.editReply({
-                content: `You Are Register Riot Account With`,
+                content: CommandLanguage['succes'],
                 embeds: [ createEmbed ],
             });
 
             //clear
-            _cache.clear(_userId);
+            _cache.clear(userId);
 
             //save
             if(_subCommand === 'get'){
                 return;
             }
 
-            if(isAccountInDatabase){
-                await ValDatabase.deleteMany({ discordId: _userId });
+            if(ValAccountInDatabase.isFind){
+                await ValDatabase.deleteMany({ discordId: userId });
             }
 
             const SaveAccount = new ValDatabase({
-                account: encrypt(JSON.stringify(ValClient.toJSONAuth()), _apiKey),
-                discordId: _userId,
+                account: encrypt(JSON.stringify(ValClient.toJSONAuth()), apiKey),
+                discordId: userId,
                 update: createdTime,
             });
             await SaveAccount.save();
@@ -154,10 +152,10 @@ export default {
                 await success(ValClient);
             } else {
                 //multifactor
-                await _cache.input(encrypt(JSON.stringify(ValClient.toJSONAuth()), _apiKey), _userId);
+                await _cache.input(encrypt(JSON.stringify(ValClient.toJSONAuth()), apiKey), userId);
 
                 await interaction.editReply({
-                    content: `Please Verify Your Account\nBy Using: **/login verify {VerifyCode}**`,
+                    content: CommandLanguage.verify,
                     embeds: [
                         createEmbed,
                     ],
@@ -167,43 +165,42 @@ export default {
             //auth
             const _MFA_CODE = Number(interaction.options.getNumber("verify_code"));
 
-            const _save = await _cache.output(_userId);
+            const _save = await _cache.output(userId);
 
-            ValClient.fromJSONAuth(JSON.parse(decrypt(_save, _apiKey)));
+            ValClient.fromJSONAuth(JSON.parse(decrypt(_save, apiKey)));
             await ValClient.verify(_MFA_CODE);
 
             //success
             await success(ValClient);
         } else if (_subCommand === 'remove') {
             //from cache
-            await _cache.clear(_userId);
+            await _cache.clear(userId);
 
             //from database
-            if(!isAccountInDatabase) {
+            if(!ValAccountInDatabase.isFind) {
                 await interaction.editReply({
-                    content: `Couldn't Find Your Account`,
+                    content: CommandLanguage['not_account'],
                 });
                 return;
             }
 
-            await ValDatabase.deleteOne({ discordId: _userId });
+            await ValDatabase.deleteOne({ discordId: userId });
 
             //response
             await interaction.editReply({
-                content: `Your Account Has Been Removed`,
+                content: CommandLanguage['remove'],
             });
         } else if (_subCommand === 'get') {
-            if(!isAccountInDatabase) {
+            if(!ValAccountInDatabase.isFind) {
                 await interaction.editReply({
-                    content: `Couldn't Find Your Account`,
+                    content: CommandLanguage['not_account'],
                 });
                 return;
             }
 
-            const _save = await ValDatabase.findOne({ discordId: _userId });
-            const SaveAccount = (_save.toJSON() as IValorantAccount).account;
+            const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
 
-            ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, _apiKey)));
+            ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, apiKey)));
 
             await success(ValClient);
         }

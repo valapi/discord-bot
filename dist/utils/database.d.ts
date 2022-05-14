@@ -24,7 +24,12 @@ declare class ValData {
      * @param {mongoose.FilterQuery} filter filter to check
      * @returns {Promise<number>}
      */
-    static checkIfExist<YourCollectionInterface = IValorantAccount>(model: mongoose.Model<YourCollectionInterface, any, any, any>, filter: mongoose.FilterQuery<YourCollectionInterface>): Promise<number>;
+    static checkIfExist<YourCollectionInterface = IValorantAccount>(model: mongoose.Model<YourCollectionInterface, any, any, any>, filter: mongoose.FilterQuery<YourCollectionInterface>): Promise<{
+        isFind: Boolean;
+        total: Number;
+        data: Array<YourCollectionInterface>;
+        once: YourCollectionInterface;
+    }>;
     /**
      * login to mongodb database
      * @param {string} token token of access to database

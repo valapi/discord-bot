@@ -3,13 +3,12 @@ import { ToMilliseconds } from '@ing3kth/core/dist/utils/Milliseconds';
 
 import type { Client } from 'discord.js';
 
+// MATH EXPLAIN //
+// Math.round() // most nearest number
+// Math.floor() // down
+// Math.ceil()  // up
+
 async function getStatus(DiscordClient: Client, createdTime: number) {
-    // UPTIME //
-    const _uptime = ToMilliseconds(process.uptime() * 1000);
-
-    // STATUS //
-    const _status = Number(DiscordClient.user?.presence.status);
-
     // PING //
 
     //discord.js ping
@@ -20,6 +19,12 @@ async function getStatus(DiscordClient: Client, createdTime: number) {
 
     //client ping
     const client_ping = Math.round(DiscordClient.ws.ping)
+
+    // UPTIME //
+    const _uptime = ToMilliseconds(process.uptime() * 1000);
+
+    // STATUS //
+    const _status = Number(DiscordClient.user?.presence.status);
 
     //return
     return {

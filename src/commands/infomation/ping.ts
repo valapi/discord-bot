@@ -1,8 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import {
-    type Client as DisClient, type CommandInteraction, Permissions,
-    MessageAttachment, MessageEmbed,
-} from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
+import type { SlashCommandExtendData } from '../../interface/SlashCommand';
 
 export default {
 	data: new SlashCommandBuilder()
@@ -12,7 +10,10 @@ export default {
         Permissions.ALL,
     ],
 	privateMessage: false,
-	async execute(interaction:CommandInteraction): Promise<void> {
-		await interaction.editReply('Pong!');
+	async execute({ interaction, language }:SlashCommandExtendData): Promise<void> {
+		//script
+        const CommandLanguage = language.data.command['ping'];
+
+		await interaction.editReply(CommandLanguage.default);
 	},
 };

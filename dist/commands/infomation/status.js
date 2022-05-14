@@ -23,7 +23,7 @@ exports.default = {
         discord_js_1.Permissions.ALL,
     ],
     privateMessage: false,
-    execute(interaction, DiscordClient, createdTime) {
+    execute({ interaction, DiscordClient, createdTime }) {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const getStatus = yield (0, getStatus_1.default)(DiscordClient, createdTime.getTime());

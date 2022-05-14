@@ -1,13 +1,32 @@
 import { Random } from "@ing3kth/core";
 
-function makeBuur(message: string, replaceWithString:string= '?'): string {
-    const split_message = String(message).split('');
+interface makeBuurConfig {
+    message: string,
+    replaceWith?: string,
+    percent?: number,
+}
+
+function makeBuur(config:makeBuurConfig | string): string {
+    if(typeof config === 'string'){
+        config = {
+            message: config,
+        }
+    }
+
+    const _defaultSettings:makeBuurConfig = {
+        message: '',
+        replaceWith: '?',
+        percent: 45,
+    }
+    const _config:makeBuurConfig = new Object({ ..._defaultSettings, ...config }) as makeBuurConfig;
+    
+    const split_message = String(_config.message).split('');
     const _buur = [];
 
     for (let i = 0; i < split_message.length; i++) {
         const _random = Random(0, 100);
-        if (_random <= 45) {
-            _buur.push(replaceWithString);
+        if (_random <= Number(_config.percent)) {
+            _buur.push(_config.replaceWith);
         } else {
             _buur.push(split_message[i]);
         }

@@ -65,10 +65,15 @@ class ValData {
      * @param {mongoose.FilterQuery} filter filter to check
      * @returns {Promise<number>}
      */
-     public static async checkIfExist<YourCollectionInterface = IValorantAccount>(model:mongoose.Model<YourCollectionInterface, any, any, any>, filter:mongoose.FilterQuery<YourCollectionInterface>): Promise<number> {
-        const _FindInDatabase = await model.find(filter);
+     public static async checkIfExist<YourCollectionInterface = IValorantAccount>(model:mongoose.Model<YourCollectionInterface, any, any, any>, filter:mongoose.FilterQuery<YourCollectionInterface>): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once:YourCollectionInterface }> {
+        const _FindInDatabase:Array<YourCollectionInterface> = await model.find(filter);
 
-        return Number(_FindInDatabase.length);
+        return {
+            isFind: (Number(_FindInDatabase.length) > 0),
+            total: Number(_FindInDatabase.length),
+            data: _FindInDatabase,
+            once: _FindInDatabase[0],
+        };
     }
 
     /**

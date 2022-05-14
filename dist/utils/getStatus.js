@@ -34,13 +34,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const process = __importStar(require("process"));
 const Milliseconds_1 = require("@ing3kth/core/dist/utils/Milliseconds");
+// MATH EXPLAIN //
+// Math.round() // most nearest number
+// Math.floor() // down
+// Math.ceil()  // up
 function getStatus(DiscordClient, createdTime) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        // UPTIME //
-        const _uptime = (0, Milliseconds_1.ToMilliseconds)(process.uptime() * 1000);
-        // STATUS //
-        const _status = Number((_a = DiscordClient.user) === null || _a === void 0 ? void 0 : _a.presence.status);
         // PING //
         //discord.js ping
         const discord_now = new Date().getTime();
@@ -48,6 +48,10 @@ function getStatus(DiscordClient, createdTime) {
         const discord_ping = discord_now - discord_create;
         //client ping
         const client_ping = Math.round(DiscordClient.ws.ping);
+        // UPTIME //
+        const _uptime = (0, Milliseconds_1.ToMilliseconds)(process.uptime() * 1000);
+        // STATUS //
+        const _status = Number((_a = DiscordClient.user) === null || _a === void 0 ? void 0 : _a.presence.status);
         //return
         return {
             uptime: _uptime.data,

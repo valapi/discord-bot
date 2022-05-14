@@ -1,39 +1,23 @@
-import { ILanguage } from "../controller";
+import type { ILanguage } from "../interface";
 
 export default {
-    language: 'en_US',
+    language: `en_US`,
     data: {
+        error: `Something Went Wrong, Please Try Again Later`,
         command: {
-            'ping': {
-                description: 'Pong!',
+            "ping": {
+                "default": `Pong!`,
             },
-            'status': {
-                description: 'check the current status of the bot',
+            "account": {
+                "succes": `You Are Register Riot Account With`,
+                "not_account": `Couldn't Find Your Account`,
+                "verify": `Please Verify Your Account\nBy Using: **/login verify {VerifyCode}**`,
+                "remove": `Your Account Has Been Removed`,
             },
-            'account': {
-                description: 'Valorant account management',
-                subCommand: {
-                    'login': {
-                        description: 'add your Valorant account',
-                        options: {
-                            'username': 'Riot account username',
-                            'password': 'Riot account password',
-                        },
-                    },
-                    'verify': {
-                        description: 'verify your Valorant account',
-                        options: {
-                            'verify_code': 'verify code',
-                        }
-                    },
-                    'remove': {
-                        description: 'remove your Valorant account',
-                    },
-                    'get': {
-                        description: 'get your Valorant account',
-                    },
-                },
-            },
+            "language": {
+                "fail": `Language Not Found`,
+                "succes": `Language Changed`,
+            }
         },
     },
 } as ILanguage;

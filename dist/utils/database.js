@@ -92,7 +92,12 @@ class ValData {
     static checkIfExist(model, filter) {
         return __awaiter(this, void 0, void 0, function* () {
             const _FindInDatabase = yield model.find(filter);
-            return Number(_FindInDatabase.length);
+            return {
+                isFind: (Number(_FindInDatabase.length) > 0),
+                total: Number(_FindInDatabase.length),
+                data: _FindInDatabase,
+                once: _FindInDatabase[0],
+            };
         });
     }
     /**

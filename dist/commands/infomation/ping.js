@@ -19,9 +19,11 @@ exports.default = {
         discord_js_1.Permissions.ALL,
     ],
     privateMessage: false,
-    execute(interaction) {
+    execute({ interaction, language }) {
         return __awaiter(this, void 0, void 0, function* () {
-            yield interaction.editReply('Pong!');
+            //script
+            const CommandLanguage = language.data.command['ping'];
+            yield interaction.editReply(CommandLanguage.default);
         });
     },
 };

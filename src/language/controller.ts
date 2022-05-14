@@ -1,41 +1,40 @@
-interface ILanguage {
-    language: string;
-    data: {
-        command: {
-            'ping': {
-                description: string;
-            },
-            'status': {
-                description: string;
-            }
-            'account': {
-                description: string;
-                subCommand: {
-                    'login': {
-                        description: string,
-                        options: {
-                            'username': string,
-                            'password': string,
-                        },
-                    },
-                    'verify': {
-                        description: string,
-                        options: {
-                            'verify_code': string,
-                        }
-                    },
-                    'remove': {
-                        description: string,
-                    },
-                    'get': {
-                        description: string,
-                    }
-                }
-            },
-        },
-    },
+import * as fs from 'fs';
+import * as process from 'process';
+
+import type { ILanguage } from "./interface";
+
+const _defaultLanguage:string = 'en-US'
+
+function getLanguage (language:string = _defaultLanguage):ILanguage | void {
+    const langFolder = fs.readdirSync(process.cwd() + '/dist/language/data').filter(file => file.endsWith('.js'));
+
+    for(let i = 0; i < langFolder.length; i++){
+        const _lang = require(process.cwd() + `/dist/language/data/${langFolder[i]}`).default as ILanguage;
+
+        if(!_lang){
+            continue;
+        }
+
+        if(_lang.language === language){
+            return _lang;
+        }
+    }
 }
 
-export {
-    type ILanguage
+function getLanguageAndUndefined (language:string = _defaultLanguage):ILanguage {
+    const _lang = getLanguage(language);
+
+    if(!_lang){
+        const _normalLang = getLanguage(_defaultLanguage);
+
+        if(!_normalLang){
+            throw new Error('Default language is not found.');
+        }
+
+        return _normalLang;
+    }
+
+    return _lang;
 }
+
+export { getLanguage, getLanguageAndUndefined };
