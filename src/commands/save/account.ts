@@ -92,16 +92,14 @@ export default {
             const ValorantPlayerCard_Display = String(ValorantPlayerCard.data.data?.displayIcon);
 
             //sendMessage
-            let sendMessage = "";
-            sendMessage += `Name: **${ValorantUserInfo.data.acct.game_name}**\n`;
-            sendMessage += `Tag: **${ValorantUserInfo.data.acct.tag_line}**\n`;
-            sendMessage += `ID: **${makeBuur(puuid)}**\n`;
-
             const createEmbed = new MessageEmbed()
                 .setColor(`#0099ff`)
-                .setTitle(`${ValorantUserInfo.data.acct.game_name}`)
-                .setAuthor({ name: `${DiscordClient.user?.tag}`, iconURL: DiscordClient.user?.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                .setDescription(sendMessage)
+                .addFields(
+                    { name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true },
+                    { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true },
+                    { name: '\u200B', value: '\u200B' },
+                    { name: `ID`, value: `${puuid}`, inline: true },
+                )
                 .setThumbnail(ValorantPlayerCard_Display)
                 .setTimestamp(createdTime)
                 .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
@@ -126,7 +124,7 @@ export default {
             const SaveAccount = new ValDatabase({
                 account: encrypt(JSON.stringify(ValClient.toJSONAuth()), apiKey),
                 discordId: userId,
-                update: createdTime,
+                createdAt: createdTime,
             });
             await SaveAccount.save();
         }

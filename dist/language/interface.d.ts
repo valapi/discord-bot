@@ -1,5 +1,5 @@
 interface ILanguage {
-    language: string;
+    name: string;
     data: {
         error: string;
         command: {
@@ -15,6 +15,9 @@ interface ILanguage {
             'language': {
                 'succes': string;
                 'fail': string;
+            };
+            'profile': {
+                'default': string;
             };
         };
     };

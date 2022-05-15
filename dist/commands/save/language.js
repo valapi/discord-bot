@@ -70,7 +70,7 @@ exports.default = {
                 }
             }
             else {
-                yield _cache.input(String(_language.language), guildId);
+                yield _cache.input(String(_language.name), guildId);
                 yield interaction.editReply(_language.data.command['language']['succes']);
             }
         });

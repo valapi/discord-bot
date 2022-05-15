@@ -42,7 +42,8 @@ const core_1 = require("@ing3kth/core");
 const _valorantSchema = new mongoose_1.default.Schema({
     account: { type: String, required: true },
     discordId: { type: Number, required: true },
-    update: { type: Date, required: false },
+    //21,600 (seconds) = 360 (minutes) = 6 (hour)
+    createdAt: { type: Date, required: false, expires: 21600, default: new Date() },
 });
 class ValData {
     constructor() {

@@ -45,7 +45,7 @@ export default {
                 await interaction.editReply(_old_language.data.command['language']['fail']);
             }
         } else {
-            await _cache.input(String(_language.language), guildId);
+            await _cache.input(String(_language.name), guildId);
 
             await interaction.editReply(_language.data.command['language']['succes']);
         }

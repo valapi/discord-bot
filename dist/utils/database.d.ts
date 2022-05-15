@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 interface IValorantAccount {
     account: string;
     discordId: number;
-    update: Date;
+    createdAt: Date;
 }
 declare class ValData {
     constructor();

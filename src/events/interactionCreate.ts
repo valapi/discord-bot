@@ -48,7 +48,7 @@ export default {
 					DiscordClient: _extraData.client,
 					createdTime: createdTime,
 					language: _language,
-					apiKey: genarateApiKey(interaction.user.id, interaction.user.createdTimestamp, String(interaction.guildId))
+					apiKey: genarateApiKey(interaction.user.id, interaction.user.createdTimestamp, ( interaction.user.username + interaction.user.tag )),
 				};
 
 				await command.execute(_SlashCommandExtendData);

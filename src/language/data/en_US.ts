@@ -1,7 +1,7 @@
 import type { ILanguage } from "../interface";
 
 export default {
-    language: `en_US`,
+    name: `en_US`,
     data: {
         error: `Something Went Wrong, Please Try Again Later`,
         command: {
@@ -17,6 +17,9 @@ export default {
             "language": {
                 "fail": `Language Not Found`,
                 "succes": `Language Changed`,
+            },
+            "profile": {
+                "default": `This is your Valorant profiles`,
             }
         },
     },

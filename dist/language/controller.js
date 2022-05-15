@@ -26,7 +26,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getLanguageAndUndefined = exports.getLanguage = void 0;
 const fs = __importStar(require("fs"));
 const process = __importStar(require("process"));
-const _defaultLanguage = 'en-US';
+const _defaultLanguage = 'en_US';
 function getLanguage(language = _defaultLanguage) {
     const langFolder = fs.readdirSync(process.cwd() + '/dist/language/data').filter(file => file.endsWith('.js'));
     for (let i = 0; i < langFolder.length; i++) {
@@ -34,7 +34,7 @@ function getLanguage(language = _defaultLanguage) {
         if (!_lang) {
             continue;
         }
-        if (_lang.language === language) {
+        if (_lang.name === language) {
             return _lang;
         }
     }

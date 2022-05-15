@@ -71,7 +71,7 @@ exports.default = {
                         DiscordClient: _extraData.client,
                         createdTime: createdTime,
                         language: _language,
-                        apiKey: (0, crypto_1.genarateApiKey)(interaction.user.id, interaction.user.createdTimestamp, String(interaction.guildId))
+                        apiKey: (0, crypto_1.genarateApiKey)(interaction.user.id, interaction.user.createdTimestamp, (interaction.user.username + interaction.user.tag)),
                     };
                     yield command.execute(_SlashCommandExtendData);
                     //log time of use

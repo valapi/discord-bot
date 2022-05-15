@@ -3,7 +3,7 @@ import * as process from 'process';
 
 import type { ILanguage } from "./interface";
 
-const _defaultLanguage:string = 'en-US'
+const _defaultLanguage:string = 'en_US'
 
 function getLanguage (language:string = _defaultLanguage):ILanguage | void {
     const langFolder = fs.readdirSync(process.cwd() + '/dist/language/data').filter(file => file.endsWith('.js'));
@@ -15,7 +15,7 @@ function getLanguage (language:string = _defaultLanguage):ILanguage | void {
             continue;
         }
 
-        if(_lang.language === language){
+        if(_lang.name === language){
             return _lang;
         }
     }

@@ -96,7 +96,7 @@ exports.default = {
             })));
             //success
             function success(ValClient) {
-                var _a, _b, _c;
+                var _a;
                 return __awaiter(this, void 0, void 0, function* () {
                     const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
                     const puuid = ValorantUserInfo.data.sub;
@@ -105,15 +105,9 @@ exports.default = {
                     const ValorantPlayerCard = yield (new valorant_api_com_1.Client()).PlayerCards.getByUuid(ValorantPlayerCard_ID);
                     const ValorantPlayerCard_Display = String((_a = ValorantPlayerCard.data.data) === null || _a === void 0 ? void 0 : _a.displayIcon);
                     //sendMessage
-                    let sendMessage = "";
-                    sendMessage += `Name: **${ValorantUserInfo.data.acct.game_name}**\n`;
-                    sendMessage += `Tag: **${ValorantUserInfo.data.acct.tag_line}**\n`;
-                    sendMessage += `ID: **${(0, makeBuur_1.default)(puuid)}**\n`;
                     const createEmbed = new discord_js_1.MessageEmbed()
                         .setColor(`#0099ff`)
-                        .setTitle(`${ValorantUserInfo.data.acct.game_name}`)
-                        .setAuthor({ name: `${(_b = DiscordClient.user) === null || _b === void 0 ? void 0 : _b.tag}`, iconURL: (_c = DiscordClient.user) === null || _c === void 0 ? void 0 : _c.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
-                        .setDescription(sendMessage)
+                        .addFields({ name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true }, { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true }, { name: '\u200B', value: '\u200B' }, { name: `ID`, value: `${puuid}`, inline: true })
                         .setThumbnail(ValorantPlayerCard_Display)
                         .setTimestamp(createdTime)
                         .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
@@ -133,7 +127,7 @@ exports.default = {
                     const SaveAccount = new ValDatabase({
                         account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), apiKey),
                         discordId: userId,
-                        update: createdTime,
+                        createdAt: createdTime,
                     });
                     yield SaveAccount.save();
                 });

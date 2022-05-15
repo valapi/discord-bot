@@ -1,7 +1,7 @@
 import type { ILanguage } from "../interface";
 
 export default {
-    language: `th_TH`,
+    name: `th_TH`,
     data: {
         error: `บางอย่างผิดพลาด กรุณาลองใหม่อีกครั้ง`,
         command: {
@@ -17,6 +17,9 @@ export default {
             "language": {
                 "fail": `ไม่พบภาษา`,
                 "succes": `ภาษาถูกเปลี่ยนแล้ว`,
+            },
+            "profile": {
+                "default": `นี่คือข้อมูลโปรไฟล์ของคุณ`,
             }
         },
     },
