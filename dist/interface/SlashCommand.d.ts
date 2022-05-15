@@ -1,3 +1,4 @@
+import type { SlashCommandBuilder } from '@discordjs/builders';
 import type { Client, CommandInteraction } from 'discord.js';
 import type { ILanguage } from '../language/interface';
 interface SlashCommandExtendData {
@@ -7,5 +8,11 @@ interface SlashCommandExtendData {
     language: ILanguage;
     apiKey: string;
 }
-export type { SlashCommandExtendData, };
+interface CustomSlashCommands {
+    data: SlashCommandBuilder;
+    permissions: Array<bigint>;
+    privateMessage: boolean;
+    execute(data: SlashCommandExtendData): Promise<void>;
+}
+export type { SlashCommandExtendData, CustomSlashCommands, };
 //# sourceMappingURL=SlashCommand.d.ts.map

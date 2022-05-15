@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
-import type { SlashCommandExtendData } from '../../interface/SlashCommand';
+import type { CustomSlashCommands } from '../../interface/SlashCommand';
 
 import getStatusFunction from '../../utils/getStatus';
 
@@ -12,7 +12,7 @@ export default {
         Permissions.ALL,
     ],
     privateMessage: false,
-    async execute({ interaction, DiscordClient, createdTime }:SlashCommandExtendData): Promise<void> {
+    async execute({ interaction, DiscordClient, createdTime }) {
         const getStatus = await getStatusFunction(DiscordClient, createdTime.getTime());
 
         let sendMessage = ``;
@@ -35,4 +35,4 @@ export default {
             embeds: [createEmbed],
         });
     }
-};
+} as CustomSlashCommands;

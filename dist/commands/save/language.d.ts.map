@@ -1,1 +1,1 @@
-{"version":3,"file":"language.d.ts","sourceRoot":"","sources":["../../../src/commands/save/language.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,qBAAqB,CAAC;AAE1D,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,8BAA8B,CAAC;;;;;6BA6B5C,sBAAsB,GAAG,QAAQ,IAAI,CAAC;;AAtBrE,wBA2CE"}
+{"version":3,"file":"language.d.ts","sourceRoot":"","sources":["../../../src/commands/save/language.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,8BAA8B,CAAC;;AAOxE,wBA2CyB"}

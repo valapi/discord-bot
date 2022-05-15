@@ -63,8 +63,7 @@ import { ValData } from './utils/database';
         await Logs.log('Started refreshing application (/) commands.', 'info');
 
         await rest.put(
-            Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
-            //Routes.applicationCommands(String(process.env['CLIENT_ID']),
+            Routes.applicationCommands(String(process.env['CLIENT_ID'])),
             { body: _commandArray },
         );
 

@@ -1,10 +1,4 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
-import type { SlashCommandExtendData } from '../../interface/SlashCommand';
-declare const _default: {
-    data: SlashCommandBuilder;
-    permissions: bigint[];
-    privateMessage: boolean;
-    execute({ interaction, language, apiKey, DiscordClient, createdTime }: SlashCommandExtendData): Promise<void>;
-};
+import type { CustomSlashCommands } from '../../interface/SlashCommand';
+declare const _default: CustomSlashCommands;
 export default _default;
 //# sourceMappingURL=store.d.ts.map

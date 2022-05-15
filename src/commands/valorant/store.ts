@@ -1,7 +1,7 @@
 //common
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
-import type { SlashCommandExtendData } from '../../interface/SlashCommand';
+import type { CustomSlashCommands } from '../../interface/SlashCommand';
 
 //valorant common
 import { decrypt } from '../../utils/crypto';
@@ -22,7 +22,7 @@ export default {
         Permissions.ALL,
     ],
     privateMessage: false,
-    async execute({ interaction, language, apiKey, DiscordClient, createdTime }: SlashCommandExtendData): Promise<void> {
+    async execute({ interaction, language, apiKey }) {
         //script
         const userId = interaction.user.id;
 
@@ -166,4 +166,4 @@ export default {
             embeds: sendMessageArray,
         });
     }
-};
+} as CustomSlashCommands;

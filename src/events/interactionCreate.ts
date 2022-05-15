@@ -1,11 +1,11 @@
-import { type Interaction, Permissions } from "discord.js";
+import type { Interaction } from "discord.js";
 
 import * as IngCore from '@ing3kth/core';
 import { getLanguageAndUndefined } from "../language/controller";
 import { genarateApiKey } from "../utils/crypto";
 
 import type { EventExtraData } from "../interface/EventData";
-import type { SlashCommandExtendData } from "../interface/SlashCommand";
+import type { SlashCommandExtendData, CustomSlashCommands } from "../interface/SlashCommand";
 
 export default {
 	name: 'interactionCreate',
@@ -14,7 +14,7 @@ export default {
 		const createdTime = new Date();
 
 		if (interaction.isCommand()) {
-			const command = _extraData.commands.get(interaction.commandName);
+			const command = _extraData.commands.get(interaction.commandName) as CustomSlashCommands;
 
 			if (!command) {
 				return;
@@ -28,7 +28,7 @@ export default {
 
 				//permissions
 				if (command.permissions && Array(command.permissions).length > 0) {
-					if (!interaction.memberPermissions?.has(command.permissions as Array<Permissions>)) {
+					if (!interaction.memberPermissions?.has(command.permissions)) {
 						await interaction.editReply({
 							content: `You don't have permission to use this command.`,
 						});

@@ -1,1 +1,1 @@
-{"version":3,"file":"status.d.ts","sourceRoot":"","sources":["../../../src/commands/infomation/status.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,qBAAqB,CAAC;AAE1D,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,8BAA8B,CAAC;;;;;yDAYb,sBAAsB,GAAG,QAAQ,IAAI,CAAC;;AARpG,wBA+BE"}
+{"version":3,"file":"status.d.ts","sourceRoot":"","sources":["../../../src/commands/infomation/status.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,8BAA8B,CAAC;;AAIxE,wBA+ByB"}

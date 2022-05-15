@@ -1,6 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
-import type { SlashCommandExtendData } from '../../interface/SlashCommand';
+import type { CustomSlashCommands } from '../../interface/SlashCommand';
 
 import { getLanguageAndUndefined } from '../../language/controller';
 import * as IngCore from '@ing3kth/core';
@@ -29,7 +29,7 @@ export default {
         Permissions.FLAGS.ADMINISTRATOR,
     ],
 	privateMessage: false,
-	async execute({ interaction }:SlashCommandExtendData): Promise<void> {
+	async execute({ interaction }) {
         const _choice = interaction.options.getString('language') as string;
         const guildId = String(interaction.guild?.id);
 
@@ -50,4 +50,4 @@ export default {
             await interaction.editReply(_language.data.command['language']['succes']);
         }
 	},
-};
+} as CustomSlashCommands;

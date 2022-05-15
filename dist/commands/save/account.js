@@ -75,7 +75,7 @@ exports.default = {
         discord_js_1.Permissions.ALL,
     ],
     privateMessage: true,
-    execute({ interaction, DiscordClient, createdTime, language, apiKey }) {
+    execute({ interaction, createdTime, language, apiKey }) {
         return __awaiter(this, void 0, void 0, function* () {
             //script
             const _subCommand = interaction.options.getSubcommand();

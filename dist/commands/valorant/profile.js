@@ -26,7 +26,7 @@ exports.default = {
         discord_js_1.Permissions.ALL,
     ],
     privateMessage: false,
-    execute({ interaction, language, apiKey, DiscordClient, createdTime }) {
+    execute({ interaction, language, apiKey, createdTime }) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             //script
