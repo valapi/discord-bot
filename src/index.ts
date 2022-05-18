@@ -1,8 +1,8 @@
 import * as dotenv from 'dotenv';
 import * as process from 'process';
 import * as fs from 'fs';
-import * as events from 'events'
 
+import discordModals from 'discord-modals';
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
@@ -13,13 +13,11 @@ import { EventExtraData } from './interface/EventData';
 import { ValData } from './utils/database';
 
 (async () => {
-    //set maxListeners Limit
-    events.EventEmitter.defaultMaxListeners = 35;
-
     //dotenv
     dotenv.config({
         path: process.cwd() + '/.env'
-    })
+    });
+    
 
     //database
     await ValData.verify(process.env['MONGO_TOKEN']);
@@ -33,6 +31,10 @@ import { ValData } from './utils/database';
             Intents.FLAGS.DIRECT_MESSAGES,
         ],
     });
+
+    DiscordClient.setMaxListeners(35);
+
+    discordModals(DiscordClient);
 
     //handle command
     const commandFolders = fs.readdirSync(process.cwd() + '/dist/commands');
@@ -63,7 +65,8 @@ import { ValData } from './utils/database';
         await Logs.log('Started refreshing application (/) commands.', 'info');
 
         await rest.put(
-            Routes.applicationCommands(String(process.env['CLIENT_ID'])),
+            Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
+            //Routes.applicationCommands(String(process.env['CLIENT_ID'])),
             { body: _commandArray },
         );
 

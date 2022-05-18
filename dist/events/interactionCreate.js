@@ -32,6 +32,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const discord_js_1 = require("discord.js");
+const builders_1 = require("@discordjs/builders");
 const IngCore = __importStar(require("@ing3kth/core"));
 const controller_1 = require("../language/controller");
 const crypto_1 = require("../utils/crypto");
@@ -43,15 +45,25 @@ exports.default = {
         return __awaiter(this, void 0, void 0, function* () {
             const createdTime = new Date();
             if (interaction.isCommand()) {
-                const command = _extraData.commands.get(interaction.commandName);
-                if (!command) {
+                const GetSlashCommand = _extraData.commands.get(interaction.commandName);
+                if (!GetSlashCommand) {
                     return;
                 }
                 ;
+                const _defaultCommandAddto = {
+                    data: (new builders_1.SlashCommandBuilder().setName('default')).setDescription('Default command'),
+                    execute: (({ interaction }) => __awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
+                    permissions: [discord_js_1.Permissions.ALL],
+                    privateMessage: false,
+                    showDeferReply: true,
+                };
+                const command = new Object(Object.assign(Object.assign({}, _defaultCommandAddto), GetSlashCommand));
                 try {
-                    yield interaction.deferReply({
-                        ephemeral: Boolean(command.privateMessage),
-                    });
+                    if (command.showDeferReply) {
+                        yield interaction.deferReply({
+                            ephemeral: Boolean(command.privateMessage),
+                        });
+                    }
                     //permissions
                     if (command.permissions && Array(command.permissions).length > 0) {
                         if (!((_a = interaction.memberPermissions) === null || _a === void 0 ? void 0 : _a.has(command.permissions))) {
@@ -62,7 +74,7 @@ exports.default = {
                         }
                     }
                     //log interaction
-                    yield IngCore.Logs.log(`${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName}\x1b[0m`, 'info');
+                    yield IngCore.Logs.log(`<${interaction.user.id}> ${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName}\x1b[0m`, 'info');
                     //language
                     const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
                     //run commands
@@ -78,7 +90,7 @@ exports.default = {
                     const command_now = Number(new Date());
                     const command_create = Number(createdTime);
                     const command_ping = command_now - command_create;
-                    yield IngCore.Logs.log(`${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName} - ${command_ping} Milliseconds\x1b[0m`, 'info');
+                    yield IngCore.Logs.log(`<${interaction.user.id}> ${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName} - ${command_ping} Milliseconds\x1b[0m`, 'info');
                 }
                 catch (error) {
                     yield IngCore.Logs.log(error, 'error');

@@ -1,5 +1,5 @@
-import type { EventExtraData } from "../interface/EventData";
-import type { Guild } from 'discord.js';
+import { type Guild } from 'discord.js';
+import type { EventExtraData } from '../interface/EventData';
 declare const _default: {
     name: string;
     once: boolean;

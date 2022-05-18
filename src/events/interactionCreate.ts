@@ -1,4 +1,5 @@
-import type { Interaction } from "discord.js";
+import { Interaction, Permissions } from "discord.js";
+import { SlashCommandBuilder } from "@discordjs/builders";
 
 import * as IngCore from '@ing3kth/core';
 import { getLanguageAndUndefined } from "../language/controller";
@@ -14,17 +15,29 @@ export default {
 		const createdTime = new Date();
 
 		if (interaction.isCommand()) {
-			const command = _extraData.commands.get(interaction.commandName) as CustomSlashCommands;
+			const GetSlashCommand = _extraData.commands.get(interaction.commandName) as CustomSlashCommands;
 
-			if (!command) {
+			if (!GetSlashCommand) {
 				return;
 			};
 
+			const _defaultCommandAddto:CustomSlashCommands = {
+				data: (new SlashCommandBuilder().setName('default')).setDescription('Default command'),
+				execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.') }),
+				permissions: [ Permissions.ALL ],
+				privateMessage: false,
+				showDeferReply: true,
+			}
+
+			const command = new Object({ ..._defaultCommandAddto, ...GetSlashCommand }) as CustomSlashCommands;
+
 			try {
 
-				await interaction.deferReply({
-					ephemeral: Boolean(command.privateMessage),
-				});
+				if(command.showDeferReply){
+					await interaction.deferReply({
+						ephemeral: Boolean(command.privateMessage),
+					});
+				}
 
 				//permissions
 				if (command.permissions && Array(command.permissions).length > 0) {
@@ -37,7 +50,7 @@ export default {
 				}
 
 				//log interaction
-				await IngCore.Logs.log(`${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName}\x1b[0m`, 'info')
+				await IngCore.Logs.log(`<${interaction.user.id}> ${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName}\x1b[0m`, 'info')
 
 				//language
 				const _language = getLanguageAndUndefined(await IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
@@ -58,7 +71,7 @@ export default {
 				const command_create = Number(createdTime);
 				const command_ping = command_now - command_create
 
-				await IngCore.Logs.log(`${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName} - ${command_ping} Milliseconds\x1b[0m`, 'info')
+				await IngCore.Logs.log(`<${interaction.user.id}> ${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName} - ${command_ping} Milliseconds\x1b[0m`, 'info')
 			} catch (error) {
 				await IngCore.Logs.log(error, 'error');
 				await interaction.editReply({

@@ -10,8 +10,9 @@ interface SlashCommandExtendData {
 }
 interface CustomSlashCommands {
     data: SlashCommandBuilder;
-    permissions: Array<bigint>;
-    privateMessage: boolean;
+    permissions?: Array<bigint>;
+    privateMessage?: boolean;
+    showDeferReply?: boolean;
     execute(data: SlashCommandExtendData): Promise<void>;
 }
 export type { SlashCommandExtendData, CustomSlashCommands, };

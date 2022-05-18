@@ -14,9 +14,9 @@ exports.default = {
     name: 'ready',
     once: true,
     execute(client) {
-        var _a, _b;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
-            yield core_1.Logs.log(`Ready! Logged in as ${(_a = client.user) === null || _a === void 0 ? void 0 : _a.username} ${(_b = client.user) === null || _b === void 0 ? void 0 : _b.tag}`, 'system');
+            yield core_1.Logs.log(`Ready! Logged in as ${(_a = client.user) === null || _a === void 0 ? void 0 : _a.tag}`, 'system');
         });
     },
 };

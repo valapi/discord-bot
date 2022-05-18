@@ -52,10 +52,6 @@ export default {
                 .setName('get')
                 .setDescription("Get Your Valorant Account")
         ),
-    permissions: [
-        Permissions.ALL,
-    ],
-    privateMessage: true,
     async execute({ interaction, createdTime, language, apiKey }) {
         //script
         const _subCommand = interaction.options.getSubcommand();

@@ -5,6 +5,6 @@ export default {
 	name: 'ready',
 	once: true,
 	async execute(client:Client) {
-		await Logs.log(`Ready! Logged in as ${client.user?.username} ${client.user?.tag}`, 'system');
+		await Logs.log(`Ready! Logged in as ${client.user?.tag}`, 'system');
 	},
 };

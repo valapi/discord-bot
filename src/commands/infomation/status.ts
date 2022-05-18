@@ -8,10 +8,6 @@ export default {
     data: new SlashCommandBuilder()
         .setName(`status`)
         .setDescription(`Bot Status`),
-    permissions: [
-        Permissions.ALL,
-    ],
-    privateMessage: false,
     async execute({ interaction, DiscordClient, createdTime }) {
         const getStatus = await getStatusFunction(DiscordClient, createdTime.getTime());
 

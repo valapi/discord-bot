@@ -52,7 +52,6 @@ exports.default = {
         discord_js_1.Permissions.STAGE_MODERATOR,
         discord_js_1.Permissions.FLAGS.ADMINISTRATOR,
     ],
-    privateMessage: false,
     execute({ interaction }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {

@@ -71,10 +71,6 @@ exports.default = {
         .addSubcommand(subcommand => subcommand
         .setName('get')
         .setDescription("Get Your Valorant Account")),
-    permissions: [
-        discord_js_1.Permissions.ALL,
-    ],
-    privateMessage: true,
     execute({ interaction, createdTime, language, apiKey }) {
         return __awaiter(this, void 0, void 0, function* () {
             //script

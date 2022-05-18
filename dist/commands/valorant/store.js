@@ -24,10 +24,6 @@ exports.default = {
     data: new builders_1.SlashCommandBuilder()
         .setName('store')
         .setDescription('Get Valorant Store'),
-    permissions: [
-        discord_js_1.Permissions.ALL,
-    ],
-    privateMessage: false,
     execute({ interaction, language, apiKey }) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {

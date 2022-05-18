@@ -15,10 +15,6 @@ export default {
     data: new SlashCommandBuilder()
         .setName('profile')
         .setDescription('Valorant Profile'),
-    permissions: [
-        Permissions.ALL,
-    ],
-    privateMessage: false,
     async execute({ interaction, language, apiKey, createdTime }) {
         //script
         const userId = interaction.user.id;

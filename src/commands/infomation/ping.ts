@@ -6,10 +6,6 @@ export default {
 	data: new SlashCommandBuilder()
 		.setName('ping')
 		.setDescription('Replies with Pong!'),
-    permissions: [
-        Permissions.ALL,
-    ],
-	privateMessage: false,
 	async execute({ interaction, language }) {
 		//script
         const CommandLanguage = language.data.command['ping'];

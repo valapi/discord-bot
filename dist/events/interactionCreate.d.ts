@@ -1,4 +1,4 @@
-import type { Interaction } from "discord.js";
+import { Interaction } from "discord.js";
 import type { EventExtraData } from "../interface/EventData";
 declare const _default: {
     name: string;

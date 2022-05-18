@@ -31,11 +31,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 const process = __importStar(require("process"));
 const fs = __importStar(require("fs"));
-const events = __importStar(require("events"));
+const discord_modals_1 = __importDefault(require("discord-modals"));
 const rest_1 = require("@discordjs/rest");
 const v10_1 = require("discord-api-types/v10");
 const discord_js_1 = require("discord.js");
@@ -43,8 +46,6 @@ const core_1 = require("@ing3kth/core");
 const database_1 = require("./utils/database");
 (() => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    //set maxListeners Limit
-    events.EventEmitter.defaultMaxListeners = 35;
     //dotenv
     dotenv.config({
         path: process.cwd() + '/.env'
@@ -60,6 +61,8 @@ const database_1 = require("./utils/database");
             discord_js_1.Intents.FLAGS.DIRECT_MESSAGES,
         ],
     });
+    DiscordClient.setMaxListeners(35);
+    (0, discord_modals_1.default)(DiscordClient);
     //handle command
     const commandFolders = fs.readdirSync(process.cwd() + '/dist/commands');
     const rest = new rest_1.REST({ version: '10' }).setToken(String(process.env['TOKEN']));
@@ -79,7 +82,7 @@ const database_1 = require("./utils/database");
     try {
         yield core_1.Logs.log('Started refreshing application (/) commands.', 'info');
         yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), 
-        //Routes.applicationCommands(String(process.env['CLIENT_ID']),
+        //Routes.applicationCommands(String(process.env['CLIENT_ID'])),
         { body: _commandArray });
         yield core_1.Logs.log('Successfully reloaded application (/) commands.', 'info');
     }

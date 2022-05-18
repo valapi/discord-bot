@@ -18,10 +18,6 @@ export default {
     data: new SlashCommandBuilder()
         .setName('store')
         .setDescription('Get Valorant Store'),
-    permissions: [
-        Permissions.ALL,
-    ],
-    privateMessage: false,
     async execute({ interaction, language, apiKey }) {
         //script
         const userId = interaction.user.id;
