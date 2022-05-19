@@ -75,6 +75,35 @@ const database_1 = require("./utils/database");
             if (!command) {
                 continue;
             }
+            if (command.echo && command.echo.command.length > 0) {
+                command.echo.command.forEach((cmd) => {
+                    if (typeof cmd === 'string') {
+                        _commands.set(cmd, new Object(Object.assign(Object.assign({}, command), { data: { name: cmd }, echo: { from: command.data.name, command: [] } })));
+                        _commandArray.push(new Object(Object.assign(Object.assign({}, command.data.toJSON()), { name: cmd })));
+                    }
+                    else {
+                        let ofNewCommand = command.data.toJSON();
+                        if (ofNewCommand.options) {
+                            let OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.subCommandName);
+                            if (OptionCommand && OptionCommand.type === 1) {
+                                if (!OptionCommand.options)
+                                    OptionCommand.options = [];
+                                let NewSlashCommand = new Object(Object.assign(Object.assign({}, ofNewCommand), {
+                                    type: OptionCommand.type,
+                                    name: cmd.newCommandName,
+                                    description: OptionCommand.description,
+                                    options: OptionCommand.options,
+                                }));
+                                _commands.set(NewSlashCommand.name, new Object(Object.assign(Object.assign({}, command), { data: NewSlashCommand, echo: { from: OptionCommand.name, command: [], isSubCommand: true } })));
+                                _commandArray.push(NewSlashCommand);
+                            }
+                            else {
+                                core_1.Logs.log(`<${file}> option command [${cmd.subCommandName}] not found`, 'error');
+                            }
+                        }
+                    }
+                });
+            }
             _commands.set(command.data.name, command);
             _commandArray.push(command.data.toJSON());
         }
@@ -101,17 +130,22 @@ const database_1 = require("./utils/database");
             commands: _commands,
             commandArray: _commandArray,
         };
-        if (event.once) {
-            DiscordClient.once(event.name, (...args) => event.execute(...args, _extraData));
+        try {
+            if (event.once) {
+                DiscordClient.once(event.name, (...args) => event.execute(...args, _extraData));
+            }
+            else {
+                DiscordClient.on(event.name, (...args) => event.execute(...args, _extraData));
+            }
         }
-        else {
-            DiscordClient.on(event.name, (...args) => event.execute(...args, _extraData));
+        catch (error) {
+            yield core_1.Logs.log(error, 'error');
         }
     }
     //login
     yield DiscordClient.login(process.env['TOKEN']);
-    yield ((_a = DiscordClient.user) === null || _a === void 0 ? void 0 : _a.setActivity("ING PROJECT", {
+    (_a = DiscordClient.user) === null || _a === void 0 ? void 0 : _a.setActivity("ING PROJECT", {
         type: "PLAYING"
-    }));
+    });
 }))();
 //# sourceMappingURL=index.js.map

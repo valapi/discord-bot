@@ -1,16 +1,15 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed, Formatters } from 'discord.js';
 import type { CustomSlashCommands } from '../../interface/SlashCommand';
 
-import { getLanguageAndUndefined } from '../../language/controller';
 import * as IngCore from '@ing3kth/core';
 
 import { getLanguage } from '../../language/controller';
 
 export default {
-	data: new SlashCommandBuilder()
-		.setName('language')
-		.setDescription('Change Language')
+    data: new SlashCommandBuilder()
+        .setName('language')
+        .setDescription('Change Language')
         .addStringOption(option =>
             option
                 .setName('language')
@@ -28,7 +27,7 @@ export default {
         Permissions.STAGE_MODERATOR,
         Permissions.FLAGS.ADMINISTRATOR,
     ],
-	async execute({ interaction }) {
+    async execute({ interaction }) {
         const _choice = interaction.options.getString('language') as string;
         const guildId = String(interaction.guild?.id);
 
@@ -38,7 +37,7 @@ export default {
         const _language = getLanguage(_choice);
 
         if (!_language) {
-            if(!_old_language) {
+            if (!_old_language) {
                 await interaction.editReply(`Language **${_choice}** is not found!`);
             } else {
                 await interaction.editReply(_old_language.data.command['language']['fail']);
@@ -48,5 +47,5 @@ export default {
 
             await interaction.editReply(_language.data.command['language']['succes']);
         }
-	},
+    },
 } as CustomSlashCommands;

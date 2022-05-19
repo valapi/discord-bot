@@ -71,6 +71,18 @@ exports.default = {
         .addSubcommand(subcommand => subcommand
         .setName('get')
         .setDescription("Get Your Valorant Account")),
+    echo: {
+        command: [
+            {
+                newCommandName: 'login',
+                subCommandName: 'login',
+            },
+            {
+                newCommandName: 'verify',
+                subCommandName: 'verify',
+            }
+        ],
+    },
     execute({ interaction, createdTime, language, apiKey }) {
         return __awaiter(this, void 0, void 0, function* () {
             //script
@@ -86,14 +98,17 @@ exports.default = {
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
-                    content: language.data.error,
+                    content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
-                return;
+                console.log(data.data);
             })));
             //success
             function success(ValClient) {
                 var _a;
                 return __awaiter(this, void 0, void 0, function* () {
+                    if (ValClient.isError) {
+                        return;
+                    }
                     const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
                     const puuid = ValorantUserInfo.data.sub;
                     const ValorantInventory = yield ValClient.Player.Loadout(puuid);
@@ -160,6 +175,12 @@ exports.default = {
                 //auth
                 const _MFA_CODE = Number(interaction.options.getNumber("verify_code"));
                 const _save = yield _cache.output(userId);
+                if (!_save) {
+                    yield interaction.editReply({
+                        content: CommandLanguage['not_account'],
+                    });
+                    return;
+                }
                 ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(_save, apiKey)));
                 yield ValClient.verify(_MFA_CODE);
                 //success

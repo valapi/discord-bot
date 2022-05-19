@@ -11,19 +11,20 @@ import { Client as DisClient, Collection, Intents } from 'discord.js';
 import { Logs } from '@ing3kth/core';
 import { EventExtraData } from './interface/EventData';
 import { ValData } from './utils/database';
+import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashCommand';
 
 (async () => {
     //dotenv
     dotenv.config({
         path: process.cwd() + '/.env'
     });
-    
+
 
     //database
     await ValData.verify(process.env['MONGO_TOKEN']);
 
     //client
-    const DiscordClient:DisClient = new DisClient({
+    const DiscordClient: DisClient = new DisClient({
         intents: [
             Intents.FLAGS.GUILDS,
             Intents.FLAGS.GUILD_MESSAGES,
@@ -41,21 +42,48 @@ import { ValData } from './utils/database';
     const rest = new REST({ version: '10' }).setToken(String(process.env['TOKEN']));
 
     const _commands = new Collection();
-    const _commandArray:Array<{
-        data: RESTPostAPIApplicationCommandsJSONBody,
-        execute: Function,
-    }> = [];
+    const _commandArray: Array<RESTPostAPIApplicationCommandsJSONBody> = [];
 
     for (const folder of commandFolders) {
         const commandFiles = fs.readdirSync(process.cwd() + `/dist/commands/${folder}`).filter(file => file.endsWith('.js'));
 
         for (const file of commandFiles) {
-            const command = require(`./commands/${folder}/${file}`).default;
+            const command = require(`./commands/${folder}/${file}`).default as CustomSlashCommands;
 
-            if(!command){
+            if (!command) {
                 continue;
             }
 
+            if (command.echo && command.echo.command.length > 0) {
+                command.echo.command.forEach((cmd: string | EchoSubCommand) => {
+                    if (typeof cmd === 'string') {
+                        _commands.set(cmd, new Object({ ...command, ...{ data: { name: cmd }, echo: { from: command.data.name ,command: [] } } }) as CustomSlashCommands);
+                        _commandArray.push(new Object({ ...command.data.toJSON(), ...{ name: cmd } }) as RESTPostAPIApplicationCommandsJSONBody);
+                    } else {
+                        let ofNewCommand: RESTPostAPIApplicationCommandsJSONBody = command.data.toJSON();
+
+                        if (ofNewCommand.options) {
+                            let OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.subCommandName);
+                            if (OptionCommand && OptionCommand.type === 1) {
+                                if (!OptionCommand.options) OptionCommand.options = [];
+
+                                let NewSlashCommand = new Object({ ...ofNewCommand, ...{
+                                    type: OptionCommand.type,
+                                    name: cmd.newCommandName,
+                                    description: OptionCommand.description,
+                                    options: OptionCommand.options,
+                                } }) as RESTPostAPIApplicationCommandsJSONBody;
+
+                                _commands.set(NewSlashCommand.name, new Object({ ...command, ...{ data: NewSlashCommand, echo: { from: OptionCommand.name, command: [], isSubCommand: true } } }) as CustomSlashCommands);
+                                _commandArray.push(NewSlashCommand);
+                            } else {
+                                Logs.log(`<${file}> option command [${cmd.subCommandName}] not found`, 'error');
+                            }
+                        }
+                    }
+                });
+            }
+            
             _commands.set(command.data.name, command);
             _commandArray.push(command.data.toJSON());
         }
@@ -81,26 +109,30 @@ import { ValData } from './utils/database';
     for (const file of eventFiles) {
         const event = require(`./events/${file}`).default;
 
-        if(!event){
+        if (!event) {
             continue;
         }
 
-        const _extraData:EventExtraData = {
+        const _extraData: EventExtraData = {
             client: DiscordClient,
             commands: _commands,
             commandArray: _commandArray,
         };
 
-        if (event.once) {
-            DiscordClient.once(event.name, (...args) => event.execute(...args, _extraData));
-        } else {
-            DiscordClient.on(event.name, (...args) => event.execute(...args, _extraData));
+        try {
+            if (event.once) {
+                DiscordClient.once(event.name, (...args) => event.execute(...args, _extraData));
+            } else {
+                DiscordClient.on(event.name, (...args) => event.execute(...args, _extraData));
+            }
+        } catch (error) {
+            await Logs.log(error, 'error');
         }
     }
 
     //login
     await DiscordClient.login(process.env['TOKEN']);
-    await DiscordClient.user?.setActivity("ING PROJECT", {
+    DiscordClient.user?.setActivity("ING PROJECT", {
         type: "PLAYING"
     });
 })();

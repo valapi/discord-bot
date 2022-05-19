@@ -1,6 +1,6 @@
 //common
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed, Formatters } from 'discord.js';
 import type { CustomSlashCommands } from '../../interface/SlashCommand';
 
 //valorant common
@@ -17,10 +17,38 @@ import { ToMilliseconds } from '@ing3kth/core/dist/utils/Milliseconds';
 export default {
     data: new SlashCommandBuilder()
         .setName('store')
-        .setDescription('Get Valorant Store'),
+        .setDescription('Get Valorant Store')
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('daily')
+                .setDescription('Daily Store')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('bundle')
+                .setDescription('Current Bundle')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
+                .setName('night_market')
+                .setDescription('Night Market')
+        ),
+    echo: {
+        command: [
+            {
+                newCommandName: 'todaystore',
+                subCommandName: 'daily',
+            },
+            {
+                newCommandName: 'nightmarket',
+                subCommandName: 'night_market',
+            },
+        ],
+    },
     async execute({ interaction, language, apiKey }) {
         //script
         const userId = interaction.user.id;
+        const _subCommand = interaction.options.getSubcommand();
 
         const ValApiCom = new ValAPI();
         const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
@@ -33,11 +61,9 @@ export default {
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
-                content: language.data.error,
+                content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
-
-            return;
-        }))
+        }));
 
         //get
         if (!ValAccountInDatabase.isFind) {
@@ -51,46 +77,38 @@ export default {
 
         ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, apiKey)));
 
-        //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;
 
         const ValorantStore = await ValClient.Store.GetStorefront(puuid);
 
-        const _time = ToMilliseconds(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds * 1000);
+        //function
+        const getCurency = await ValApiCom.Currencies.get();
+        const getOffers = await ValClient.Store.GetOffers();
+        const GetWeaponSkin = await ValApiCom.Weapons.getSkins();
 
-        //items
-        const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers as Array<string>;
-        let sendMessageArray: Array<MessageEmbed> = [];
+        async function getOffersOf(ItemsId: string) {
+            let Store_ItemID: string = '';
+            let Store_Quantity: string = '';
+            let Store_ID: string = '';
+            let Store_Cost: string = '';
+            let Store_Curency: string = 'VP';
 
-        for (const ofItemsId in AllOffers) {
-            const ItemsId = AllOffers[ofItemsId];
-
-            //skin
-            let Store_ItemID:string = '';
-            let Store_Quantity:string = '';
-            let Store_ID:string = '';
-            let Store_Cost:string = '';
-            let Store_Curency:string = 'VP';
-            
-
-            const getCurency = await ValApiCom.Currencies.get();
-            const getOffers = await ValClient.Store.GetOffers();
-
+            // Main //
             for (const TheOffer of getOffers.data.Offers) {
-                for(const _offer of TheOffer.Rewards) {
+                for (const _offer of TheOffer.Rewards) {
                     Store_ItemID = _offer.ItemID;
                     Store_Quantity = _offer.Quantity;
 
-                    if(Store_ItemID === ItemsId){
+                    if (Store_ItemID === ItemsId) {
                         Store_ID = TheOffer.OfferID;
 
-                        if(!getCurency.isError && getCurency.data.data){
-                            for(const _currency of getCurency.data.data) {
+                        if (!getCurency.isError && getCurency.data.data) {
+                            for (const _currency of getCurency.data.data) {
                                 Store_Cost = TheOffer.Cost[_currency.uuid];
                                 Store_Curency = _currency.displayName;
 
-                                if(Store_Cost){
+                                if (Store_Cost) {
                                     break;
                                 }
                             }
@@ -98,16 +116,15 @@ export default {
                         break;
                     }
                 }
-                
-                if(Store_ID && Store_Cost){
+
+                if (Store_ID && Store_Cost) {
                     break;
                 }
             }
 
-            //content tier
-            let Store_ContentTier_ID:string = '';
+            // Content Tier Id //
+            let Store_ContentTier_ID: string = '';
 
-            const GetWeaponSkin = await ValApiCom.Weapons.getSkins();
             if (!GetWeaponSkin.isError && GetWeaponSkin.data.data) {
                 for (const _Skins of GetWeaponSkin.data.data) {
                     for (const _Level of _Skins.levels) {
@@ -117,49 +134,142 @@ export default {
                         }
                     }
 
-                    if(Store_ContentTier_ID){
+                    if (Store_ContentTier_ID) {
                         break;
                     }
                 }
             }
 
-            let Store_ContentTier_Name:string = '';
-            let Store_ContentTier_Display:string = '';
+            // Content Tier //
+            let Store_ContentTier_Name: string = '';
+            let Store_ContentTier_Display: string = '';
 
             const GetContentTier = await ValApiCom.ContentTiers.getByUuid(String(Store_ContentTier_ID));
             Store_ContentTier_Name = String(GetContentTier.data.data?.devName);
             Store_ContentTier_Display = String(GetContentTier.data.data?.displayIcon);
 
-            //sendMessage
+            //color
             let ContentTiersColor = String(GetContentTier.data.data?.highlightColor);
             const _Color = ContentTiersColor.substring(0, ContentTiersColor.length - 2);
 
+            //display
+
+            let Store_Display_Name: string = '';
+            let Store_Display_Icon: string = '';
             const GetWeaponSkinLevel = await ValApiCom.Weapons.getSkinLevels();
             if (!GetWeaponSkinLevel.isError && GetWeaponSkinLevel.data.data) {
                 for (const _SkinLevel of GetWeaponSkinLevel.data.data) {
-                    if (_SkinLevel.uuid === ItemsId) {
-                        let sendMessage = ``;
-                        sendMessage += `Price: **${Store_Cost} ${Store_Curency}**\n`;
-                        sendMessage += `Slot: **${Number(ofItemsId) + 1}**\n`;
+                    if (_SkinLevel.uuid === Store_ItemID) {
+                        Store_Display_Name = _SkinLevel.displayName;
+                        Store_Display_Icon = _SkinLevel.displayIcon;
 
-                        const createEmbed = new MessageEmbed()
-                            .setColor(`#${_Color}`)
-                            .setTitle(_SkinLevel.displayName)
-                            .setDescription(sendMessage)
-                            .setThumbnail(_SkinLevel.displayIcon)
-                            .setAuthor({ name: Store_ContentTier_Name, iconURL: Store_ContentTier_Display })
-
-                        sendMessageArray.push(createEmbed);
                         break;
                     }
                 }
             }
+
+            return {
+                ItemId: Store_ItemID,
+                Quantity: Store_Quantity,
+                Id: Store_ID,
+                Cost: Store_Cost,
+                Curency: Store_Curency,
+                ContentTier: {
+                    Id: Store_ContentTier_ID,
+                    Name: Store_ContentTier_Name,
+                    Display: Store_ContentTier_Display,
+                    Color: _Color,
+                },
+                Display: {
+                    Name: Store_Display_Name,
+                    Icon: Store_Display_Icon,
+                },
+            };
         }
 
-        //sendMessage
-        await interaction.editReply({
-            content: `Time Left: **${_time.all.hour} hour(s) ${_time.all.minute} minute(s) ${_time.all.second} second(s)**`,
-            embeds: sendMessageArray,
-        });
+        async function success(time:number, ItemIDs: Array<string>) {
+            const _time = ToMilliseconds(time * 1000);
+            let sendMessageArray: Array<MessageEmbed> = [];
+
+            for(const ofItemID in ItemIDs) {
+                const ItemID = ItemIDs[ofItemID];
+                const _Offer = await getOffersOf(ItemID);
+
+                let sendMessage = ``;
+                sendMessage += `Price: **${_Offer.Cost} ${_Offer.Curency}**\n`;
+                sendMessage += `Slot: **${Number(ofItemID) + 1}**\n`;
+
+                const createEmbed = new MessageEmbed()
+                    .setColor(`#${_Offer.ContentTier.Color}`)
+                    .setTitle(_Offer.Display.Name)
+                    .setDescription(sendMessage)
+                    .setThumbnail(_Offer.Display.Icon)
+                    .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display })
+
+                sendMessageArray.push(createEmbed);
+            }
+
+            //sendMessage
+            await interaction.editReply({
+                content: `Time Left: **${_time.all.hour} hour(s) ${_time.all.minute} minute(s) ${_time.all.second} second(s)**`,
+                embeds: sendMessageArray,
+            });
+        }
+
+        if (_subCommand === 'daily') {
+            const TimeLeft = Number(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds);
+            const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers;
+
+            await success(TimeLeft, AllOffers)
+        } else if (_subCommand === 'bundle') {
+            //work in progress
+            for(const ofTheBundle in ValorantStore.data.FeaturedBundle.Bundles) {
+                const TheBundle = ValorantStore.data.FeaturedBundle.Bundles[ofTheBundle];
+
+                const ThisBundleId = TheBundle.DataAssetID;
+                const ThisBundleData = ValApiCom.Bundles.getByUuid(ThisBundleId);
+
+                const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
+                const TimeInMillisecondFormat = ToMilliseconds(TimeLeft * 1000);
+
+                const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
+
+                //items
+                const AllItems = TheBundle.Items as Array<{
+                    Item: {
+                        ItemTypeID: string;
+                        ItemID: string;
+                        Amount: number;
+                    };
+                    BasePrice: number;
+                    CurrencyID: string;
+                    DiscountPercent: string;
+                    DiscountedPrice: string;
+                    IsPromoItem: Boolean;
+                }>;
+
+                //to be continue
+            }
+
+            ValApiCom.Bundles.getByUuid(ValorantStore.data.FeaturedBundle.Bundle.uuid);
+        } else if (_subCommand === 'night_market') {
+            if (!ValorantStore.data.BonusStore) {
+                await interaction.editReply({
+                    content: `Bonus Store is undefined`,
+                });
+                return;
+            } else {
+                const TimeLeft = Number(ValorantStore.data.BonusStore.BonusStoreRemainingDurationInSeconds);
+                const _BonusStore = ValorantStore.data.BonusStore.BonusStoreOffers;
+
+                let ArrayOfItemID: Array<string> = [];
+
+                for (const ofBonusStore of _BonusStore) {
+                    ArrayOfItemID.push(ofBonusStore.Offer.Rewards[0].ItemID);
+                }
+
+                await success(TimeLeft, ArrayOfItemID)
+            }
+        }
     }
 } as CustomSlashCommands;

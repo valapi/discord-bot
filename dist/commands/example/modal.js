@@ -21,15 +21,16 @@ exports.default = {
             //create model
             const TextInput1 = new discord_modals_1.TextInputComponent() // We create a Text Input Component
                 .setCustomId('CardInfo-1')
-                .setLabel('Some text Here')
-                .setStyle('LONG') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
-                .setMinLength(4)
-                .setMaxLength(10)
+                .setLabel('LABEL - Some text Here')
+                .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
+                .setMinLength(4) //message length min
+                .setMaxLength(10) //message length max
                 .setPlaceholder('Write a text here')
+                .setDefaultValue('Default Value') //default value for [required === false]
                 .setRequired(true); // If it's required or not
             const modal = new discord_modals_1.Modal() // We create a Modal
                 .setCustomId('GiveMeYourCreditCard')
-                .setTitle('Test of Discord-Modals!')
+                .setTitle('Title - Here')
                 .addComponents(TextInput1);
             yield (0, discord_modals_1.showModal)(modal, {
                 client: DiscordClient,

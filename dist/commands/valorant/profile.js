@@ -35,9 +35,8 @@ exports.default = {
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
-                    content: language.data.error,
+                    content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
-                return;
             })));
             //get
             if (!ValAccountInDatabase.isFind) {

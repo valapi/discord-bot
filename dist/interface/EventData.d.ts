@@ -3,10 +3,7 @@ import type { Client, Collection } from 'discord.js';
 interface EventExtraData {
     client: Client;
     commands: Collection<any, any>;
-    commandArray: Array<{
-        data: RESTPostAPIApplicationCommandsJSONBody;
-        execute: Function;
-    }>;
+    commandArray: Array<RESTPostAPIApplicationCommandsJSONBody>;
 }
 export type { EventExtraData };
 //# sourceMappingURL=EventData.d.ts.map

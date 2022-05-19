@@ -1,6 +1,6 @@
 //common
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Permissions, MessageAttachment, MessageEmbed } from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed, Formatters } from 'discord.js';
 import type { CustomSlashCommands } from '../../interface/SlashCommand';
 
 //valorant common
@@ -29,11 +29,9 @@ export default {
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
-                content: language.data.error,
+                content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
-
-            return;
-        }))
+        }));
 
         //get
         if (!ValAccountInDatabase.isFind) {

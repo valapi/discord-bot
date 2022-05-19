@@ -10,15 +10,26 @@ interface SlashCommandExtendData {
     apiKey: string;
 }
 
+interface EchoSubCommand {
+    subCommandName: string,
+    newCommandName: string,
+}
+
 interface CustomSlashCommands {
     data: SlashCommandBuilder,
     permissions?: Array<bigint>,
     privateMessage?: boolean,
     showDeferReply?: boolean,
-    execute(data: SlashCommandExtendData): Promise<void>,
+    echo?: {
+        from?: string,
+        command: Array<string | EchoSubCommand>,
+        isSubCommand?: boolean,
+    },
+    execute(data: SlashCommandExtendData): Promise<void | string>,
 }
 
 export type {
     SlashCommandExtendData,
+    EchoSubCommand,
     CustomSlashCommands,
 }

@@ -34,6 +34,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const discord_js_1 = require("discord.js");
 const builders_1 = require("@discordjs/builders");
+const process = __importStar(require("process"));
 const IngCore = __importStar(require("@ing3kth/core"));
 const controller_1 = require("../language/controller");
 const crypto_1 = require("../utils/crypto");
@@ -41,7 +42,7 @@ exports.default = {
     name: 'interactionCreate',
     once: false,
     execute(interaction, _extraData) {
-        var _a;
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             const createdTime = new Date();
             if (interaction.isCommand()) {
@@ -50,23 +51,45 @@ exports.default = {
                     return;
                 }
                 ;
+                if (!interaction.guild) {
+                    interaction.reply({
+                        content: 'Please use this command in a server.',
+                    });
+                    return;
+                }
                 const _defaultCommandAddto = {
                     data: (new builders_1.SlashCommandBuilder().setName('default')).setDescription('Default command'),
                     execute: (({ interaction }) => __awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
                     permissions: [discord_js_1.Permissions.ALL],
                     privateMessage: false,
                     showDeferReply: true,
+                    echo: {
+                        from: 'default',
+                        command: [],
+                        isSubCommand: false,
+                    },
                 };
                 const command = new Object(Object.assign(Object.assign({}, _defaultCommandAddto), GetSlashCommand));
+                //language
+                const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
+                //script
                 try {
                     if (command.showDeferReply) {
                         yield interaction.deferReply({
                             ephemeral: Boolean(command.privateMessage),
                         });
                     }
+                    //echo sub command
+                    if (((_a = command.echo) === null || _a === void 0 ? void 0 : _a.isSubCommand) === true) {
+                        interaction.commandName = command.echo.from || interaction.commandName;
+                        interaction.options.getSubcommand = ((required) => {
+                            var _a;
+                            return String((_a = command.echo) === null || _a === void 0 ? void 0 : _a.from);
+                        });
+                    }
                     //permissions
                     if (command.permissions && Array(command.permissions).length > 0) {
-                        if (!((_a = interaction.memberPermissions) === null || _a === void 0 ? void 0 : _a.has(command.permissions))) {
+                        if (!((_b = interaction.memberPermissions) === null || _b === void 0 ? void 0 : _b.has(command.permissions))) {
                             yield interaction.editReply({
                                 content: `You don't have permission to use this command.`,
                             });
@@ -74,28 +97,30 @@ exports.default = {
                         }
                     }
                     //log interaction
-                    yield IngCore.Logs.log(`<${interaction.user.id}> ${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName}\x1b[0m`, 'info');
-                    //language
-                    const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
+                    yield IngCore.Logs.log(`<${interaction.user.id}> <start> /${interaction.commandName}\x1b[0m`, 'info');
                     //run commands
                     const _SlashCommandExtendData = {
                         interaction: interaction,
                         DiscordClient: _extraData.client,
                         createdTime: createdTime,
                         language: _language,
-                        apiKey: (0, crypto_1.genarateApiKey)(interaction.user.id, interaction.user.createdTimestamp, (interaction.user.username + interaction.user.tag)),
+                        apiKey: (0, crypto_1.genarateApiKey)((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (interaction.guild.id + interaction.guild.ownerId + interaction.guild.createdTimestamp), process.env['PUBLIC_KEY']),
                     };
-                    yield command.execute(_SlashCommandExtendData);
+                    const CommandExecute = yield command.execute(_SlashCommandExtendData);
+                    if (typeof CommandExecute === 'string') {
+                        yield interaction.editReply({ content: CommandExecute });
+                    }
                     //log time of use
-                    const command_now = Number(new Date());
+                    const command_now = new Date().getTime();
                     const command_create = Number(createdTime);
                     const command_ping = command_now - command_create;
-                    yield IngCore.Logs.log(`<${interaction.user.id}> ${interaction.user.username}#${interaction.user.discriminator} used /${interaction.commandName} - ${command_ping} Milliseconds\x1b[0m`, 'info');
+                    yield IngCore.Logs.log(`<${interaction.user.id}> <end - ${command_ping}> /${interaction.commandName}\x1b[0m`, 'info');
                 }
                 catch (error) {
-                    yield IngCore.Logs.log(error, 'error');
+                    //await IngCore.Logs.log(error, 'error');
+                    console.error(error);
                     yield interaction.editReply({
-                        content: `Something Went Wrong, Please Try Again Later`,
+                        content: _language.data.error || `Something Went Wrong, Please Try Again Later`,
                     });
                 }
             }
