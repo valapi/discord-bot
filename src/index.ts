@@ -14,7 +14,7 @@ import { EventExtraData } from './interface/EventData';
 import { ValData } from './utils/database';
 import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashCommand';
 
-(async () => {
+async function START_ENGINE() {
     //dotenv
     dotenv.config({
         path: process.cwd() + '/.env'
@@ -50,7 +50,7 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
         const commandFiles = fs.readdirSync(process.cwd() + `/dist/commands/${folder}`).filter(file => file.endsWith('.js'));
 
         for (const file of commandFiles) {
-            const command = require(`./commands/${folder}/${file}`).default as CustomSlashCommands;
+            const command = require(`./commands/${folder}/${file.replace('.js', '')}`).default as CustomSlashCommands;
 
             if (!command) {
                 continue;
@@ -113,7 +113,7 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
     const eventFiles = fs.readdirSync(process.cwd() + '/dist/events').filter(file => file.endsWith('.js'));
 
     for (const file of eventFiles) {
-        const event = require(`./events/${file}`).default;
+        const event = require(`./events/${file.replace('.js', '')}`).default;
 
         if (!event) {
             continue;
@@ -125,14 +125,22 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
             commandArray: _commandArray,
         };
 
-        try {
-            if (event.once) {
-                DiscordClient.once(event.name, (...args) => event.execute(...args, _extraData));
-            } else {
-                DiscordClient.on(event.name, (...args) => event.execute(...args, _extraData));
-            }
-        } catch (error) {
-            await Logs.log(error, 'error');
+        if (event.once) {
+            DiscordClient.once(event.name, (async (...args) => {
+                try {
+                    await event.execute(...args, _extraData)
+                } catch (error) {
+                    await Logs.log(error, 'error');
+                }
+            }));
+        } else {
+            DiscordClient.on(event.name, (async (...args) => {
+                try {
+                    await event.execute(...args, _extraData)
+                } catch (error) {
+                    await Logs.log(error, 'error');
+                }
+            }));
         }
     }
 
@@ -143,4 +151,19 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
     });
 
     DiscordClient.setMaxListeners(100);
+};
+
+async function LOAD_ENGINE() {
+    try {
+        await START_ENGINE();
+    }
+    catch (error) {
+        await Logs.log(error, 'error');
+        setTimeout((async () => { await LOAD_ENGINE() }), 1000);
+    }
+}
+
+(async () => {
+    //the loop will run 3 time on error
+    await LOAD_ENGINE();
 })();

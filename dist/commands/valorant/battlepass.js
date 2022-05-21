@@ -151,14 +151,13 @@ exports.default = {
                 name: 'XP (total)',
                 value: `${BP_TotalEarnedXp}`,
                 inline: true,
-            })
+            }, { name: '\u200B', value: '\u200B' })
                 .setAuthor({ name: `${BP_Name}` })
                 .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
             if (BP_Slot_Display)
                 createEmbed.setThumbnail(BP_Slot_Display);
             if (BP_Slot_Description)
                 createEmbed.setDescription(BP_Slot_Description);
-            createEmbed.addField('\u200B', '\u200B');
             yield interaction.editReply({
                 embeds: [createEmbed],
             });
