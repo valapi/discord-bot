@@ -22,23 +22,19 @@ export default {
 				return;
 			};
 
-			if(!interaction.guild) {
-				interaction.reply({
-					content: 'Please use this command in a server.',
-				})
-				return;
-			}
-
 			const _defaultCommandAddto:CustomSlashCommands = {
 				data: (new SlashCommandBuilder().setName('default')).setDescription('Default command'),
 				execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.') }),
-				permissions: [ Permissions.ALL ],
+				permissions: [],
 				privateMessage: false,
 				showDeferReply: true,
 				echo: {
 					from: 'default',
 					command: [],
-					isSubCommand: false,
+					subCommand: {
+						baseCommand: 'default',
+						isSubCommand: false,
+					}
 				},
 			}
 
@@ -50,31 +46,43 @@ export default {
 			//script
 			try {
 
+				// Loading Command //
+
 				if(command.showDeferReply){
 					await interaction.deferReply({
 						ephemeral: Boolean(command.privateMessage),
 					});
 				}
 
-				//echo sub command
-				if(command.echo?.isSubCommand === true){
-					interaction.commandName = command.echo.from || interaction.commandName;
+				if(!interaction.guild) {
+					interaction.editReply({
+						content: _language.data.not_guild || 'Slash Command are only available in server.',
+					})
+					return;
+				}
+
+				// Sub Command //
+
+				//echo
+				if(command.echo?.subCommand && command.echo?.subCommand.isSubCommand === true) {
 					interaction.options.getSubcommand = ((required?:boolean) => {
-						return String(command.echo?.from);
+						return String(command.echo?.subCommand?.baseCommand);
 					});
 				}
 
-				//permissions
+				// Permissions //
 				if (command.permissions && Array(command.permissions).length > 0) {
 					if (!interaction.memberPermissions?.has(command.permissions)) {
 						await interaction.editReply({
-							content: `You don't have permission to use this command.`,
+							content: _language.data.not_permission || `You don't have permission to use this command.`,
 						});
 						return;
 					}
 				}
 
-				//log interaction
+				// Interaction //
+
+				//logs
 				await IngCore.Logs.log(`<${interaction.user.id}> <start> /${interaction.commandName}\x1b[0m`, 'info');
 
 				//run commands
@@ -98,8 +106,7 @@ export default {
 
 				await IngCore.Logs.log(`<${interaction.user.id}> <end - ${command_ping}> /${interaction.commandName}\x1b[0m`, 'info');
 			} catch (error) {
-				//await IngCore.Logs.log(error, 'error');
-				console.error(error);
+				await IngCore.Logs.log(error, 'error');
 				await interaction.editReply({
 					content: _language.data.error || `Something Went Wrong, Please Try Again Later`,
 				});

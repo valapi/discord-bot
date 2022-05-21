@@ -7,6 +7,7 @@ import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 import { Client as DisClient, Collection, Intents } from 'discord.js';
+import EventEmitter from 'events';
 
 import { Logs } from '@ing3kth/core';
 import { EventExtraData } from './interface/EventData';
@@ -33,7 +34,8 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
         ],
     });
 
-    DiscordClient.setMaxListeners(35);
+    EventEmitter.defaultMaxListeners = 35;
+    DiscordClient.setMaxListeners(50);
 
     discordModals(DiscordClient);
 
@@ -57,7 +59,7 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
             if (command.echo && command.echo.command.length > 0) {
                 command.echo.command.forEach((cmd: string | EchoSubCommand) => {
                     if (typeof cmd === 'string') {
-                        _commands.set(cmd, new Object({ ...command, ...{ data: { name: cmd }, echo: { from: command.data.name ,command: [] } } }) as CustomSlashCommands);
+                        _commands.set(cmd, new Object({ ...command, ...{ data: { name: cmd }, echo: { from: command.data.name, command: [] }, privateMessage: !!command.privateMessage } }) as CustomSlashCommands);
                         _commandArray.push(new Object({ ...command.data.toJSON(), ...{ name: cmd } }) as RESTPostAPIApplicationCommandsJSONBody);
                     } else {
                         let ofNewCommand: RESTPostAPIApplicationCommandsJSONBody = command.data.toJSON();
@@ -74,7 +76,7 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
                                     options: OptionCommand.options,
                                 } }) as RESTPostAPIApplicationCommandsJSONBody;
 
-                                _commands.set(NewSlashCommand.name, new Object({ ...command, ...{ data: NewSlashCommand, echo: { from: OptionCommand.name, command: [], isSubCommand: true } } }) as CustomSlashCommands);
+                                _commands.set(NewSlashCommand.name, new Object({ ...command, ...{ data: NewSlashCommand, echo: { from: command.data.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } }, privateMessage: !!command.privateMessage } }) as CustomSlashCommands);
                                 _commandArray.push(NewSlashCommand);
                             } else {
                                 Logs.log(`<${file}> option command [${cmd.subCommandName}] not found`, 'error');
@@ -94,8 +96,12 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
 
         await rest.put(
             Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
-            //Routes.applicationCommands(String(process.env['CLIENT_ID'])),
             { body: _commandArray },
+        );
+
+        await rest.put(
+            Routes.applicationCommands(String(process.env['CLIENT_ID'])),
+            { body: [] },
         );
 
         await Logs.log('Successfully reloaded application (/) commands.', 'info');
@@ -135,4 +141,6 @@ import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashComma
     DiscordClient.user?.setActivity("ING PROJECT", {
         type: "PLAYING"
     });
+
+    DiscordClient.setMaxListeners(100);
 })();

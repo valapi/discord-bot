@@ -23,7 +23,10 @@ interface CustomSlashCommands {
     echo?: {
         from?: string,
         command: Array<string | EchoSubCommand>,
-        isSubCommand?: boolean,
+        subCommand?: {
+            baseCommand: string,
+            isSubCommand: boolean,
+        },
     },
     execute(data: SlashCommandExtendData): Promise<void | string>,
 }

@@ -61,7 +61,7 @@ const database_1 = require("./utils/database");
             discord_js_1.Intents.FLAGS.DIRECT_MESSAGES,
         ],
     });
-    DiscordClient.setMaxListeners(35);
+    DiscordClient.setMaxListeners(50);
     (0, discord_modals_1.default)(DiscordClient);
     //handle command
     const commandFolders = fs.readdirSync(process.cwd() + '/dist/commands');
@@ -78,7 +78,7 @@ const database_1 = require("./utils/database");
             if (command.echo && command.echo.command.length > 0) {
                 command.echo.command.forEach((cmd) => {
                     if (typeof cmd === 'string') {
-                        _commands.set(cmd, new Object(Object.assign(Object.assign({}, command), { data: { name: cmd }, echo: { from: command.data.name, command: [] } })));
+                        _commands.set(cmd, new Object(Object.assign(Object.assign({}, command), { data: { name: cmd }, echo: { from: command.data.name, command: [] }, privateMessage: !!command.privateMessage })));
                         _commandArray.push(new Object(Object.assign(Object.assign({}, command.data.toJSON()), { name: cmd })));
                     }
                     else {
@@ -94,7 +94,7 @@ const database_1 = require("./utils/database");
                                     description: OptionCommand.description,
                                     options: OptionCommand.options,
                                 }));
-                                _commands.set(NewSlashCommand.name, new Object(Object.assign(Object.assign({}, command), { data: NewSlashCommand, echo: { from: OptionCommand.name, command: [], isSubCommand: true } })));
+                                _commands.set(NewSlashCommand.name, new Object(Object.assign(Object.assign({}, command), { data: NewSlashCommand, echo: { from: command.data.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } }, privateMessage: !!command.privateMessage })));
                                 _commandArray.push(NewSlashCommand);
                             }
                             else {
@@ -110,9 +110,8 @@ const database_1 = require("./utils/database");
     }
     try {
         yield core_1.Logs.log('Started refreshing application (/) commands.', 'info');
-        yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), 
-        //Routes.applicationCommands(String(process.env['CLIENT_ID'])),
-        { body: _commandArray });
+        yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), { body: _commandArray });
+        yield rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), { body: [] });
         yield core_1.Logs.log('Successfully reloaded application (/) commands.', 'info');
     }
     catch (error) {
@@ -147,5 +146,6 @@ const database_1 = require("./utils/database");
     (_a = DiscordClient.user) === null || _a === void 0 ? void 0 : _a.setActivity("ING PROJECT", {
         type: "PLAYING"
     });
+    DiscordClient.setMaxListeners(100);
 }))();
 //# sourceMappingURL=index.js.map

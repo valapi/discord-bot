@@ -39,11 +39,18 @@ exports.ValData = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const process = __importStar(require("process"));
 const core_1 = require("@ing3kth/core");
+const dotenv = __importStar(require("dotenv"));
 const _valorantSchema = new mongoose_1.default.Schema({
     account: { type: String, required: true },
     discordId: { type: Number, required: true },
-    //21,600 (seconds) = 360 (minutes) = 6 (hour)
-    createdAt: { type: Date, required: false, expires: 21600, default: new Date() },
+    createdAt: {
+        type: Date,
+        immutable: true,
+        required: false,
+        default: () => Date.now(),
+        //28,800,000 (milliseconds)  28,800 (seconds) = 480 (minutes) = 8 (hour)
+        expires: 28800,
+    },
 });
 class ValData {
     constructor() {
@@ -57,6 +64,10 @@ class ValData {
         mongoose_1.default.connection.on("disconnected", (() => __awaiter(this, void 0, void 0, function* () {
             yield core_1.Logs.log('Disconnected from database', 'warning');
         })));
+        //dot ENV
+        dotenv.config({
+            path: process.cwd() + '/.env'
+        });
     }
     /**
      * login to mongodb database

@@ -10,6 +10,7 @@ import { ValData, type IValorantAccount } from '../../utils/database';
 //valorant
 import { Client as ApiWrapper } from '@valapi/api-wrapper';
 import { Client as ValAPI } from '@valapi/valorant-api.com';
+import { Locale } from '@valapi/lib';
 
 //extend
 import { ToMilliseconds } from '@ing3kth/core/dist/utils/Milliseconds';
@@ -17,7 +18,7 @@ import { ToMilliseconds } from '@ing3kth/core/dist/utils/Milliseconds';
 export default {
     data: new SlashCommandBuilder()
         .setName('store')
-        .setDescription('Get Valorant Store')
+        .setDescription('Valorant Store')
         .addSubcommand(subcommand =>
             subcommand
                 .setName('daily')
@@ -32,6 +33,11 @@ export default {
             subcommand
                 .setName('night_market')
                 .setDescription('Night Market')
+                .addBooleanOption(option =>
+                    option
+                        .setName('show_hidden')
+                        .setDescription('Show All Items')
+                )
         ),
     echo: {
         command: [
@@ -45,12 +51,15 @@ export default {
             },
         ],
     },
-    async execute({ interaction, language, apiKey }) {
+    async execute({ interaction, language, apiKey}) {
         //script
         const userId = interaction.user.id;
         const _subCommand = interaction.options.getSubcommand();
 
-        const ValApiCom = new ValAPI();
+        const ValApiCom = new ValAPI({
+            language: (language.name).replace('_', '-') as keyof typeof Locale,
+        });
+        
         const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
         const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
 
@@ -92,9 +101,11 @@ export default {
             let Store_Quantity: string = '';
             let Store_ID: string = '';
             let Store_Cost: string = '';
-            let Store_Curency: string = 'VP';
+            let Store_Curency_Name: string = 'VP';
+            let Store_Curency_ID: string = '';
+            let Store_StartTime: string = '';
 
-            // Main //
+            // Main // 
             for (const TheOffer of getOffers.data.Offers) {
                 for (const _offer of TheOffer.Rewards) {
                     Store_ItemID = _offer.ItemID;
@@ -102,11 +113,14 @@ export default {
 
                     if (Store_ItemID === ItemsId) {
                         Store_ID = TheOffer.OfferID;
+                        Store_StartTime = TheOffer.StartDate;
 
                         if (!getCurency.isError && getCurency.data.data) {
                             for (const _currency of getCurency.data.data) {
                                 Store_Cost = TheOffer.Cost[_currency.uuid];
-                                Store_Curency = _currency.displayName;
+
+                                Store_Curency_Name = _currency.displayName;
+                                Store_Curency_ID = _currency.uuid;
 
                                 if (Store_Cost) {
                                     break;
@@ -173,7 +187,11 @@ export default {
                 Quantity: Store_Quantity,
                 Id: Store_ID,
                 Cost: Store_Cost,
-                Curency: Store_Curency,
+                Curency: {
+                    Name: Store_Curency_Name,
+                    Id: Store_Curency_ID,
+                },
+                CreateTime: new Date(Store_StartTime || NaN),
                 ContentTier: {
                     Id: Store_ContentTier_ID,
                     Name: Store_ContentTier_Name,
@@ -187,16 +205,20 @@ export default {
             };
         }
 
-        async function success(time:number, ItemIDs: Array<string>) {
-            const _time = ToMilliseconds(time * 1000);
+        if (_subCommand === 'daily') {
+            const TimeLeft = Number(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds);
+            const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers;
+
+            const _time = ToMilliseconds(TimeLeft * 1000);
             let sendMessageArray: Array<MessageEmbed> = [];
 
-            for(const ofItemID in ItemIDs) {
-                const ItemID = ItemIDs[ofItemID];
+            for (const ofItemID in AllOffers) {
+                const ItemID = AllOffers[ofItemID];
                 const _Offer = await getOffersOf(ItemID);
 
                 let sendMessage = ``;
-                sendMessage += `Price: **${_Offer.Cost} ${_Offer.Curency}**\n`;
+                sendMessage += `Price: **${_Offer.Cost} ${_Offer.Curency.Name}**\n`;
+                sendMessage += `Create At: **${_Offer.CreateTime.toUTCString()}**\n`;
                 sendMessage += `Slot: **${Number(ofItemID) + 1}**\n`;
 
                 const createEmbed = new MessageEmbed()
@@ -211,30 +233,32 @@ export default {
 
             //sendMessage
             await interaction.editReply({
-                content: `Time Left: **${_time.all.hour} hour(s) ${_time.all.minute} minute(s) ${_time.all.second} second(s)**`,
+                content: `Time Left: **${_time.all.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`,
                 embeds: sendMessageArray,
             });
-        }
-
-        if (_subCommand === 'daily') {
-            const TimeLeft = Number(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds);
-            const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers;
-
-            await success(TimeLeft, AllOffers)
         } else if (_subCommand === 'bundle') {
             //work in progress
-            for(const ofTheBundle in ValorantStore.data.FeaturedBundle.Bundles) {
+            let sendMessageArray = [];
+
+            for (const ofTheBundle in ValorantStore.data.FeaturedBundle.Bundles) {
                 const TheBundle = ValorantStore.data.FeaturedBundle.Bundles[ofTheBundle];
 
                 const ThisBundleId = TheBundle.DataAssetID;
-                const ThisBundleData = ValApiCom.Bundles.getByUuid(ThisBundleId);
+                const ThisBundleCurrency = TheBundle.CurrencyID;
+
+                const ThisBundleData = await ValApiCom.Bundles.getByUuid(ThisBundleId);
+                if(!ThisBundleData.data.data){
+                    throw new Error(ThisBundleData.data.error);
+                }
 
                 const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
                 const TimeInMillisecondFormat = ToMilliseconds(TimeLeft * 1000);
 
                 const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
 
-                //items
+                //price
+                let Price_Base:number = 0;
+                let Price_Discounted:number = 0;
                 const AllItems = TheBundle.Items as Array<{
                     Item: {
                         ItemTypeID: string;
@@ -243,32 +267,94 @@ export default {
                     };
                     BasePrice: number;
                     CurrencyID: string;
-                    DiscountPercent: string;
-                    DiscountedPrice: string;
+                    DiscountPercent: number;
+                    DiscountedPrice: number;
                     IsPromoItem: Boolean;
                 }>;
 
-                //to be continue
+                for(let ofItem of AllItems){
+                    Price_Base += ofItem.BasePrice;
+                    Price_Discounted += ofItem.DiscountedPrice;
+                }
+
+                //currency
+                const GetCurrency = await ValApiCom.Currencies.getByUuid(ThisBundleCurrency);
+                if(GetCurrency.isError || !GetCurrency.data.data){
+                    throw new Error(GetCurrency.data.error);
+                }
+
+                let ThePrice = GetCurrency.data.data.displayName;
+
+                let Price_DiscountCosts:number = (Price_Base - Price_Discounted) / Price_Base * 100;
+
+                //embed
+                const createEmbed = new MessageEmbed()
+                    .setImage(ThisBundleData.data.data?.displayIcon as string)
+                    .addFields(
+                        { name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true },
+                        { name: `Price`, value: `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(Price_DiscountCosts)}%)**`, inline: true },
+                        { name: '\u200B', value: '\u200B' },
+                        { name: `Time Remaining`, value: `${TimeInMillisecondFormat.data.day} day(s) ${TimeInMillisecondFormat.data.hour} hour(s) ${TimeInMillisecondFormat.data.minute} minute(s) ${TimeInMillisecondFormat.data.second} second(s)`, inline: true },
+                    )
+
+                sendMessageArray.push(createEmbed);
             }
 
-            ValApiCom.Bundles.getByUuid(ValorantStore.data.FeaturedBundle.Bundle.uuid);
+            await interaction.editReply({
+                embeds: sendMessageArray,
+            });
         } else if (_subCommand === 'night_market') {
             if (!ValorantStore.data.BonusStore) {
                 await interaction.editReply({
-                    content: `Bonus Store is undefined`,
+                    content: `${language.data.command['store']['not_nightmarket']}`,
                 });
                 return;
             } else {
+                const ForceToShow = interaction.options.getBoolean('show_hidden') || false;
                 const TimeLeft = Number(ValorantStore.data.BonusStore.BonusStoreRemainingDurationInSeconds);
+                const _time = ToMilliseconds(TimeLeft * 1000);
+
                 const _BonusStore = ValorantStore.data.BonusStore.BonusStoreOffers;
 
-                let ArrayOfItemID: Array<string> = [];
+                let sendMessageArray: Array<MessageEmbed> = [];
 
-                for (const ofBonusStore of _BonusStore) {
-                    ArrayOfItemID.push(ofBonusStore.Offer.Rewards[0].ItemID);
+                for (let ofItem in _BonusStore) {
+                    const ThisBonusStore = _BonusStore[ofItem];
+                    const ItemId = ThisBonusStore.Offer.Rewards[0].ItemID;
+
+                    //script
+                    let DiscountPercent = ThisBonusStore.DiscountPercent;
+                    let IsSeen = Boolean(ThisBonusStore.IsSeen);
+
+                    if(!IsSeen && !ForceToShow) continue;
+
+                    const _Offer = await getOffersOf(ItemId);
+                    let DiscountCosts = ThisBonusStore.DiscountCosts[_Offer.Curency.Id];
+
+                    let sendMessage = ``;
+                    sendMessage += `Price: ~~${_Offer.Cost}~~ *-->* **${DiscountCosts} ${_Offer.Curency.Name} (-${DiscountPercent}%)**\n`;
+                    sendMessage += `Create At: **${_Offer.CreateTime.toUTCString()}**\n`;
+                    sendMessage += `Slot: **${Number(ofItem) + 1}**\n`;
+
+                    sendMessageArray.push(
+                        new MessageEmbed()
+                            .setColor(`#${_Offer.ContentTier.Color}`)
+                            .setTitle(_Offer.Display.Name)
+                            .setDescription(sendMessage)
+                            .setThumbnail(_Offer.Display.Icon)
+                            .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display })
+                    )
                 }
 
-                await success(TimeLeft, ArrayOfItemID)
+                let _message:string = `Time Left: **${_time.data.day} day(s) ${_time.data.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`
+                if(sendMessageArray.length === 0){
+                    _message += `\n\n` + language.data.command['store']['no_nightmarket'];
+                }
+
+                await interaction.editReply({
+                    content: _message,
+                    embeds: sendMessageArray,
+                });
             }
         }
     }

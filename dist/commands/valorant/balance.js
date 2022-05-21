@@ -18,12 +18,18 @@ const database_1 = require("../../utils/database");
 //valorant
 const api_wrapper_1 = require("@valapi/api-wrapper");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
+const core_1 = require("@ing3kth/core");
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
-        .setName('profile')
-        .setDescription('Valorant Profile'),
+        .setName('balance')
+        .setDescription('Valorant InGame Wallet'),
+    echo: {
+        command: [
+            'wallet'
+        ],
+    },
     execute({ interaction, language, apiKey, createdTime }) {
-        var _a, _b, _c;
+        var _a;
         return __awaiter(this, void 0, void 0, function* () {
             //script
             const userId = interaction.user.id;
@@ -53,26 +59,34 @@ exports.default = {
             //success
             const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
             const puuid = ValorantUserInfo.data.sub;
-            const ValorantInventory = yield ValClient.Player.Loadout(puuid);
-            const PlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
-            const PlayerCard = yield ValApiCom.PlayerCards.getByUuid(PlayerCard_ID);
-            const PlayerCard_Name = String((_a = PlayerCard.data.data) === null || _a === void 0 ? void 0 : _a.displayName);
-            const PlayerCard_Icon = String((_b = PlayerCard.data.data) === null || _b === void 0 ? void 0 : _b.displayIcon);
-            const PlayerTitle_ID = ValorantInventory.data.Identity.PlayerTitleID;
-            const PlayerTitle = yield ValApiCom.PlayerTitles.getByUuid(PlayerTitle_ID);
-            const PlayerTitle_Title = String((_c = PlayerTitle.data.data) === null || _c === void 0 ? void 0 : _c.titleText);
+            const GetWallet = yield ValClient.Store.GetWallet(puuid);
+            const AllWallet = GetWallet.data.Balances;
+            const GetCurrency = yield ValApiCom.Currencies.get();
+            //currency
+            let BalanceArray = [];
+            if (GetCurrency.isError || !GetCurrency.data.data) {
+                throw new Error('Currency not found');
+            }
+            for (let ofCurrency of GetCurrency.data.data) {
+                if (!isNaN(AllWallet[ofCurrency.uuid])) {
+                    BalanceArray.push({
+                        id: ofCurrency.uuid,
+                        name: ofCurrency.displayName,
+                        icon: ofCurrency.displayIcon,
+                        value: Number(AllWallet[ofCurrency.uuid]),
+                    });
+                }
+            }
             //sendMessage
             const createEmbed = new discord_js_1.MessageEmbed()
-                .setColor(`#0099ff`)
-                .addFields({ name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true }, { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true }, { name: '\u200B', value: '\u200B' }, { name: `Card`, value: `${PlayerCard_Name}`, inline: true }, { name: `Title`, value: `${PlayerTitle_Title}`, inline: true }, { name: '\u200B', value: '\u200B' }, { name: `Country`, value: `${ValorantUserInfo.data.country}`, inline: true }, { name: `Create`, value: `${new Date(ValorantUserInfo.data.acct.created_at).toUTCString()}`, inline: true })
-                .setThumbnail(PlayerCard_Icon)
-                .setTimestamp(createdTime)
-                .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
+                .setThumbnail((_a = (BalanceArray.at((0, core_1.Random)(0, BalanceArray.length - 1)))) === null || _a === void 0 ? void 0 : _a.icon);
+            BalanceArray.forEach((item) => {
+                createEmbed.addField(item.name, String(item.value));
+            });
             yield interaction.editReply({
-                content: language.data.command['profile']['default'],
                 embeds: [createEmbed],
             });
         });
     }
 };
-//# sourceMappingURL=profile.js.map
+//# sourceMappingURL=balance.js.map

@@ -1,6 +1,8 @@
 interface ILanguage {
     name: string;
     data: {
+        not_guild: string;
+        not_permission: string;
         error: string;
         command: {
             'ping': {
@@ -17,6 +19,16 @@ interface ILanguage {
                 'fail': string;
             };
             'profile': {
+                'default': string;
+            };
+            'store': {
+                'not_nightmarket': string;
+                'no_nightmarket': string;
+            };
+            'report': {
+                'thanks': string;
+            };
+            'collection': {
                 'default': string;
             };
         };

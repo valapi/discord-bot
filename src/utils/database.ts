@@ -14,8 +14,14 @@ interface IValorantAccount {
 const _valorantSchema = new mongoose.Schema<IValorantAccount>({
     account: { type: String, required: true },
     discordId: { type: Number, required: true },
-    //21,600 (seconds) = 360 (minutes) = 6 (hour)
-    createdAt: { type: Date, required: false, expires: 21600, default: new Date() },
+    createdAt: {
+        type: Date,
+        immutable: true,
+        required: false, 
+        default: () => Date.now(),
+        //28,800,000 (milliseconds)  28,800 (seconds) = 480 (minutes) = 8 (hour)
+        expires: 28800,
+    },
 });
 
 class ValData {
@@ -32,6 +38,11 @@ class ValData {
         mongoose.connection.on("disconnected", (async () => {
             await Logs.log('Disconnected from database', 'warning');
         }));
+
+        //dot ENV
+        dotenv.config({
+            path: process.cwd() + '/.env'
+        });
     }
 
     /**
@@ -39,8 +50,8 @@ class ValData {
      * @param {string} token token of access to database
      * @returns {Promise<void>}
      */
-    public async login(token:string = String(process.env['MONGO_TOKEN'])): Promise<void> {
-        if(!token){
+    public async login(token: string = String(process.env['MONGO_TOKEN'])): Promise<void> {
+        if (!token) {
             await Logs.log('token is not defined', 'error');
         }
 
@@ -52,7 +63,7 @@ class ValData {
      * @param {string} name name of the collection
      * @returns {mongoose.Model}
      */
-    public getCollection<YourCollectionInterface = IValorantAccount>(name:string = 'account', schema:mongoose.Schema = _valorantSchema, collection:string = 'valorant'): mongoose.Model<YourCollectionInterface, any, any, any> {
+    public getCollection<YourCollectionInterface = IValorantAccount>(name: string = 'account', schema: mongoose.Schema = _valorantSchema, collection: string = 'valorant'): mongoose.Model<YourCollectionInterface, any, any, any> {
         try {
             return mongoose.model<YourCollectionInterface>(name, schema, collection);
         } catch (error) {
@@ -66,8 +77,8 @@ class ValData {
      * @param {mongoose.FilterQuery} filter filter to check
      * @returns {Promise<number>}
      */
-     public static async checkIfExist<YourCollectionInterface = IValorantAccount>(model:mongoose.Model<YourCollectionInterface, any, any, any>, filter:mongoose.FilterQuery<YourCollectionInterface>): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once:YourCollectionInterface }> {
-        const _FindInDatabase:Array<YourCollectionInterface> = await model.find(filter);
+    public static async checkIfExist<YourCollectionInterface = IValorantAccount>(model: mongoose.Model<YourCollectionInterface, any, any, any>, filter: mongoose.FilterQuery<YourCollectionInterface>): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }> {
+        const _FindInDatabase: Array<YourCollectionInterface> = await model.find(filter);
 
         return {
             isFind: (Number(_FindInDatabase.length) > 0),
@@ -82,7 +93,7 @@ class ValData {
      * @param {string} token token of access to database
      * @returns {Promise<ValData>}
      */
-     public static async verify(token?:string): Promise<ValData> {
+    public static async verify(token?: string): Promise<ValData> {
         const _database = new ValData();
         _database.login(token);
 
@@ -90,7 +101,7 @@ class ValData {
     }
 }
 
-export { 
+export {
     ValData,
     type IValorantAccount,
 };

@@ -32,7 +32,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
 const builders_1 = require("@discordjs/builders");
 const process = __importStar(require("process"));
 const IngCore = __importStar(require("@ing3kth/core"));
@@ -42,7 +41,7 @@ exports.default = {
     name: 'interactionCreate',
     once: false,
     execute(interaction, _extraData) {
-        var _a, _b;
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             const createdTime = new Date();
             if (interaction.isCommand()) {
@@ -51,22 +50,19 @@ exports.default = {
                     return;
                 }
                 ;
-                if (!interaction.guild) {
-                    interaction.reply({
-                        content: 'Please use this command in a server.',
-                    });
-                    return;
-                }
                 const _defaultCommandAddto = {
                     data: (new builders_1.SlashCommandBuilder().setName('default')).setDescription('Default command'),
                     execute: (({ interaction }) => __awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
-                    permissions: [discord_js_1.Permissions.ALL],
+                    permissions: [],
                     privateMessage: false,
                     showDeferReply: true,
                     echo: {
                         from: 'default',
                         command: [],
-                        isSubCommand: false,
+                        subCommand: {
+                            baseCommand: 'default',
+                            isSubCommand: false,
+                        }
                     },
                 };
                 const command = new Object(Object.assign(Object.assign({}, _defaultCommandAddto), GetSlashCommand));
@@ -74,29 +70,37 @@ exports.default = {
                 const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
                 //script
                 try {
+                    // Loading Command //
                     if (command.showDeferReply) {
                         yield interaction.deferReply({
                             ephemeral: Boolean(command.privateMessage),
                         });
                     }
-                    //echo sub command
-                    if (((_a = command.echo) === null || _a === void 0 ? void 0 : _a.isSubCommand) === true) {
-                        interaction.commandName = command.echo.from || interaction.commandName;
+                    if (!interaction.guild) {
+                        interaction.editReply({
+                            content: _language.data.not_guild || 'Slash Command are only available in server.',
+                        });
+                        return;
+                    }
+                    // Sub Command //
+                    //echo
+                    if (((_a = command.echo) === null || _a === void 0 ? void 0 : _a.subCommand) && ((_b = command.echo) === null || _b === void 0 ? void 0 : _b.subCommand.isSubCommand) === true) {
                         interaction.options.getSubcommand = ((required) => {
-                            var _a;
-                            return String((_a = command.echo) === null || _a === void 0 ? void 0 : _a.from);
+                            var _a, _b;
+                            return String((_b = (_a = command.echo) === null || _a === void 0 ? void 0 : _a.subCommand) === null || _b === void 0 ? void 0 : _b.baseCommand);
                         });
                     }
-                    //permissions
+                    // Permissions //
                     if (command.permissions && Array(command.permissions).length > 0) {
-                        if (!((_b = interaction.memberPermissions) === null || _b === void 0 ? void 0 : _b.has(command.permissions))) {
+                        if (!((_c = interaction.memberPermissions) === null || _c === void 0 ? void 0 : _c.has(command.permissions))) {
                             yield interaction.editReply({
-                                content: `You don't have permission to use this command.`,
+                                content: _language.data.not_permission || `You don't have permission to use this command.`,
                             });
                             return;
                         }
                     }
-                    //log interaction
+                    // Interaction //
+                    //logs
                     yield IngCore.Logs.log(`<${interaction.user.id}> <start> /${interaction.commandName}\x1b[0m`, 'info');
                     //run commands
                     const _SlashCommandExtendData = {
@@ -117,8 +121,7 @@ exports.default = {
                     yield IngCore.Logs.log(`<${interaction.user.id}> <end - ${command_ping}> /${interaction.commandName}\x1b[0m`, 'info');
                 }
                 catch (error) {
-                    //await IngCore.Logs.log(error, 'error');
-                    console.error(error);
+                    yield IngCore.Logs.log(error, 'error');
                     yield interaction.editReply({
                         content: _language.data.error || `Something Went Wrong, Please Try Again Later`,
                     });

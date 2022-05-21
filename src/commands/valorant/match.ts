@@ -14,8 +14,8 @@ import { Locale } from '@valapi/lib';
 
 export default {
     data: new SlashCommandBuilder()
-        .setName('profile')
-        .setDescription('Valorant Profile'),
+        .setName('match')
+        .setDescription('Valorant InGame Match'),
     async execute({ interaction, language, apiKey, createdTime }) {
         //script
         const userId = interaction.user.id;
@@ -53,38 +53,7 @@ export default {
         //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;
-        
-        const ValorantInventory = await ValClient.Player.Loadout(puuid);
 
-        const PlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
-        const PlayerCard = await ValApiCom.PlayerCards.getByUuid(PlayerCard_ID);
-        const PlayerCard_Name = String(PlayerCard.data.data?.displayName);
-        const PlayerCard_Icon = String(PlayerCard.data.data?.displayIcon);
-
-        const PlayerTitle_ID = ValorantInventory.data.Identity.PlayerTitleID;
-        const PlayerTitle = await ValApiCom.PlayerTitles.getByUuid(PlayerTitle_ID);
-        const PlayerTitle_Title = String(PlayerTitle.data.data?.titleText);
-
-        //sendMessage
-        const createEmbed = new MessageEmbed()
-            .setColor(`#0099ff`)
-            .addFields(
-                { name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true },
-                { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true },
-                { name: '\u200B', value: '\u200B' },
-                { name: `Card`, value: `${PlayerCard_Name}`, inline: true },
-                { name: `Title`, value: `${PlayerTitle_Title}`, inline: true },
-                { name: '\u200B', value: '\u200B' },
-                { name: `Country`, value: `${ValorantUserInfo.data.country}`, inline: true },
-                { name: `Create`, value: `${new Date(ValorantUserInfo.data.acct.created_at).toUTCString()}`, inline: true },
-            )
-            .setThumbnail(PlayerCard_Icon)
-            .setTimestamp(createdTime)
-            .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
-
-        await interaction.editReply({
-            content: language.data.command['profile']['default'],
-            embeds: [ createEmbed ],
-        });
+        console.log(await ValClient.Match.FetchMatchHistory(puuid));
     }
 } as CustomSlashCommands;

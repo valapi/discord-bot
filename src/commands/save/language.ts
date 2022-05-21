@@ -27,6 +27,11 @@ export default {
         Permissions.STAGE_MODERATOR,
         Permissions.FLAGS.ADMINISTRATOR,
     ],
+    echo: {
+        command: [
+            'setlanguage',
+        ]
+    },
     async execute({ interaction }) {
         const _choice = interaction.options.getString('language') as string;
         const guildId = String(interaction.guild?.id);

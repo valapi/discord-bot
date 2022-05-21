@@ -52,6 +52,7 @@ export default {
                 .setName('get')
                 .setDescription("Get Your Valorant Account")
         ),
+    privateMessage: true,
     echo: {
         command: [
             {
@@ -152,7 +153,7 @@ export default {
             const createEmbed = new MessageEmbed()
                 .setColor(`#0099ff`)
                 .setTitle(`/${interaction.commandName} ${_subCommand}`)
-                .setDescription(`Username: **${_USERNAME}**\nPassword: **${makeBuur(_PASSWORD)}**`)
+                .setDescription(`Username: **${_USERNAME}**\nPassword: **${makeBuur({ message: _PASSWORD, percent: 70 })}**`)
                 .setTimestamp(createdTime)
                 .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
 

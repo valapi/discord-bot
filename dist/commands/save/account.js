@@ -71,6 +71,7 @@ exports.default = {
         .addSubcommand(subcommand => subcommand
         .setName('get')
         .setDescription("Get Your Valorant Account")),
+    privateMessage: true,
     echo: {
         command: [
             {
@@ -153,7 +154,7 @@ exports.default = {
                 const createEmbed = new discord_js_1.MessageEmbed()
                     .setColor(`#0099ff`)
                     .setTitle(`/${interaction.commandName} ${_subCommand}`)
-                    .setDescription(`Username: **${_USERNAME}**\nPassword: **${(0, makeBuur_1.default)(_PASSWORD)}**`)
+                    .setDescription(`Username: **${_USERNAME}**\nPassword: **${(0, makeBuur_1.default)({ message: _PASSWORD, percent: 70 })}**`)
                     .setTimestamp(createdTime)
                     .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
                 if (!ValClient.multifactor) {

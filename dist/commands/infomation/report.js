@@ -13,25 +13,37 @@ const builders_1 = require("@discordjs/builders");
 const discord_modals_1 = require("discord-modals");
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
-        .setName('modal')
-        .setDescription('Generate a modal'),
+        .setName('report')
+        .setDescription('Report Bug To Developer'),
     showDeferReply: false,
+    echo: {
+        command: [
+            'reportbug',
+        ]
+    },
     execute({ interaction, DiscordClient }) {
         return __awaiter(this, void 0, void 0, function* () {
             //create model
-            const TextInput1 = new discord_modals_1.TextInputComponent() // We create a Text Input Component
-                .setCustomId('CardInfo-1')
-                .setLabel('LABEL - Some text Here')
-                .setStyle('SHORT') //IMPORTANT: Text Input Component Style can be 'SHORT' or 'LONG'
-                .setMinLength(4) //message length min
-                .setMaxLength(10) //message length max
-                .setPlaceholder('Write a text here')
-                .setDefaultValue('Default Value') //default value for [required === false]
-                .setRequired(true); // If it's required or not
-            const modal = new discord_modals_1.Modal() // We create a Modal
-                .setCustomId('GiveMeYourCreditCard')
-                .setTitle('Title - Here')
-                .addComponents(TextInput1);
+            const TextInput1 = new discord_modals_1.TextInputComponent()
+                .setCustomId('reportbug-text1')
+                .setLabel('Topic')
+                .setStyle('SHORT')
+                .setMinLength(5)
+                .setMaxLength(20)
+                .setPlaceholder(`Put your message here`)
+                .setRequired(false);
+            const TextInput2 = new discord_modals_1.TextInputComponent()
+                .setCustomId('reportbug-text2')
+                .setLabel('Report Message')
+                .setStyle('LONG')
+                .setMinLength(10)
+                .setMaxLength(500)
+                .setPlaceholder(`Put your message here`)
+                .setRequired(true);
+            const modal = new discord_modals_1.Modal()
+                .setCustomId('reportbug-modal')
+                .setTitle('Report Bug')
+                .addComponents(TextInput1, TextInput2);
             yield (0, discord_modals_1.showModal)(modal, {
                 client: DiscordClient,
                 interaction: interaction,
@@ -39,4 +51,4 @@ exports.default = {
         });
     },
 };
-//# sourceMappingURL=modal.js.map
+//# sourceMappingURL=report.js.map

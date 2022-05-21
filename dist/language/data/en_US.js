@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     name: `en_US`,
     data: {
+        not_guild: `This command can only be used in a guild.`,
+        not_permission: `You don't have permission to use this command.`,
         error: `Something Went Wrong, Please Try Again Later`,
         command: {
             "ping": {
@@ -11,7 +13,7 @@ exports.default = {
             "account": {
                 "succes": `You Are Register Riot Account With`,
                 "not_account": `Couldn't Find Your Account`,
-                "verify": `Please Verify Your Account\nBy Using: **/login verify {VerifyCode}**`,
+                "verify": `Please Verify Your Account\nBy Using: **/verify {VerifyCode}**`,
                 "remove": `Your Account Has Been Removed`,
             },
             "language": {
@@ -20,6 +22,16 @@ exports.default = {
             },
             "profile": {
                 "default": `This is your Valorant profiles`,
+            },
+            "store": {
+                "not_nightmarket": `Bonus Store is undefined`,
+                "no_nightmarket": `You didn't open any night market items yet.`,
+            },
+            "report": {
+                "thanks": `Thank you for your report!`,
+            },
+            "collection": {
+                "default": `This is your Valorant collection`,
             }
         },
     },
