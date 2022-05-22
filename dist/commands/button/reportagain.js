@@ -9,30 +9,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const builders_1 = require("@discordjs/builders");
+const ReportModal_1 = require("../../interface/ReportModal");
 const discord_modals_1 = require("discord-modals");
-const ReportModal_1 = require("../../../interface/ReportModal");
 exports.default = {
-    data: new builders_1.SlashCommandBuilder()
-        .setName('report')
-        .setDescription('Report Bug To Developer'),
-    type: 'miscellaneous',
+    customId: 'reportagain',
     showDeferReply: false,
     privateMessage: true,
-    echo: {
-        command: [
-            'reportbug',
-        ]
-    },
-    execute({ interaction, DiscordClient, language }) {
+    execute({ interaction, language, DiscordClient }) {
         return __awaiter(this, void 0, void 0, function* () {
-            //create model
+            //script
             const modal = (0, ReportModal_1.genarateReportForm)(language);
             yield (0, discord_modals_1.showModal)(modal, {
                 client: DiscordClient,
                 interaction: interaction,
             });
         });
-    },
+    }
 };
-//# sourceMappingURL=report.js.map
+//# sourceMappingURL=reportagain.js.map

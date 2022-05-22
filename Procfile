@@ -1,0 +1,1 @@
+worker: nodemon --ignore /ing3kth/* -x 'node dist/index.js'

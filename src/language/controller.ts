@@ -37,4 +37,8 @@ function getLanguageAndUndefined (language:string = _defaultLanguage):ILanguage 
     return _lang;
 }
 
-export { getLanguage, getLanguageAndUndefined };
+export { 
+    getLanguage, 
+    getLanguageAndUndefined, 
+    _defaultLanguage as defaultLanguage,
+};

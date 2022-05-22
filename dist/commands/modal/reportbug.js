@@ -41,8 +41,15 @@ exports.default = {
         return __awaiter(this, void 0, void 0, function* () {
             const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(modal.guildId) }));
             // main reply //
+            const createButtons = new discord_js_1.MessageActionRow()
+                .addComponents(//max 5
+            new discord_js_1.MessageButton()
+                .setCustomId('reportagain')
+                .setLabel('Show Report Form') //title
+                .setStyle('SECONDARY'));
             yield modal.reply({
                 content: `${_language.data.command['report']['thanks']}`,
+                components: [createButtons],
                 ephemeral: true
             });
             // on submit //

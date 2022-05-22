@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { Permissions, MessageAttachment, MessageEmbed, Formatters } from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton } from 'discord.js';
 import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
 export default {

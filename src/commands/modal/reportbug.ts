@@ -1,4 +1,4 @@
-import { Formatters } from "discord.js";
+import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton } from 'discord.js';
 import type { ModalSubmitInteraction } from "discord-modals";
 
 import * as IngCore from '@ing3kth/core';
@@ -12,8 +12,17 @@ export default {
 
         // main reply //
 
+        const createButtons = new MessageActionRow()
+            .addComponents( //max 5
+                new MessageButton()
+                    .setCustomId('reportagain')
+                    .setLabel('Show Report Form') //title
+                    .setStyle('SECONDARY'),
+            );
+
         await modal.reply({
             content: `${_language.data.command['report']['thanks']}`,
+            components: [ createButtons ],
             ephemeral: true
         });
 

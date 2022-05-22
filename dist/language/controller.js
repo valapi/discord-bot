@@ -23,10 +23,11 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getLanguageAndUndefined = exports.getLanguage = void 0;
+exports.defaultLanguage = exports.getLanguageAndUndefined = exports.getLanguage = void 0;
 const fs = __importStar(require("fs"));
 const process = __importStar(require("process"));
 const _defaultLanguage = 'en_US';
+exports.defaultLanguage = _defaultLanguage;
 function getLanguage(language = _defaultLanguage) {
     const langFolder = fs.readdirSync(process.cwd() + '/dist/language/data').filter(file => file.endsWith('.js'));
     for (let i = 0; i < langFolder.length; i++) {

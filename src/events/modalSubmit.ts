@@ -14,7 +14,7 @@ export default {
 	async execute(modal:ModalSubmitInteraction, _extraData:EventExtraData) {
 		const ModalFolder = await fs.readdirSync(`${process.cwd()}/dist/commands/modal`).filter(file => file.endsWith('.js'));
 		
-		await ModalFolder.forEach(async (file) => {
+		ModalFolder.forEach(async (file) => {
 			const _file = require(`${process.cwd()}/dist/commands/modal/${file.replace('.js', '')}`).default as {
 				customId: string,
 				execute: Function,

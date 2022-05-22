@@ -40,7 +40,7 @@ exports.default = {
     execute(modal, _extraData) {
         return __awaiter(this, void 0, void 0, function* () {
             const ModalFolder = yield fs.readdirSync(`${process.cwd()}/dist/commands/modal`).filter(file => file.endsWith('.js'));
-            yield ModalFolder.forEach((file) => __awaiter(this, void 0, void 0, function* () {
+            ModalFolder.forEach((file) => __awaiter(this, void 0, void 0, function* () {
                 const _file = require(`${process.cwd()}/dist/commands/modal/${file.replace('.js', '')}`).default;
                 if (_file.customId === modal.customId) {
                     yield _file.execute(modal, _extraData);

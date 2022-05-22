@@ -31,12 +31,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const builders_1 = require("@discordjs/builders");
+const fs = __importStar(require("fs"));
 const process = __importStar(require("process"));
 const IngCore = __importStar(require("@ing3kth/core"));
 const controller_1 = require("../language/controller");
 const crypto_1 = require("../utils/crypto");
+const msANDms_1 = __importDefault(require("../utils/msANDms"));
 exports.default = {
     name: 'interactionCreate',
     once: false,
@@ -44,7 +49,13 @@ exports.default = {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             const createdTime = new Date();
+            //language
+            const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
+            //script
             if (interaction.isCommand()) {
+                /**
+                 * SLASH COMMAND
+                 */
                 const GetSlashCommand = _extraData.commands.get(interaction.commandName);
                 if (!GetSlashCommand) {
                     return;
@@ -67,8 +78,6 @@ exports.default = {
                     },
                 };
                 const command = new Object(Object.assign(Object.assign({}, _defaultCommandAddto), GetSlashCommand));
-                //language
-                const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
                 //script
                 try {
                     // Loading Command //
@@ -102,7 +111,7 @@ exports.default = {
                     }
                     // Interaction //
                     //logs
-                    yield IngCore.Logs.log(`<${interaction.user.id}> <start> /${interaction.commandName}\x1b[0m`, 'info');
+                    yield IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`, 'info');
                     //run commands
                     const _SlashCommandExtendData = {
                         interaction: interaction,
@@ -119,11 +128,8 @@ exports.default = {
                     if (typeof CommandExecute === 'string') {
                         yield interaction.editReply({ content: CommandExecute });
                     }
-                    //log time of use
-                    const command_now = new Date().getTime();
-                    const command_create = Number(createdTime);
-                    const command_ping = command_now - command_create;
-                    yield IngCore.Logs.log(`<${interaction.user.id}> <end - ${command_ping}> /${interaction.commandName}\x1b[0m`, 'info');
+                    //end
+                    yield IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${(0, msANDms_1.default)(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
                 }
                 catch (error) {
                     yield IngCore.Logs.log(error, 'error');
@@ -131,6 +137,41 @@ exports.default = {
                         content: _language.data.error || `Something Went Wrong, Please Try Again Later`,
                     });
                 }
+            }
+            else if (interaction.isButton()) {
+                /**
+                 * B U T T O N
+                 */
+                yield IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId}\x1b[0m`, 'info');
+                const ButtonFolder = yield fs.readdirSync(`${process.cwd()}/dist/commands/button`).filter(file => file.endsWith('.js'));
+                ButtonFolder.forEach((file) => __awaiter(this, void 0, void 0, function* () {
+                    const _getButtonFile = require(`${process.cwd()}/dist/commands/button/${file.replace('.js', '')}`).default;
+                    if (_getButtonFile.customId === interaction.customId) {
+                        const _defaultButtonFile = {
+                            customId: 'default',
+                            privateMessage: false,
+                            showDeferReply: true,
+                            execute: (({ interaction }) => __awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
+                        };
+                        const _file = new Object(Object.assign(Object.assign({}, _defaultButtonFile), _getButtonFile));
+                        // SCRIPT //
+                        if (_file.showDeferReply) {
+                            yield interaction.deferReply({
+                                ephemeral: Boolean(_file.privateMessage),
+                            });
+                        }
+                        const _ButtonExtendData = {
+                            interaction: interaction,
+                            DiscordClient: _extraData.client,
+                            createdTime: createdTime,
+                            language: _language,
+                        };
+                        yield _file.execute(_ButtonExtendData);
+                        return;
+                    }
+                }));
+                //end
+                yield IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId} [${(0, msANDms_1.default)(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
             }
         });
     },
