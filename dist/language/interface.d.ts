@@ -27,6 +27,10 @@ interface ILanguage {
             };
             'report': {
                 'thanks': string;
+                'topic_title': string;
+                'topic_placeholder': string;
+                'message_title': string;
+                'message_placeholder': string;
             };
             'collection': {
                 'default': string;

@@ -24,6 +24,7 @@ export default {
 
 			const _defaultCommandAddto:CustomSlashCommands = {
 				data: (new SlashCommandBuilder().setName('default')).setDescription('Default command'),
+				type: 'miscellaneous',
 				execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.') }),
 				permissions: [],
 				privateMessage: false,
@@ -92,6 +93,10 @@ export default {
 					createdTime: createdTime,
 					language: _language,
 					apiKey: genarateApiKey((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), ( interaction.guild.id + interaction.guild.ownerId + interaction.guild.createdTimestamp ), process.env['PUBLIC_KEY']),
+					command: {
+						collection: _extraData.commands,
+						array: _extraData.commandArray,
+					},
 				};
 
 				const CommandExecute = await command.execute(_SlashCommandExtendData);

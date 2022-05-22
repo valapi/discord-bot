@@ -32,27 +32,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const discord_js_1 = require("discord.js");
-const IngCore = __importStar(require("@ing3kth/core"));
-const controller_1 = require("../language/controller");
+const process = __importStar(require("process"));
+const fs = __importStar(require("fs"));
 exports.default = {
     name: 'modalSubmit',
     once: true,
     execute(modal, _extraData) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (modal.customId === 'reportbug-modal') {
-                const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(modal.guildId) }));
-                const _Topic = modal.getTextInputValue('reportbug-text1');
-                const _Message = modal.getTextInputValue('reportbug-text2');
-                const OwnerOfClient = yield _extraData.client.users.fetch('549231132382855189');
-                OwnerOfClient.send({
-                    content: `${discord_js_1.Formatters.userMention(modal.user.id)} has reported a bug!\n\nTopic:\n**${_Topic}**\n\nMessage:\n${discord_js_1.Formatters.blockQuote(_Message)}`,
-                });
-                yield modal.reply({
-                    content: `${_language.data.command['report']['thanks']}`,
-                    ephemeral: true
-                });
-            }
+            const ModalFolder = yield fs.readdirSync(`${process.cwd()}/dist/commands/modal`).filter(file => file.endsWith('.js'));
+            yield ModalFolder.forEach((file) => __awaiter(this, void 0, void 0, function* () {
+                const _file = require(`${process.cwd()}/dist/commands/modal/${file.replace('.js', '')}`).default;
+                if (_file.customId === modal.customId) {
+                    yield _file.execute(modal, _extraData);
+                    return;
+                }
+            }));
         });
     },
 };

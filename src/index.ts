@@ -40,17 +40,17 @@ async function START_ENGINE() {
     discordModals(DiscordClient);
 
     //handle command
-    const commandFolders = fs.readdirSync(process.cwd() + '/dist/commands');
+    const commandFolders = fs.readdirSync(`${process.cwd()}/dist/commands/slash`);
     const rest = new REST({ version: '10' }).setToken(String(process.env['TOKEN']));
 
-    const _commands = new Collection();
+    const _commands: Collection<any, any> = new Collection();
     const _commandArray: Array<RESTPostAPIApplicationCommandsJSONBody> = [];
 
     for (const folder of commandFolders) {
-        const commandFiles = fs.readdirSync(process.cwd() + `/dist/commands/${folder}`).filter(file => file.endsWith('.js'));
+        const commandFiles = fs.readdirSync(`${process.cwd()}/dist/commands/slash/${folder}`).filter(file => file.endsWith('.js'));
 
         for (const file of commandFiles) {
-            const command = require(`./commands/${folder}/${file.replace('.js', '')}`).default as CustomSlashCommands;
+            const command = require(`${process.cwd()}/dist/commands/slash/${folder}/${file.replace('.js', '')}`).default as CustomSlashCommands;
 
             if (!command) {
                 continue;

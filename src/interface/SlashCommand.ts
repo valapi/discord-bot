@@ -1,5 +1,7 @@
 import type { SlashCommandBuilder } from '@discordjs/builders';
-import type { Client, CommandInteraction } from 'discord.js';
+import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
+import type { Client, Collection, CommandInteraction } from 'discord.js';
+
 import type { ILanguage } from '../language/interface';
 
 interface SlashCommandExtendData {
@@ -8,6 +10,10 @@ interface SlashCommandExtendData {
     createdTime: Date;
     language: ILanguage;
     apiKey: string;
+    command: {
+        collection: Collection<any, any>;
+        array: Array<RESTPostAPIApplicationCommandsJSONBody>
+    };
 }
 
 interface EchoSubCommand {
@@ -15,8 +21,11 @@ interface EchoSubCommand {
     newCommandName: string,
 }
 
+type CustomSlashCommandsCategory = 'settings' | 'infomation' | 'valorant' | 'miscellaneous';
+
 interface CustomSlashCommands {
     data: SlashCommandBuilder,
+    type: CustomSlashCommandsCategory,
     permissions?: Array<bigint>,
     privateMessage?: boolean,
     showDeferReply?: boolean,

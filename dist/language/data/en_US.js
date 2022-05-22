@@ -29,6 +29,10 @@ exports.default = {
             },
             "report": {
                 "thanks": `Thank you for your report!`,
+                "topic_title": `Topic`,
+                "topic_placeholder": `Your Topic (required)`,
+                "message_title": `Report Message`,
+                "message_placeholder": `Your Report Message (required)\nsometime you need to /report again to submit`,
             },
             "collection": {
                 "default": `This is your Valorant collection`,

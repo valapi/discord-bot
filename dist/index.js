@@ -67,14 +67,14 @@ function START_ENGINE() {
         DiscordClient.setMaxListeners(50);
         (0, discord_modals_1.default)(DiscordClient);
         //handle command
-        const commandFolders = fs.readdirSync(process.cwd() + '/dist/commands');
+        const commandFolders = fs.readdirSync(`${process.cwd()}/dist/commands/slash`);
         const rest = new rest_1.REST({ version: '10' }).setToken(String(process.env['TOKEN']));
         const _commands = new discord_js_1.Collection();
         const _commandArray = [];
         for (const folder of commandFolders) {
-            const commandFiles = fs.readdirSync(process.cwd() + `/dist/commands/${folder}`).filter(file => file.endsWith('.js'));
+            const commandFiles = fs.readdirSync(`${process.cwd()}/dist/commands/slash/${folder}`).filter(file => file.endsWith('.js'));
             for (const file of commandFiles) {
-                const command = require(`./commands/${folder}/${file.replace('.js', '')}`).default;
+                const command = require(`${process.cwd()}/dist/commands/slash/${folder}/${file.replace('.js', '')}`).default;
                 if (!command) {
                     continue;
                 }

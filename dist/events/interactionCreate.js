@@ -52,6 +52,7 @@ exports.default = {
                 ;
                 const _defaultCommandAddto = {
                     data: (new builders_1.SlashCommandBuilder().setName('default')).setDescription('Default command'),
+                    type: 'miscellaneous',
                     execute: (({ interaction }) => __awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
                     permissions: [],
                     privateMessage: false,
@@ -109,6 +110,10 @@ exports.default = {
                         createdTime: createdTime,
                         language: _language,
                         apiKey: (0, crypto_1.genarateApiKey)((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (interaction.guild.id + interaction.guild.ownerId + interaction.guild.createdTimestamp), process.env['PUBLIC_KEY']),
+                        command: {
+                            collection: _extraData.commands,
+                            array: _extraData.commandArray,
+                        },
                     };
                     const CommandExecute = yield command.execute(_SlashCommandExtendData);
                     if (typeof CommandExecute === 'string') {
