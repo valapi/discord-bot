@@ -1,4 +1,4 @@
-import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton } from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton, MessageSelectMenu } from 'discord.js';
 import type { ModalSubmitInteraction } from "discord-modals";
 
 import * as IngCore from '@ing3kth/core';

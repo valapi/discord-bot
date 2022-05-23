@@ -1,4 +1,4 @@
-import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton } from 'discord.js';
+import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton, MessageSelectMenu } from 'discord.js';
 import type { CustomButton } from '../../interface/Button';
 
 import { genarateReportForm } from '../../interface/ReportModal';

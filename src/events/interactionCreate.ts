@@ -11,6 +11,7 @@ import msANDms from "../utils/msANDms";
 import type { EventExtraData } from "../interface/EventData";
 import type { SlashCommandExtendData, CustomSlashCommands } from "../interface/SlashCommand";
 import type { CustomButton, CustomButtonExtendData } from "../interface/Button";
+import type { CustomMenu, CustomMenuExtendData } from "../interface/SelectMeus";
 
 export default {
 	name: 'interactionCreate',
@@ -101,10 +102,6 @@ export default {
 					createdTime: createdTime,
 					language: _language,
 					apiKey: genarateApiKey((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (interaction.guild.id + interaction.guild.ownerId + interaction.guild.createdTimestamp), process.env['PUBLIC_KEY']),
-					command: {
-						collection: _extraData.commands,
-						array: _extraData.commandArray,
-					},
 				};
 
 				const CommandExecute = await command.execute(_SlashCommandExtendData);
@@ -162,6 +159,50 @@ export default {
 
 			//end
 			await IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
+		} else if (interaction.isSelectMenu()) {
+			/**
+			 * M E N U
+			 */
+			
+			 await IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`, 'info');
+
+			 const MenusFolder = await fs.readdirSync(`${process.cwd()}/dist/commands/menu`).filter(file => file.endsWith('.js'));
+ 
+			 MenusFolder.forEach(async (file) => {
+				 const _getMenuFile = require(`${process.cwd()}/dist/commands/menu/${file.replace('.js', '')}`).default as CustomMenu;
+				 
+				 if (_getMenuFile.customId === interaction.customId) {
+					 const _defaultMenuFile:CustomMenu = {
+						 customId: 'default',
+						 privateMessage: false,
+						 showDeferReply: true,
+						 execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.') }),
+					 }
+					 const _file = new Object({ ..._defaultMenuFile, ..._getMenuFile }) as CustomMenu;
+ 
+					 // SCRIPT //
+					 if(_file.showDeferReply){
+						 await interaction.deferUpdate();
+					 }
+ 
+					 const _MenuExtendData: CustomMenuExtendData = {
+						 interaction: interaction,
+						 DiscordClient: _extraData.client,
+						 createdTime: createdTime,
+						 language: _language,
+						 command: {
+							 collection: _extraData.commands,
+							 array: _extraData.commandArray,
+						 }
+					 }
+ 
+					 await _file.execute(_MenuExtendData);
+					 return;
+				 }
+			 });
+ 
+			 //end
+			 await IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
 		}
 	},
 };

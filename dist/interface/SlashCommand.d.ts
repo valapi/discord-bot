@@ -1,6 +1,5 @@
 import type { SlashCommandBuilder } from '@discordjs/builders';
-import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
-import type { Client, Collection, CommandInteraction } from 'discord.js';
+import type { Client, CommandInteraction } from 'discord.js';
 import type { ILanguage } from '../language/interface';
 interface SlashCommandExtendData {
     interaction: CommandInteraction;
@@ -8,10 +7,6 @@ interface SlashCommandExtendData {
     createdTime: Date;
     language: ILanguage;
     apiKey: string;
-    command: {
-        collection: Collection<any, any>;
-        array: Array<RESTPostAPIApplicationCommandsJSONBody>;
-    };
 }
 interface EchoSubCommand {
     subCommandName: string;
@@ -34,5 +29,5 @@ interface CustomSlashCommands {
     };
     execute(data: SlashCommandExtendData): Promise<void | string>;
 }
-export type { SlashCommandExtendData, EchoSubCommand, CustomSlashCommands, };
+export type { SlashCommandExtendData, EchoSubCommand, CustomSlashCommandsCategory, CustomSlashCommands, };
 //# sourceMappingURL=SlashCommand.d.ts.map

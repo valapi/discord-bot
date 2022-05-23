@@ -1,38 +1,36 @@
-import { SlashCommandBuilder } from '@discordjs/builders';
 import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton, MessageSelectMenu } from 'discord.js';
-import type { CustomSlashCommands } from '../../../interface/SlashCommand';
+import type { CustomMenu } from '../../interface/SelectMeus';
+
+import type { CustomSlashCommands, CustomSlashCommandsCategory } from '../../interface/SlashCommand';
 
 export default {
-	data: new SlashCommandBuilder()
-		.setName('help')
-		.setDescription('Show all Commands'),
-    type: 'infomation',
-	async execute({ interaction }) {
-		//script
+    customId: 'helplist',
+    async execute({ interaction, command }) {
+        //script
+        const _CommandType:string = interaction.values[0] as CustomSlashCommandsCategory;
+
         const createEmbed = new MessageEmbed()
-            .setTitle('Help')
-            .setDescription('You can select one of the categories below')
-            .addFields(
-                {
-                    name: '/reportbug',
-                    value: 'Report Bug To Developer',
-                    inline: true,
-                },
-                {
-                    name: '/account',
-                    value: 'Manage Valorant Account',
-                    inline: true,
-                },
-                {
-                    name: '/language',
-                    value: 'Change Language',
-                    inline: true,
-                },
-            )
+            .setTitle(`Help - ${_CommandType}`)
             .setColor('#0099ff')
+        
+        //slash command
+        let sendMessage:string = ``;
+
+        for(let cmd of command.array){
+            const _cmd = command.collection.get(cmd.name) as CustomSlashCommands;
+
+            if(_cmd.type != (_CommandType.toLocaleLowerCase())) {
+                continue;
+            }
+
+            if(!_cmd.echo || !_cmd.echo?.from) {
+                sendMessage += `${Formatters.inlineCode('/' + _cmd.data.name)} - ${_cmd.data.description}\n`;
+            }
+        }
+
+        createEmbed.setDescription(sendMessage);
 
         // help list
-
         const createComponents = new MessageActionRow()
             .addComponents(
                 new MessageSelectMenu()
@@ -64,9 +62,10 @@ export default {
                     ),
             );
 
+        //sendMessage
         await interaction.editReply({
             embeds: [ createEmbed ],
             components: [ createComponents ],
         });
-	},
-} as CustomSlashCommands;
+    }
+} as CustomMenu

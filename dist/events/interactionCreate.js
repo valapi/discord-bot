@@ -119,10 +119,6 @@ exports.default = {
                         createdTime: createdTime,
                         language: _language,
                         apiKey: (0, crypto_1.genarateApiKey)((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (interaction.guild.id + interaction.guild.ownerId + interaction.guild.createdTimestamp), process.env['PUBLIC_KEY']),
-                        command: {
-                            collection: _extraData.commands,
-                            array: _extraData.commandArray,
-                        },
                     };
                     const CommandExecute = yield command.execute(_SlashCommandExtendData);
                     if (typeof CommandExecute === 'string') {
@@ -172,6 +168,43 @@ exports.default = {
                 }));
                 //end
                 yield IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId} [${(0, msANDms_1.default)(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
+            }
+            else if (interaction.isSelectMenu()) {
+                /**
+                 * M E N U
+                 */
+                yield IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`, 'info');
+                const MenusFolder = yield fs.readdirSync(`${process.cwd()}/dist/commands/menu`).filter(file => file.endsWith('.js'));
+                MenusFolder.forEach((file) => __awaiter(this, void 0, void 0, function* () {
+                    const _getMenuFile = require(`${process.cwd()}/dist/commands/menu/${file.replace('.js', '')}`).default;
+                    if (_getMenuFile.customId === interaction.customId) {
+                        const _defaultMenuFile = {
+                            customId: 'default',
+                            privateMessage: false,
+                            showDeferReply: true,
+                            execute: (({ interaction }) => __awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
+                        };
+                        const _file = new Object(Object.assign(Object.assign({}, _defaultMenuFile), _getMenuFile));
+                        // SCRIPT //
+                        if (_file.showDeferReply) {
+                            yield interaction.deferUpdate();
+                        }
+                        const _MenuExtendData = {
+                            interaction: interaction,
+                            DiscordClient: _extraData.client,
+                            createdTime: createdTime,
+                            language: _language,
+                            command: {
+                                collection: _extraData.commands,
+                                array: _extraData.commandArray,
+                            }
+                        };
+                        yield _file.execute(_MenuExtendData);
+                        return;
+                    }
+                }));
+                //end
+                yield IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId} [${(0, msANDms_1.default)(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
             }
         });
     },

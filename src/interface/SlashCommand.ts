@@ -10,10 +10,6 @@ interface SlashCommandExtendData {
     createdTime: Date;
     language: ILanguage;
     apiKey: string;
-    command: {
-        collection: Collection<any, any>;
-        array: Array<RESTPostAPIApplicationCommandsJSONBody>
-    };
 }
 
 interface EchoSubCommand {
@@ -43,5 +39,6 @@ interface CustomSlashCommands {
 export type {
     SlashCommandExtendData,
     EchoSubCommand,
+    CustomSlashCommandsCategory,
     CustomSlashCommands,
 }
