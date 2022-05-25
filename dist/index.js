@@ -45,6 +45,7 @@ const discord_js_1 = require("discord.js");
 const events_1 = __importDefault(require("events"));
 const core_1 = require("@ing3kth/core");
 const database_1 = require("./utils/database");
+const DEVELOPMENT_MODE = false;
 function START_ENGINE() {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -113,8 +114,13 @@ function START_ENGINE() {
         }
         try {
             yield core_1.Logs.log('Started refreshing application (/) commands.', 'info');
-            yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), { body: _commandArray });
-            yield rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), { body: [] });
+            if (DEVELOPMENT_MODE) {
+                yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), { body: _commandArray });
+            }
+            else {
+                yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), { body: [] });
+                yield rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), { body: _commandArray });
+            }
             yield core_1.Logs.log('Successfully reloaded application (/) commands.', 'info');
         }
         catch (error) {

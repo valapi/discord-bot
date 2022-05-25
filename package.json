@@ -14,6 +14,7 @@
     "scripts": {
         "typescript": "npx tsc --project tsconfig.json",
         "build": "npm run typescript && node dist/index.js",
+        "server": "git push heroku master",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
