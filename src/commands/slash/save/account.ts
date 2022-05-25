@@ -87,7 +87,6 @@ export default {
             await interaction.editReply({
                 content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
-            console.log(data.data);
         }));
 
         //success

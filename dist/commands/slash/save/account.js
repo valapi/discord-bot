@@ -102,7 +102,6 @@ exports.default = {
                 yield interaction.editReply({
                     content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
-                console.log(data.data);
             })));
             //success
             function success(ValClient) {

@@ -57,7 +57,6 @@ export default {
 
         let Party_ID:string = (await ValClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
         const TheParty = await ValClient.Party.FetchParty(Party_ID);
-        console.log(TheParty.data);
 
         let sendMessageArray:Array<MessageEmbed> = [];
         let currentArrayPosition:number = 0;

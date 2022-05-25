@@ -18,11 +18,10 @@ const database_1 = require("../../../utils/database");
 //valorant
 const api_wrapper_1 = require("@valapi/api-wrapper");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
-const lib_1 = require("@valapi/lib");
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
-        .setName('party')
-        .setDescription('Valorant InGame Party'),
+        .setName('rank')
+        .setDescription('Valorant Competitive Rank'),
     type: 'valorant',
     execute({ interaction, language, apiKey, createdTime }) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -54,52 +53,45 @@ exports.default = {
             //success
             const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
             const puuid = ValorantUserInfo.data.sub;
-            let Party_ID = (yield ValClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
-            const TheParty = yield ValClient.Party.FetchParty(Party_ID);
-            let sendMessageArray = [];
-            let currentArrayPosition = 0;
-            // PARTY //
-            let Party_QueueID = lib_1.QueueId[TheParty.data.MatchmakingData.QueueID];
-            let Party_RemoveRR = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
-            let Party_Accessibility = TheParty.data.Accessibility;
-            sendMessageArray.push(new discord_js_1.MessageEmbed()
-                .setColor(`#0099ff`)
-                .setTitle(`Party`)
-                .addFields({ name: 'Queue Mode', value: Party_QueueID, inline: true }, { name: 'Accessibility', value: Party_Accessibility, inline: true }));
-            if (Party_RemoveRR) {
-                sendMessageArray[currentArrayPosition].addFields({ name: '\u200B', value: '\u200B' }, {
-                    name: 'Disparity Rank Rating Penalty',
-                    value: `${Party_RemoveRR}%`,
-                    inline: true,
-                });
-            }
-            currentArrayPosition += 1;
-            // MEMBER //
-            const AllMembers = TheParty.data.Members;
-            sendMessageArray.push(new discord_js_1.MessageEmbed()
-                .setColor(`#0099ff`)
-                .setTitle(`Members`));
-            for (let member of AllMembers) {
-                const ThatPlayer = yield ValClient.Player.GetUsername(member.PlayerIdentity.Subject);
-                const ThatPlayerArg = ThatPlayer.data.find(player => player.Subject = member.Subject);
-                let sendMessage = `Level: **${member.PlayerIdentity.AccountLevel}**\nWin: **${member.SeasonalBadgeInfo.NumberOfWins}**`;
-                if (member.IsOwner) {
-                    sendMessage = `*Owner*\n${sendMessage}`;
+            const ThisRank = ((yield ValClient.MMR.FetchCompetitiveUpdates(puuid)).data.Matches.filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
+            let Rank_Rating_Earned = ThisRank.RankedRatingEarned;
+            let Rank_Rating_Now = ThisRank.RankedRatingAfterUpdate;
+            let Rank_Rating_Old = ThisRank.RankedRatingBeforeUpdate;
+            const AllRanks = yield ValApiCom.CompetitiveTiers.get();
+            if (AllRanks.isError || !AllRanks.data.data)
+                throw new Error(AllRanks.data.error);
+            let Rank_Name = '';
+            let Rank_Icon = '';
+            let Rank_Color = '';
+            for (let _rank of AllRanks.data.data) {
+                for (let _tier of _rank.tiers) {
+                    if (_tier.tier == ThisRank.TierAfterUpdate) {
+                        Rank_Name = _tier.tierName;
+                        Rank_Icon = _tier.largeIcon;
+                        Rank_Color = String(_tier.backgroundColor).substring(0, _tier.backgroundColor.length - 2);
+                        break;
+                    }
                 }
-                else if (member.IsModerator) {
-                    sendMessage = `*Moderator*\n${sendMessage}`;
+                if (Rank_Name) {
+                    break;
                 }
-                sendMessageArray[currentArrayPosition].addField(`${ThatPlayerArg === null || ThatPlayerArg === void 0 ? void 0 : ThatPlayerArg.GameName}#${ThatPlayerArg === null || ThatPlayerArg === void 0 ? void 0 : ThatPlayerArg.TagLine}`, `${sendMessage}`, true);
             }
-            if (AllMembers.length > 1) {
-                sendMessageArray[currentArrayPosition].setColor('#00ff00');
-            }
-            currentArrayPosition += 1;
-            // DONE //
-            yield interaction.editReply({
-                embeds: sendMessageArray,
+            interaction.editReply({
+                embeds: [
+                    new discord_js_1.MessageEmbed()
+                        .setColor(`#${Rank_Color}`)
+                        .setTimestamp(createdTime)
+                        .addFields({
+                        name: "Rank",
+                        value: `${Rank_Name}`,
+                    }, { name: '\u200B', value: '\u200B' }, {
+                        name: "Rating",
+                        value: `${Rank_Rating_Now} RR\n(*${discord_js_1.Formatters.strikethrough(Rank_Rating_Old)}* / ${Rank_Rating_Earned})`,
+                    })
+                        .setThumbnail(Rank_Icon),
+                ]
             });
         });
     }
 };
-//# sourceMappingURL=party.js.map
+//# sourceMappingURL=rank.js.map
