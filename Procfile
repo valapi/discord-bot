@@ -1,1 +1,1 @@
-worker: nodemon --ignore /data/* -x 'node index.js'
+worker: nodemon --ignore /ing3kth/* -x 'node dist/index.js'

@@ -1,0 +1,18 @@
+{
+    "create": "2022-05-12T09:24:45.810Z",
+    "version": 2,
+    "logs": {
+        "save": false,
+        "show": true,
+        "file": {
+            "path": "/logs",
+            "extension": "log"
+        }
+    },
+    "cache": {
+        "file": {
+            "path": "/cache",
+            "extension": "json"
+        }
+    }
+}

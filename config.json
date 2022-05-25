@@ -1,9 +1,0 @@
-{
-	"application_id": "930354659493822515",
-    "public_key": "abf76acef7fc469beb201f3d8074d21aa014c56941bd564b32c9662746aae1ea",
-    "token": "OTMwMzU0NjU5NDkzODIyNTE1.Yd0qSw.bt-feVhRLNF42M9EYN--mxAh1qM",
-    "client_id": "930354659493822515",
-    "client_secret": "m7jiifS5UqnH3s0_stwaUjhruDViNam1",
-    "guild_id": "847685392822960169",
-    "dbToken": "mongodb+srv://IngUser:v5Diad1YRR3BdiMX@ingproject.rbypq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-}
