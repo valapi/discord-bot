@@ -1,0 +1,7 @@
+APPLICATION_ID="{applicationId}"
+PUBLIC_KEY="{publicKey}"
+TOKEN="{botToken}"
+CLIENT_ID="{clientId}"
+CLIENT_SECRET="{clientSecret}"
+GUILD_ID="{guildId}"
+MONGO_TOKEN="mongodb+srv://{username}:{password}@{name}.rbypq.mongodb.net/{collectionName}?retryWrites=true&w=majority"
