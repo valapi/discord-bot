@@ -43,7 +43,7 @@
         "@discordjs/builders": "^0.13.0",
         "@discordjs/collection": "^0.6.0",
         "@discordjs/rest": "^0.4.1",
-        "@ing3kth/core": "^1.8.4",
+        "@ing3kth/core": "^1.9.0",
         "@ing3kth/val-api": "^2.0.2",
         "crypto-js": "^4.1.1",
         "discord-api-types": "^0.32.1",
