@@ -8,13 +8,11 @@
         "npm": "8.7.0"
     },
     "publishConfig": {
-        "registry": "https://npm.pkg.github.com",
         "access": "public"
     },
     "scripts": {
         "typescript": "npx tsc --project tsconfig.json",
-        "build": "npm run typescript && node dist/index.js",
-        "server": "git push heroku master",
+        "thebot": "npm run typescript && node dist/index.js",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
