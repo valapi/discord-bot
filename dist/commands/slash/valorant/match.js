@@ -29,7 +29,7 @@ exports.default = {
         .setDescription('Match Index')),
     type: 'valorant',
     execute({ interaction, language, apiKey, createdTime }) {
-        var _a;
+        var _a, _b, _c, _d, _e;
         return __awaiter(this, void 0, void 0, function* () {
             //script
             const userId = interaction.user.id;
@@ -138,11 +138,11 @@ exports.default = {
                 .addFields({ name: 'Kills', value: `${Player_Kills}`, inline: true }, { name: 'Deaths', value: `${Player_Deaths}`, inline: true }, { name: 'Assists', value: `${Player_Assists}`, inline: true }, { name: '\u200B', value: '\u200B' }, { name: 'Level', value: `${Player_Level}`, inline: true })
                 .setThumbnail(Player_Agent_Display));
             if (Match_Type === 'competitive') {
-                sendMessageArray[1].addField('Rank', Player_Rank, true);
+                (_a = sendMessageArray.at(1)) === null || _a === void 0 ? void 0 : _a.addField('Rank', Player_Rank, true);
             }
-            sendMessageArray[1].addFields({ name: '\u200B', value: '\u200B' }, { name: 'Agent', value: Player_Agent_Name, inline: true });
+            (_b = sendMessageArray.at(1)) === null || _b === void 0 ? void 0 : _b.addFields({ name: '\u200B', value: '\u200B' }, { name: 'Agent', value: Player_Agent_Name, inline: true });
             if (Match_Type !== 'deathmatch') {
-                sendMessageArray[1].addField('Team', Player_Team, true);
+                (_c = sendMessageArray.at(1)) === null || _c === void 0 ? void 0 : _c.addField('Team', Player_Team, true);
             }
             // TEAM //
             if (AllMatchData.data.teams.length > 1 && Match_Type !== 'deathmatch') {
@@ -154,13 +154,13 @@ exports.default = {
                     let Teams_Name = _team.teamId;
                     let Teams_Score = _team.numPoints;
                     let Teams_Won = _team.roundsWon;
-                    sendMessageArray[2].addFields({
+                    (_d = sendMessageArray.at(2)) === null || _d === void 0 ? void 0 : _d.addFields({
                         name: `${Teams_Name}`,
                         value: `Score: **${Teams_Score}**\nWon (rounds)*:* **${Teams_Won}**`,
                         inline: true
                     });
                 }
-                let Team_isWin = (_a = (AllTeams.find(team => team.teamId === Player_Team))) === null || _a === void 0 ? void 0 : _a.won;
+                let Team_isWin = (_e = (AllTeams.find(team => team.teamId === Player_Team))) === null || _e === void 0 ? void 0 : _e.won;
                 if (Team_isWin === true) {
                     sendMessageArray.forEach(embed => embed.setColor('#00ff00'));
                 }

@@ -78,7 +78,7 @@ export default {
         );
 
         if(Party_RemoveRR){
-            sendMessageArray[currentArrayPosition].addFields(
+            sendMessageArray.at(currentArrayPosition)?.addFields(
                 { name: '\u200B', value: '\u200B' },
                 {
                     name: 'Disparity Rank Rating Penalty',
@@ -111,7 +111,7 @@ export default {
                 sendMessage = `*Moderator*\n${sendMessage}`
             }
 
-            sendMessageArray[currentArrayPosition].addField(
+            sendMessageArray.at(currentArrayPosition)?.addField(
                 `${ThatPlayerArg?.GameName}#${ThatPlayerArg?.TagLine}`,
                 `${sendMessage}`,
                 true,
@@ -119,7 +119,7 @@ export default {
         }
 
         if(AllMembers.length > 1){
-            sendMessageArray[currentArrayPosition].setColor('#00ff00');
+            sendMessageArray.at(currentArrayPosition)?.setColor('#00ff00');
         }
 
         currentArrayPosition += 1;

@@ -25,6 +25,7 @@ exports.default = {
         .setDescription('Valorant InGame Party'),
     type: 'valorant',
     execute({ interaction, language, apiKey, createdTime }) {
+        var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {
             //script
             const userId = interaction.user.id;
@@ -67,7 +68,7 @@ exports.default = {
                 .setTitle(`Party`)
                 .addFields({ name: 'Queue Mode', value: Party_QueueID, inline: true }, { name: 'Accessibility', value: Party_Accessibility, inline: true }));
             if (Party_RemoveRR) {
-                sendMessageArray[currentArrayPosition].addFields({ name: '\u200B', value: '\u200B' }, {
+                (_a = sendMessageArray.at(currentArrayPosition)) === null || _a === void 0 ? void 0 : _a.addFields({ name: '\u200B', value: '\u200B' }, {
                     name: 'Disparity Rank Rating Penalty',
                     value: `${Party_RemoveRR}%`,
                     inline: true,
@@ -89,10 +90,10 @@ exports.default = {
                 else if (member.IsModerator) {
                     sendMessage = `*Moderator*\n${sendMessage}`;
                 }
-                sendMessageArray[currentArrayPosition].addField(`${ThatPlayerArg === null || ThatPlayerArg === void 0 ? void 0 : ThatPlayerArg.GameName}#${ThatPlayerArg === null || ThatPlayerArg === void 0 ? void 0 : ThatPlayerArg.TagLine}`, `${sendMessage}`, true);
+                (_b = sendMessageArray.at(currentArrayPosition)) === null || _b === void 0 ? void 0 : _b.addField(`${ThatPlayerArg === null || ThatPlayerArg === void 0 ? void 0 : ThatPlayerArg.GameName}#${ThatPlayerArg === null || ThatPlayerArg === void 0 ? void 0 : ThatPlayerArg.TagLine}`, `${sendMessage}`, true);
             }
             if (AllMembers.length > 1) {
-                sendMessageArray[currentArrayPosition].setColor('#00ff00');
+                (_c = sendMessageArray.at(currentArrayPosition)) === null || _c === void 0 ? void 0 : _c.setColor('#00ff00');
             }
             currentArrayPosition += 1;
             // DONE //

@@ -40,6 +40,13 @@ exports.default = {
     execute(modal, { client }) {
         return __awaiter(this, void 0, void 0, function* () {
             const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(modal.guildId) }));
+            // on submit //
+            const _Topic = modal.getTextInputValue('reportbug-text1');
+            const _Message = modal.getTextInputValue('reportbug-text2');
+            const OwnerOfClient = yield client.users.fetch('549231132382855189');
+            yield OwnerOfClient.send({
+                content: `${discord_js_1.Formatters.userMention(modal.user.id)} has reported a bug!\n\nTopic:\n**${_Topic}**\n\nMessage:\n${discord_js_1.Formatters.blockQuote(_Message)}`,
+            });
             // main reply //
             const createButtons = new discord_js_1.MessageActionRow()
                 .addComponents(//max 5
@@ -51,13 +58,6 @@ exports.default = {
                 content: `${_language.data.command['report']['thanks']}`,
                 components: [createButtons],
                 ephemeral: true
-            });
-            // on submit //
-            const _Topic = modal.getTextInputValue('reportbug-text1');
-            const _Message = modal.getTextInputValue('reportbug-text2');
-            const OwnerOfClient = yield client.users.fetch('549231132382855189');
-            yield OwnerOfClient.send({
-                content: `${discord_js_1.Formatters.userMention(modal.user.id)} has reported a bug!\n\nTopic:\n**${_Topic}**\n\nMessage:\n${discord_js_1.Formatters.blockQuote(_Message)}`,
             });
         });
     }

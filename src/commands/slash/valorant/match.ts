@@ -194,16 +194,16 @@ export default {
         )
 
         if(Match_Type === 'competitive'){
-            sendMessageArray[1].addField('Rank', Player_Rank, true);
+            sendMessageArray.at(1)?.addField('Rank', Player_Rank, true);
         }
 
-        sendMessageArray[1].addFields(
+        sendMessageArray.at(1)?.addFields(
             { name: '\u200B', value: '\u200B' },
             { name: 'Agent', value: Player_Agent_Name, inline: true },
         );
         
         if(Match_Type !== 'deathmatch'){
-            sendMessageArray[1].addField('Team', Player_Team, true);
+            sendMessageArray.at(1)?.addField('Team', Player_Team, true);
         }
 
         // TEAM //
@@ -220,20 +220,20 @@ export default {
                 new MessageEmbed()
                     .setColor(`#0099ff`)
                     .setTitle('Teams')
-            )
+            );
 
             for (let _team of AllTeams) {
                 let Teams_Name: string = _team.teamId as string;
                 let Teams_Score: number = _team.numPoints as number;
                 let Teams_Won: number = _team.roundsWon as number;
 
-                sendMessageArray[2].addFields(
+                sendMessageArray.at(2)?.addFields(
                     {
                         name: `${Teams_Name}`,
                         value: `Score: **${Teams_Score}**\nWon (rounds)*:* **${Teams_Won}**`,
                         inline: true
                     },
-                )
+                );
             }
 
 
