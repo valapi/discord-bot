@@ -13,7 +13,6 @@
     "scripts": {
         "typescript": "npx tsc --project tsconfig.json",
         "dev": "npm run typescript && node dist/index.js",
-        "start": "nodemon --ignore '/dist/*'",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
