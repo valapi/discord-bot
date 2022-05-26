@@ -1,2 +1,1 @@
-web: node dist/index.js
-worker: npx nodemon --ignore '/dist/*'
+worker: nodemon --ignore '/dist/*'
