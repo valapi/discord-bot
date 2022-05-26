@@ -1,1 +1,1 @@
-worker: nodemon --ignore '/dist/*'
+worker: nodemon --ignore '/*'
