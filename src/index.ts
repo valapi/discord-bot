@@ -14,6 +14,8 @@ import { EventExtraData } from './interface/EventData';
 import { ValData } from './utils/database';
 import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashCommand';
 
+const DEVELOPMENT_MODE:boolean = false;
+
 async function START_ENGINE() {
     //dotenv
     dotenv.config({
@@ -94,15 +96,22 @@ async function START_ENGINE() {
     try {
         await Logs.log('Started refreshing application (/) commands.', 'info');
 
-        await rest.put(
-            Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
-            { body: _commandArray },
-        );
-
-        await rest.put(
-            Routes.applicationCommands(String(process.env['CLIENT_ID'])),
-            { body: [] },
-        );
+        if(DEVELOPMENT_MODE) {
+            await rest.put(
+                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
+                { body: _commandArray },
+            );
+        } else {
+            await rest.put(
+                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
+                { body: [] },
+            );
+    
+            await rest.put(
+                Routes.applicationCommands(String(process.env['CLIENT_ID'])),
+                { body: _commandArray },
+            );
+        }
 
         await Logs.log('Successfully reloaded application (/) commands.', 'info');
     } catch (error) {
