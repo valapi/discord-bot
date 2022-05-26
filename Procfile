@@ -1,1 +1,1 @@
-worker: npx nodemon --ignore '/dist/*' '/dist/index.js'
+worker: nodemon --ignore /dist/* '/dist/index.js'
