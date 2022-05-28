@@ -82,6 +82,10 @@ exports.default = {
             {
                 newCommandName: 'verify',
                 subCommandName: 'verify',
+            },
+            {
+                newCommandName: 'logout',
+                subCommandName: 'remove',
             }
         ],
     },
