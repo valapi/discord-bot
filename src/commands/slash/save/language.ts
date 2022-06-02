@@ -32,6 +32,7 @@ export default {
             'setlanguage',
         ]
     },
+    onlyGuild: true,
     async execute({ interaction }) {
         const _choice = interaction.options.getString('language') as string;
         const guildId = String(interaction.guild?.id);

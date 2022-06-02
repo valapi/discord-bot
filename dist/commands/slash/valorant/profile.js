@@ -23,6 +23,7 @@ exports.default = {
         .setName('profile')
         .setDescription('Valorant Profile'),
     type: 'valorant',
+    onlyGuild: true,
     execute({ interaction, language, apiKey, createdTime }) {
         var _a, _b, _c;
         return __awaiter(this, void 0, void 0, function* () {

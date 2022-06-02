@@ -19,6 +19,7 @@ export default {
         .setName('battlepass')
         .setDescription('Valorant Battle Pass'),
     type: 'valorant',
+    onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
         //script
         const userId = interaction.user.id;

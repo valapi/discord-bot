@@ -29,6 +29,7 @@ exports.default = {
             'wallet'
         ],
     },
+    onlyGuild: true,
     execute({ interaction, language, apiKey, createdTime }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {

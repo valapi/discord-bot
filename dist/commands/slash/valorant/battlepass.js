@@ -24,6 +24,7 @@ exports.default = {
         .setName('battlepass')
         .setDescription('Valorant Battle Pass'),
     type: 'valorant',
+    onlyGuild: true,
     execute({ interaction, language, apiKey, createdTime }) {
         var _a, _b, _c, _d;
         return __awaiter(this, void 0, void 0, function* () {

@@ -3,6 +3,7 @@ interface ILanguage {
     data: {
         not_guild: string;
         not_permission: string;
+        dev_cmd: string;
         error: string;
         command: {
             'ping': {

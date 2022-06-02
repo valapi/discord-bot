@@ -46,7 +46,7 @@ exports.default = {
     name: 'interactionCreate',
     once: false,
     execute(interaction, _extraData) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e, _f;
         return __awaiter(this, void 0, void 0, function* () {
             const createdTime = new Date();
             //language
@@ -68,6 +68,8 @@ exports.default = {
                     permissions: [],
                     privateMessage: false,
                     showDeferReply: true,
+                    onlyGuild: false,
+                    inDevlopment: false,
                     echo: {
                         from: 'default',
                         command: [],
@@ -81,13 +83,19 @@ exports.default = {
                 //script
                 try {
                     // Loading Command //
-                    if (command.showDeferReply) {
+                    if (command.showDeferReply === true) {
                         yield interaction.deferReply({
                             ephemeral: Boolean(command.privateMessage),
                         });
                     }
-                    if (!interaction.guild) {
-                        interaction.editReply({
+                    if (command.inDevlopment === true && interaction.user.id !== '549231132382855189') {
+                        yield interaction.reply({
+                            content: _language.data.dev_cmd || 'This command is in development.',
+                        });
+                        return;
+                    }
+                    if (!interaction.guild && command.onlyGuild === true) {
+                        yield interaction.editReply({
                             content: _language.data.not_guild || 'Slash Command are only available in server.',
                         });
                         return;
@@ -101,7 +109,7 @@ exports.default = {
                         });
                     }
                     // Permissions //
-                    if (command.permissions && Array(command.permissions).length > 0) {
+                    if (command.permissions && Array(command.permissions).length > 0 && interaction.guild) {
                         if (!((_c = interaction.memberPermissions) === null || _c === void 0 ? void 0 : _c.has(command.permissions))) {
                             yield interaction.editReply({
                                 content: _language.data.not_permission || `You don't have permission to use this command.`,
@@ -118,7 +126,7 @@ exports.default = {
                         DiscordClient: _extraData.client,
                         createdTime: createdTime,
                         language: _language,
-                        apiKey: (0, crypto_1.genarateApiKey)((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (interaction.guild.id + interaction.guild.ownerId + interaction.guild.createdTimestamp), process.env['PUBLIC_KEY']),
+                        apiKey: (0, crypto_1.genarateApiKey)((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (String((_d = interaction.guild) === null || _d === void 0 ? void 0 : _d.id) + String((_e = interaction.guild) === null || _e === void 0 ? void 0 : _e.ownerId) + String((_f = interaction.guild) === null || _f === void 0 ? void 0 : _f.createdTimestamp)), process.env['PUBLIC_KEY']),
                     };
                     const CommandExecute = yield command.execute(_SlashCommandExtendData);
                     if (typeof CommandExecute === 'string') {

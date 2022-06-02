@@ -24,6 +24,7 @@ export default {
                 .setDescription('Match Index')
         ),
     type: 'valorant',
+    onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
         //script
         const userId = interaction.user.id;

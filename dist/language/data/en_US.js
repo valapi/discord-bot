@@ -5,6 +5,7 @@ exports.default = {
     data: {
         not_guild: `This command can only be used in a guild.`,
         not_permission: `You don't have permission to use this command.`,
+        dev_cmd: `This command is not available for use.`,
         error: `Something Went Wrong, Please Try Again Later`,
         command: {
             "ping": {

@@ -19,6 +19,7 @@ exports.default = {
     type: 'miscellaneous',
     showDeferReply: false,
     privateMessage: true,
+    inDevlopment: true,
     echo: {
         command: [
             'reportbug',

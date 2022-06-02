@@ -25,6 +25,8 @@ interface CustomSlashCommands {
     permissions?: Array<bigint>,
     privateMessage?: boolean,
     showDeferReply?: boolean,
+    onlyGuild: boolean,
+    inDevlopment: boolean,
     echo?: {
         from?: string,
         command: Array<string | EchoSubCommand>,

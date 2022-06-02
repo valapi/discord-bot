@@ -41,6 +41,8 @@ export default {
 				permissions: [],
 				privateMessage: false,
 				showDeferReply: true,
+				onlyGuild: false,
+				inDevlopment: false,
 				echo: {
 					from: 'default',
 					command: [],
@@ -58,14 +60,21 @@ export default {
 
 				// Loading Command //
 
-				if (command.showDeferReply) {
+				if (command.showDeferReply === true) {
 					await interaction.deferReply({
 						ephemeral: Boolean(command.privateMessage),
 					});
 				}
 
-				if (!interaction.guild) {
-					interaction.editReply({
+				if (command.inDevlopment === true && interaction.user.id !== '549231132382855189') {
+					await interaction.reply({
+						content: _language.data.dev_cmd || 'This command is in development.',
+					})
+					return;
+				}
+
+				if (!interaction.guild && command.onlyGuild === true) {
+					await interaction.editReply({
 						content: _language.data.not_guild || 'Slash Command are only available in server.',
 					})
 					return;
@@ -81,7 +90,7 @@ export default {
 				}
 
 				// Permissions //
-				if (command.permissions && Array(command.permissions).length > 0) {
+				if (command.permissions && Array(command.permissions).length > 0 && interaction.guild) {
 					if (!interaction.memberPermissions?.has(command.permissions)) {
 						await interaction.editReply({
 							content: _language.data.not_permission || `You don't have permission to use this command.`,
@@ -101,7 +110,7 @@ export default {
 					DiscordClient: _extraData.client,
 					createdTime: createdTime,
 					language: _language,
-					apiKey: genarateApiKey((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (interaction.guild.id + interaction.guild.ownerId + interaction.guild.createdTimestamp), process.env['PUBLIC_KEY']),
+					apiKey: genarateApiKey((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (String(interaction.guild?.id) + String(interaction.guild?.ownerId) + String(interaction.guild?.createdTimestamp)), process.env['PUBLIC_KEY']),
 				};
 
 				const CommandExecute = await command.execute(_SlashCommandExtendData);

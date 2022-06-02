@@ -52,6 +52,7 @@ export default {
             },
         ],
     },
+    onlyGuild: true,
     async execute({ interaction, language, apiKey}) {
         //script
         const userId = interaction.user.id;

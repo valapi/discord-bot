@@ -89,6 +89,7 @@ exports.default = {
             }
         ],
     },
+    onlyGuild: true,
     execute({ interaction, createdTime, language, apiKey }) {
         return __awaiter(this, void 0, void 0, function* () {
             //script

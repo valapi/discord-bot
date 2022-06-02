@@ -58,6 +58,7 @@ exports.default = {
             'setlanguage',
         ]
     },
+    onlyGuild: true,
     execute({ interaction }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {

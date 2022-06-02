@@ -24,6 +24,9 @@ exports.default = {
             let sendMessage = ``;
             for (let cmd of command.array) {
                 const _cmd = command.collection.get(cmd.name);
+                if (_cmd.inDevlopment === true) {
+                    continue;
+                }
                 if (_cmd.type != (_CommandType.toLocaleLowerCase())) {
                     continue;
                 }

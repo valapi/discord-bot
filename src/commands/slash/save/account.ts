@@ -70,6 +70,7 @@ export default {
             }
         ],
     },
+    onlyGuild: true,
     async execute({ interaction, createdTime, language, apiKey }) {
         //script
         const _subCommand = interaction.options.getSubcommand();

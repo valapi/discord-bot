@@ -49,6 +49,7 @@ exports.default = {
             },
         ],
     },
+    onlyGuild: true,
     execute({ interaction, language, apiKey }) {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {

@@ -23,6 +23,7 @@ exports.default = {
         .setName('rank')
         .setDescription('Valorant Competitive Rank'),
     type: 'valorant',
+    onlyGuild: true,
     execute({ interaction, language, apiKey, createdTime }) {
         return __awaiter(this, void 0, void 0, function* () {
             //script

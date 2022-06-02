@@ -19,6 +19,10 @@ export default {
         for(let cmd of command.array){
             const _cmd = command.collection.get(cmd.name) as CustomSlashCommands;
 
+            if(_cmd.inDevlopment === true) {
+                continue;
+            }
+
             if(_cmd.type != (_CommandType.toLocaleLowerCase())) {
                 continue;
             }
