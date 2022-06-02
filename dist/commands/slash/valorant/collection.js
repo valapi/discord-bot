@@ -37,6 +37,7 @@ exports.default = {
             });
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
+                autoReconnect: true,
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
@@ -112,6 +113,7 @@ exports.default = {
              */
             createEmbed
                 .setTimestamp(createdTime)
+                .setDescription(language.data.command['collection']['default'])
                 .addFields({ name: '\u200B', value: '\u200B' }, {
                 name: 'Weapons',
                 value: sendGunMessage,

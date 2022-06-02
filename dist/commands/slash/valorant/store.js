@@ -63,6 +63,7 @@ exports.default = {
             //valorant
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
+                autoReconnect: true,
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
@@ -238,7 +239,14 @@ exports.default = {
                     //embed
                     const createEmbed = new discord_js_1.MessageEmbed()
                         .setImage((_a = ThisBundleData.data.data) === null || _a === void 0 ? void 0 : _a.displayIcon)
-                        .addFields({ name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true }, { name: `Price`, value: `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(Price_DiscountCosts)}%)**`, inline: true }, { name: '\u200B', value: '\u200B' }, { name: `Time Remaining`, value: `${TimeInMillisecondFormat.data.day} day(s) ${TimeInMillisecondFormat.data.hour} hour(s) ${TimeInMillisecondFormat.data.minute} minute(s) ${TimeInMillisecondFormat.data.second} second(s)`, inline: true });
+                        .addFields({ name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true });
+                    if (Price_Base === Price_Discounted) {
+                        createEmbed.addField(`Price`, `${Price_Base}`, true);
+                    }
+                    else {
+                        createEmbed.addField(`Price`, `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(Price_DiscountCosts)}%)**`, true);
+                    }
+                    createEmbed.addFields({ name: '\u200B', value: '\u200B' }, { name: `Time Remaining`, value: `${TimeInMillisecondFormat.data.day} day(s) ${TimeInMillisecondFormat.data.hour} hour(s) ${TimeInMillisecondFormat.data.minute} minute(s) ${TimeInMillisecondFormat.data.second} second(s)`, inline: true });
                     sendMessageArray.push(createEmbed);
                 }
                 yield interaction.editReply({

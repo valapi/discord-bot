@@ -28,11 +28,12 @@ export default {
 
         //valorant
         const ValApiCom = new ValAPI({
-            language: (language.name).replace('_', '-') as keyof typeof Locale,
+            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
         const ValClient = new ApiWrapper({
             region: "ap",
+            autoReconnect: true,
         });
 
         ValClient.on('error', (async (data) => {
@@ -154,6 +155,7 @@ export default {
 
         createEmbed
             .setTimestamp(createdTime)
+            .setDescription(language.data.command['collection']['default'])
             .addFields(
                 { name: '\u200B', value: '\u200B' },
                 {

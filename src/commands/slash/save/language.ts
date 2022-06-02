@@ -20,7 +20,6 @@ export default {
                     //value is data of choice (can get from { .options.getString(); } function)
                     { name: 'English', value: 'en_US' },
                     { name: 'Thai', value: 'th_TH' },
-                    { name: 'SelectMe', value: 'bestvalorantbot' },
                 )
         ),
     type: 'settings',

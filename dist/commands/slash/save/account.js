@@ -101,6 +101,7 @@ exports.default = {
             //valorant
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
+                autoReconnect: true,
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({

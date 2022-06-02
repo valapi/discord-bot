@@ -33,11 +33,12 @@ export default {
 
         //valorant
         const ValApiCom = new ValAPI({
-            language: (language.name).replace('_', '-') as keyof typeof Locale,
+            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
         const ValClient = new ApiWrapper({
             region: "ap",
+            autoReconnect: true,
         });
 
         ValClient.on('error', (async (data) => {
@@ -88,8 +89,8 @@ export default {
 
         // MATCH //
 
-        let Match_Type = AllMatchData.data.matchInfo.queueID as keyof typeof QueueId;
-        let Match_Name = String(QueueId[Match_Type]).replace('_', ' ');
+        let Match_Type = AllMatchData.data.matchInfo.queueID as keyof typeof QueueId.from;
+        let Match_Name = String(QueueId.fromString(Match_Type)).replace('_', ' ');
         let Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
 
         //time

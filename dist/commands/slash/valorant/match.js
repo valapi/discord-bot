@@ -41,6 +41,7 @@ exports.default = {
             });
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
+                autoReconnect: true,
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
@@ -79,7 +80,7 @@ exports.default = {
             }
             // MATCH //
             let Match_Type = AllMatchData.data.matchInfo.queueID;
-            let Match_Name = String(lib_1.QueueId[Match_Type]).replace('_', ' ');
+            let Match_Name = String(lib_1.QueueId.fromString(Match_Type)).replace('_', ' ');
             let Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
             //time
             let Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);

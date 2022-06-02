@@ -58,7 +58,7 @@ export default {
         const _subCommand = interaction.options.getSubcommand();
 
         const ValApiCom = new ValAPI({
-            language: (language.name).replace('_', '-') as keyof typeof Locale,
+            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
         
         const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
@@ -67,6 +67,7 @@ export default {
         //valorant
         const ValClient = new ApiWrapper({
             region: "ap",
+            autoReconnect: true,
         });
 
         ValClient.on('error', (async (data) => {
@@ -293,10 +294,18 @@ export default {
                     .setImage(ThisBundleData.data.data?.displayIcon as string)
                     .addFields(
                         { name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true },
-                        { name: `Price`, value: `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(Price_DiscountCosts)}%)**`, inline: true },
-                        { name: '\u200B', value: '\u200B' },
-                        { name: `Time Remaining`, value: `${TimeInMillisecondFormat.data.day} day(s) ${TimeInMillisecondFormat.data.hour} hour(s) ${TimeInMillisecondFormat.data.minute} minute(s) ${TimeInMillisecondFormat.data.second} second(s)`, inline: true },
-                    )
+                    );
+
+                if (Price_Base === Price_Discounted){
+                    createEmbed.addField(`Price`, `${Price_Base}`, true);
+                } else {
+                    createEmbed.addField(`Price`, `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(Price_DiscountCosts)}%)**`, true);
+                }
+                createEmbed.addFields(
+                    { name: '\u200B', value: '\u200B' },
+                    { name: `Time Remaining`, value: `${TimeInMillisecondFormat.data.day} day(s) ${TimeInMillisecondFormat.data.hour} hour(s) ${TimeInMillisecondFormat.data.minute} minute(s) ${TimeInMillisecondFormat.data.second} second(s)`, inline: true },
+                );
+
 
                 sendMessageArray.push(createEmbed);
             }

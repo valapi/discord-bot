@@ -26,11 +26,12 @@ export default {
 
         //valorant
         const ValApiCom = new ValAPI({
-            language: (language.name).replace('_', '-') as keyof typeof Locale,
+            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
         
         const ValClient = new ApiWrapper({
             region: "ap",
+            autoReconnect: true,
         });
 
         ValClient.on('error', (async (data) => {
@@ -63,7 +64,7 @@ export default {
 
         // PARTY //
 
-        let Party_QueueID:string = QueueId[TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId] as string;
+        let Party_QueueID:string = QueueId.toString(TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId.to) as string;
         let Party_RemoveRR:string = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
         let Party_Accessibility:string = TheParty.data.Accessibility;
         

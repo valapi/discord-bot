@@ -85,6 +85,7 @@ export default {
         //valorant
         const ValClient = new ApiWrapper({
             region: "ap",
+            autoReconnect: true,
         });
 
         ValClient.on('error', (async (data) => {

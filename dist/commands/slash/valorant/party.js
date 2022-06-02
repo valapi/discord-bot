@@ -37,6 +37,7 @@ exports.default = {
             });
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
+                autoReconnect: true,
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
@@ -60,7 +61,7 @@ exports.default = {
             let sendMessageArray = [];
             let currentArrayPosition = 0;
             // PARTY //
-            let Party_QueueID = lib_1.QueueId[TheParty.data.MatchmakingData.QueueID];
+            let Party_QueueID = lib_1.QueueId.toString(TheParty.data.MatchmakingData.QueueID);
             let Party_RemoveRR = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
             let Party_Accessibility = TheParty.data.Accessibility;
             sendMessageArray.push(new discord_js_1.MessageEmbed()
