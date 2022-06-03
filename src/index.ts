@@ -178,7 +178,6 @@ async function START_ENGINE() {
         timeZone: 'Asia/Bangkok',
     });
     popJob.start();
-    popJob.fireOnTick();
 };
 
 async function LOAD_ENGINE() {
