@@ -5,6 +5,8 @@ import { Logs } from "@ing3kth/core";
 
 import * as dotenv from 'dotenv';
 
+type ICollectionName = 'account' | 'daily'
+
 interface IValorantAccount {
     account: string;
     discordId: number;
@@ -19,9 +21,22 @@ const _valorantSchema = new mongoose.Schema<IValorantAccount>({
         immutable: true,
         required: false, 
         default: () => Date.now(),
-        //28,800,000 (milliseconds)  28,800 (seconds) = 480 (minutes) = 8 (hour)
-        expires: 28800,
+        expires: 1296000000,
     },
+});
+
+interface IValorantSave {
+    user: string;
+    userId: string;
+    guild: string;
+    channelId: string;
+}
+
+const _saveSchema = new mongoose.Schema<IValorantSave>({
+    user: { type: String, required: true },
+    userId: { type: String, required: true },
+    guild: { type: String, required: true },
+    channelId: { type: String, required: true },
 });
 
 class ValData {
@@ -63,9 +78,9 @@ class ValData {
      * @param {string} name name of the collection
      * @returns {mongoose.Model}
      */
-    public getCollection<YourCollectionInterface = IValorantAccount>(name: string = 'account', schema: mongoose.Schema = _valorantSchema, collection: string = 'valorant'): mongoose.Model<YourCollectionInterface, any, any, any> {
+    public getCollection<YourCollectionInterface>(name: ICollectionName, schema: mongoose.Schema): mongoose.Model<YourCollectionInterface, any, any, any> {
         try {
-            return mongoose.model<YourCollectionInterface>(name, schema, collection);
+            return mongoose.model<YourCollectionInterface>(name, schema);
         } catch (error) {
             return mongoose.model<YourCollectionInterface>(name);
         }
@@ -77,7 +92,7 @@ class ValData {
      * @param {mongoose.FilterQuery} filter filter to check
      * @returns {Promise<number>}
      */
-    public static async checkIfExist<YourCollectionInterface = IValorantAccount>(model: mongoose.Model<YourCollectionInterface, any, any, any>, filter: mongoose.FilterQuery<YourCollectionInterface>): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }> {
+    public static async checkIfExist<YourCollectionInterface>(model: mongoose.Model<YourCollectionInterface, any, any, any>, filter: mongoose.FilterQuery<YourCollectionInterface> = {}): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }> {
         const _FindInDatabase: Array<YourCollectionInterface> = await model.find(filter);
 
         return {
@@ -102,6 +117,14 @@ class ValData {
 }
 
 export {
+    //controller
     ValData,
+
+    //valorant account
     type IValorantAccount,
+    _valorantSchema as ValorantSchema,
+
+    //valorant save
+    type IValorantSave,
+    _saveSchema as SaveSchema,
 };

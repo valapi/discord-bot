@@ -2,6 +2,10 @@ import * as dotenv from 'dotenv';
 import * as process from 'process';
 import * as fs from 'fs';
 
+import { CronJob } from 'cron';
+
+import dailyStoreTrigger from './utils/dailystore';
+
 import discordModals from 'discord-modals';
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
 import { REST } from '@discordjs/rest';
@@ -30,9 +34,12 @@ async function START_ENGINE() {
     const DiscordClient: DisClient = new DisClient({
         intents: [
             Intents.FLAGS.GUILDS,
+            Intents.FLAGS.GUILD_MEMBERS,
             Intents.FLAGS.GUILD_MESSAGES,
             Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
             Intents.FLAGS.DIRECT_MESSAGES,
+            Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
+            Intents.FLAGS.GUILD_INTEGRATIONS,
         ],
     });
 
@@ -160,6 +167,18 @@ async function START_ENGINE() {
     });
 
     DiscordClient.setMaxListeners(100);
+
+    //time event
+    const popJob = new CronJob({
+        cronTime: '0 0 8 * * *',
+        onTick: async function () {
+            await dailyStoreTrigger(DiscordClient);
+        },
+        start: false,
+        timeZone: 'Asia/Bangkok',
+    });
+    popJob.start();
+    popJob.fireOnTick();
 };
 
 async function LOAD_ENGINE() {

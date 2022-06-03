@@ -5,7 +5,7 @@ import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
 //valorant common
 import { decrypt } from '../../../utils/crypto';
-import { ValData, type IValorantAccount } from '../../../utils/database';
+import { ValData, type IValorantAccount, ValorantSchema } from '../../../utils/database';
 
 //valorant
 import { Client as ApiWrapper } from '@valapi/api-wrapper';
@@ -22,7 +22,7 @@ export default {
         //script
         const userId = interaction.user.id;
 
-        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
+        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
         const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
 
         //valorant

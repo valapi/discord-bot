@@ -5,7 +5,7 @@ import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 import * as IngCore from '@ing3kth/core';
 import { decrypt, encrypt } from '../../../utils/crypto';
 import makeBuur from '../../../utils/makeBuur';
-import { ValData, type IValorantAccount } from '../../../utils/database';
+import { ValData, type IValorantAccount, ValorantSchema } from '../../../utils/database';
 
 import { Client as ApiWrapper } from '@valapi/api-wrapper';
 import { Client as ValAPI } from '@valapi/valorant-api.com';
@@ -78,7 +78,7 @@ export default {
 
         const CommandLanguage = language.data.command['account'];
 
-        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
+        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
         const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
 
         const _cache = await new IngCore.Cache('valorant');

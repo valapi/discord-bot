@@ -5,7 +5,11 @@ import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
 //valorant common
 import { decrypt } from '../../../utils/crypto';
-import { ValData, type IValorantAccount } from '../../../utils/database';
+import { 
+    ValData,
+    type IValorantAccount, ValorantSchema,
+    SaveSchema as ValSaveSchema, type IValorantSave,
+} from '../../../utils/database';
 
 //valorant
 import { Client as ApiWrapper } from '@valapi/api-wrapper';
@@ -23,6 +27,11 @@ export default {
             subcommand
                 .setName('daily')
                 .setDescription('Daily Store')
+                .addBooleanOption(option => 
+                    option
+                        .setName('notify_everyday')
+                        .setDescription('Sent your daily store at this channel every day')
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -62,7 +71,7 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
         
-        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>();
+        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
         const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
 
         //valorant
@@ -239,6 +248,25 @@ export default {
                 content: `Time Left: **${_time.all.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`,
                 embeds: sendMessageArray,
             });
+
+            //send me every day
+            const ValSaveDatabase = (await ValData.verify()).getCollection<IValorantSave>('daily', ValSaveSchema);
+            const StoreNotify = interaction.options.getBoolean('notify_everyday');
+
+            const _checkDailyExit = await ValData.checkIfExist<IValorantSave>(ValSaveDatabase, { userId: userId });
+
+            if(StoreNotify === true && !_checkDailyExit.isFind) {
+                const SaveAccount = new ValSaveDatabase({
+                    user: interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag,
+                    userId: interaction.user.id,
+                    guild: (interaction.guild?.id as string) + (interaction.guild?.ownerId as string) + String((interaction.guild?.createdTimestamp as number)),
+                    channelId: interaction.channel?.id as string,
+                });
+                await SaveAccount.save();
+            } else if (StoreNotify === false) {
+                //delete
+                await ValSaveDatabase.deleteMany({ userId: userId });
+            }
         } else if (_subCommand === 'bundle') {
             //work in progress
             let sendMessageArray = [];

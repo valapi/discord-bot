@@ -124,6 +124,8 @@ export default {
 				await IngCore.Logs.log(error, 'error');
 				await interaction.editReply({
 					content: _language.data.error || `Something Went Wrong, Please Try Again Later`,
+					embeds: [],
+					components: [],
 				});
 			}
 		} else if (interaction.isButton()) {
