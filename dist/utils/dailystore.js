@@ -65,7 +65,6 @@ function dailyStoreTrigger(DiscordClient) {
                 const ValApiCom = new valorant_api_com_1.Client();
                 const ValClient = new api_wrapper_1.Client({
                     region: "ap",
-                    autoReconnect: true,
                 });
                 ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                     yield ValToken.deleteMany({ userId: _token.userId });
@@ -78,6 +77,7 @@ function dailyStoreTrigger(DiscordClient) {
                 const SaveAccount = ValAccountInDatabase.once.account;
                 const apiKey = (0, crypto_1.genarateApiKey)(_token.user, _token.guild, process.env['PUBLIC_KEY']);
                 ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
+                yield ValClient.reconnect(true);
                 /**
                  * Get Offers
                  */

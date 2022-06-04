@@ -41,15 +41,16 @@ exports.default = {
             const ValApiCom = new valorant_api_com_1.Client({
                 language: (language.name).replace('_', '-'),
             });
-            const ValClient = new api_wrapper_1.Client({
+            const SaveAccount = ValAccountInDatabase.once.account;
+            const ValClient = api_wrapper_1.Client.fromJSON({
                 region: "ap",
-                autoReconnect: true,
-            });
+            }, JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
                     content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
             })));
+            yield ValClient.reconnect(false);
             //get
             if (!ValAccountInDatabase.isFind) {
                 yield interaction.editReply({
@@ -57,8 +58,6 @@ exports.default = {
                 });
                 return;
             }
-            const SaveAccount = ValAccountInDatabase.once.account;
-            ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
             //success
             const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
             const puuid = ValorantUserInfo.data.sub;

@@ -48,7 +48,7 @@ exports.default = {
         .setName('account')
         .setDescription('Manage Valorant Account')
         .addSubcommand(subcommand => subcommand
-        .setName('login')
+        .setName('add')
         .setDescription("Add Your Valorant Account")
         .addStringOption(option => option
         .setName('username')
@@ -68,6 +68,12 @@ exports.default = {
         .addSubcommand(subcommand => subcommand
         .setName('remove')
         .setDescription("Remove Your Valorant Account"))
+        .addSubcommandGroup(subcommandgroup => subcommandgroup
+        .setName('settings')
+        .setDescription('Account Settings')
+        .addSubcommand(subcommand => subcommand
+        .setName('region')
+        .setDescription('Change Your Account Region')))
         .addSubcommand(subcommand => subcommand
         .setName('get')
         .setDescription("Get Your Valorant Account")),
@@ -77,7 +83,7 @@ exports.default = {
         command: [
             {
                 newCommandName: 'login',
-                subCommandName: 'login',
+                subCommandName: 'add',
             },
             {
                 newCommandName: 'verify',
@@ -86,7 +92,7 @@ exports.default = {
             {
                 newCommandName: 'logout',
                 subCommandName: 'remove',
-            }
+            },
         ],
     },
     onlyGuild: true,
@@ -102,7 +108,6 @@ exports.default = {
             //valorant
             const ValClient = new api_wrapper_1.Client({
                 region: "ap",
-                autoReconnect: true,
             });
             ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
@@ -143,7 +148,7 @@ exports.default = {
                         yield ValDatabase.deleteMany({ discordId: userId });
                     }
                     const SaveAccount = new ValDatabase({
-                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), apiKey),
+                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey),
                         discordId: userId,
                         createdAt: createdTime,
                     });
@@ -151,7 +156,7 @@ exports.default = {
                 });
             }
             //sub command
-            if (_subCommand === 'login') {
+            if (_subCommand === 'add') {
                 //auth
                 const _USERNAME = String(interaction.options.getString('username'));
                 const _PASSWORD = String(interaction.options.getString('password'));
@@ -217,7 +222,8 @@ exports.default = {
                     return;
                 }
                 const SaveAccount = ValAccountInDatabase.once.account;
-                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
+                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
+                yield ValClient.reconnect(false);
                 yield success(ValClient);
             }
         });

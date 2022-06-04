@@ -66,25 +66,28 @@ export default {
         //script
         const userId = interaction.user.id;
         const _subCommand = interaction.options.getSubcommand();
-
-        const ValApiCom = new ValAPI({
-            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
-        });
         
         const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
         const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
 
         //valorant
-        const ValClient = new ApiWrapper({
-            region: "ap",
-            autoReconnect: true,
+        const ValApiCom = new ValAPI({
+            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
+
+        const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
+        
+        const ValClient = ApiWrapper.fromJSON({
+            region: "ap",
+        }, JSON.parse(decrypt(SaveAccount, apiKey)));
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
                 content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
         }));
+
+        await ValClient.reconnect(false);
 
         //get
         if (!ValAccountInDatabase.isFind) {
@@ -93,10 +96,6 @@ export default {
             });
             return;
         }
-
-        const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
-
-        ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, apiKey)));
 
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;

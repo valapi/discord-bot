@@ -45,7 +45,6 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 			const ValApiCom = new ValAPI();
 			const ValClient = new ApiWrapper({
 				region: "ap",
-				autoReconnect: true,
 			});
 
 			ValClient.on('error', (async (data) => {
@@ -62,6 +61,7 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 			const apiKey = genarateApiKey(_token.user, _token.guild, process.env['PUBLIC_KEY']);
 
 			ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, apiKey)));
+			await ValClient.reconnect(true);
 
 			/**
 			 * Get Offers

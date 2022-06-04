@@ -16,7 +16,7 @@ export default {
         .setDescription('Manage Valorant Account')
         .addSubcommand(subcommand =>
             subcommand
-                .setName('login')
+                .setName('add')
                 .setDescription("Add Your Valorant Account")
                 .addStringOption(option =>
                     option
@@ -47,6 +47,16 @@ export default {
                 .setName('remove')
                 .setDescription("Remove Your Valorant Account")
         )
+        .addSubcommandGroup(subcommandgroup =>
+            subcommandgroup
+                .setName('settings')
+                .setDescription('Account Settings')
+                .addSubcommand(subcommand =>
+                    subcommand
+                        .setName('region')
+                        .setDescription('Change Your Account Region')
+                )    
+        )
         .addSubcommand(subcommand =>
             subcommand
                 .setName('get')
@@ -58,7 +68,7 @@ export default {
         command: [
             {
                 newCommandName: 'login',
-                subCommandName: 'login',
+                subCommandName: 'add',
             },
             {
                 newCommandName: 'verify',
@@ -67,7 +77,7 @@ export default {
             {
                 newCommandName: 'logout',
                 subCommandName: 'remove',
-            }
+            },
         ],
     },
     onlyGuild: true,
@@ -86,7 +96,6 @@ export default {
         //valorant
         const ValClient = new ApiWrapper({
             region: "ap",
-            autoReconnect: true,
         });
 
         ValClient.on('error', (async (data) => {
@@ -140,7 +149,7 @@ export default {
             }
 
             const SaveAccount = new ValDatabase({
-                account: encrypt(JSON.stringify(ValClient.toJSONAuth()), apiKey),
+                account: encrypt(JSON.stringify(ValClient.toJSON()), apiKey),
                 discordId: userId,
                 createdAt: createdTime,
             });
@@ -148,7 +157,7 @@ export default {
         }
 
         //sub command
-        if (_subCommand === 'login') {
+        if (_subCommand === 'add') {
             //auth
             const _USERNAME = String(interaction.options.getString('username'));
             const _PASSWORD = String(interaction.options.getString('password'));
@@ -222,7 +231,8 @@ export default {
 
             const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
 
-            ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, apiKey)));
+            ValClient.fromJSON(JSON.parse(decrypt(SaveAccount, apiKey)));
+            await ValClient.reconnect(false);
 
             await success(ValClient);
         }

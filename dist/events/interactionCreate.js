@@ -70,6 +70,7 @@ exports.default = {
                     showDeferReply: true,
                     onlyGuild: false,
                     inDevlopment: false,
+                    timeOut: 60000,
                     echo: {
                         from: 'default',
                         command: [],

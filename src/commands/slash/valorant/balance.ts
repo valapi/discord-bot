@@ -37,16 +37,19 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
-        const ValClient = new ApiWrapper({
+        const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
+        
+        const ValClient = ApiWrapper.fromJSON({
             region: "ap",
-            autoReconnect: true,
-        });
+        }, JSON.parse(decrypt(SaveAccount, apiKey)));
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
                 content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
         }));
+
+        await ValClient.reconnect(false);
 
         //get
         if (!ValAccountInDatabase.isFind) {
@@ -55,10 +58,6 @@ export default {
             });
             return;
         }
-
-        const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
-
-        ValClient.fromJSONAuth(JSON.parse(decrypt(SaveAccount, apiKey)));
 
         //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();

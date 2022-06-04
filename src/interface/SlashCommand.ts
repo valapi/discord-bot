@@ -27,6 +27,7 @@ interface CustomSlashCommands {
     showDeferReply?: boolean,
     onlyGuild?: boolean,
     inDevlopment?: boolean,
+    timeOut?: number,
     echo?: {
         from?: string,
         command: Array<string | EchoSubCommand>,
