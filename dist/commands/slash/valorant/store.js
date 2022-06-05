@@ -212,20 +212,20 @@ exports.default = {
                 //send me every day
                 const ValSaveDatabase = (yield database_1.ValData.verify()).getCollection('daily', database_1.SaveSchema);
                 const StoreNotify = interaction.options.getBoolean('notify_everyday');
-                const _checkDailyExit = yield database_1.ValData.checkIfExist(ValSaveDatabase, { userId: userId });
-                if (StoreNotify === true && !_checkDailyExit.isFind) {
-                    const SaveAccount = new ValSaveDatabase({
-                        user: interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag,
-                        userId: interaction.user.id,
-                        guild: ((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) + ((_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.ownerId) + String((_c = interaction.guild) === null || _c === void 0 ? void 0 : _c.createdTimestamp),
-                        channelId: (_d = interaction.channel) === null || _d === void 0 ? void 0 : _d.id,
-                    });
-                    yield SaveAccount.save();
+                if (typeof StoreNotify !== 'boolean') {
+                    return;
                 }
-                else if (StoreNotify === false) {
-                    //delete
-                    yield ValSaveDatabase.deleteMany({ userId: userId });
+                yield ValSaveDatabase.deleteMany({ userId: userId });
+                if (StoreNotify === false) {
+                    return;
                 }
+                const SaveAccount = new ValSaveDatabase({
+                    user: interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag,
+                    userId: interaction.user.id,
+                    guild: ((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) + ((_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.ownerId) + String((_c = interaction.guild) === null || _c === void 0 ? void 0 : _c.createdTimestamp),
+                    channelId: (_d = interaction.channel) === null || _d === void 0 ? void 0 : _d.id,
+                });
+                yield SaveAccount.save();
             }
             else if (_subCommand === 'bundle') {
                 //work in progress

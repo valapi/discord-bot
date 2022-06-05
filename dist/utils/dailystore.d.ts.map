@@ -1,1 +1,1 @@
-{"version":3,"file":"dailystore.d.ts","sourceRoot":"","sources":["../../src/utils/dailystore.ts"],"names":[],"mappings":"AAKA,OAAO,EAAgH,MAAM,IAAI,SAAS,EAAE,MAAM,YAAY,CAAC;AAe/J,wBAA8B,iBAAiB,CAAC,aAAa,EAAE,SAAS,iBAwNvE"}
+{"version":3,"file":"dailystore.d.ts","sourceRoot":"","sources":["../../src/utils/dailystore.ts"],"names":[],"mappings":"AAKA,OAAO,EAAgH,MAAM,IAAI,SAAS,EAAE,MAAM,YAAY,CAAC;AAe/J,wBAA8B,iBAAiB,CAAC,aAAa,EAAE,SAAS,iBA0NvE"}

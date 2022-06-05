@@ -68,6 +68,7 @@ function dailyStoreTrigger(DiscordClient) {
                 });
                 ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
                     yield ValToken.deleteMany({ userId: _token.userId });
+                    throw new Error('ValClient Error');
                 })));
                 //settings
                 if (!ValAccountInDatabase.isFind) {
@@ -208,19 +209,20 @@ function dailyStoreTrigger(DiscordClient) {
                 /**
                  * Sent Message
                  */
-                const _channel = DiscordClient.channels.cache.get('974289020911771718');
+                const _channel = DiscordClient.channels.cache.get(_token.channelId);
                 if ((_channel === null || _channel === void 0 ? void 0 : _channel.isText()) || (_channel === null || _channel === void 0 ? void 0 : _channel.isThread())) {
                     yield _channel.send({
                         content: `This is the store of ${discord_js_1.Formatters.userMention(_token.userId)} today in Valorant\n\nTime Left: **${_time.all.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`,
                         embeds: sendMessageArray,
                     });
+                    yield core_1.Logs.log(`<${_token.userId}> sented today store in Valorant`, 'info');
                 }
                 else {
                     yield ValToken.deleteMany({ userId: _token.userId });
                 }
-                core_1.Logs.log(`<${_token.userId}> sented today store in Valorant`, 'info');
             }
             catch (error) {
+                yield core_1.Logs.log(`<${_token.userId}> failed to send today store in Valorant`, 'error');
                 continue;
             }
         }

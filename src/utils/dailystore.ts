@@ -37,6 +37,7 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 
 	for (let _token of ValTokenInDatabase.data) {
 		try {
+
 			//account
 			const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
 			const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: _token.userId });
@@ -49,6 +50,7 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 
 			ValClient.on('error', (async (data) => {
 				await ValToken.deleteMany({ userId: _token.userId });
+				throw new Error('ValClient Error');
 			}));
 
 			//settings
@@ -217,20 +219,20 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 			/**
 			 * Sent Message
 			 */
-			const _channel = DiscordClient.channels.cache.get('974289020911771718');
+			const _channel = DiscordClient.channels.cache.get(_token.channelId);
 
 			if (_channel?.isText() || _channel?.isThread()) {
 				await _channel.send({
 					content: `This is the store of ${Formatters.userMention(_token.userId)} today in Valorant\n\nTime Left: **${_time.all.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`,
 					embeds: sendMessageArray,
 				});
+				await Logs.log(`<${_token.userId}> sented today store in Valorant`, 'info');
 			} else {
 				await ValToken.deleteMany({ userId: _token.userId });
 			}
 
-			Logs.log(`<${_token.userId}> sented today store in Valorant`, 'info');
-
 		} catch (error) {
+			await Logs.log(`<${_token.userId}> failed to send today store in Valorant`, 'error');
 			continue;
 		}
 	}

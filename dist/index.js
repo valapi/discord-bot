@@ -171,8 +171,9 @@ function START_ENGINE() {
         });
         DiscordClient.setMaxListeners(100);
         //time event
+        const popTime = '0 0 8 * * *';
         const popJob = new cron_1.CronJob({
-            cronTime: '0 0 8 * * *',
+            cronTime: popTime,
             onTick: function () {
                 return __awaiter(this, void 0, void 0, function* () {
                     yield (0, dailystore_1.default)(DiscordClient);

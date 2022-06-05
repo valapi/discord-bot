@@ -252,20 +252,22 @@ export default {
             const ValSaveDatabase = (await ValData.verify()).getCollection<IValorantSave>('daily', ValSaveSchema);
             const StoreNotify = interaction.options.getBoolean('notify_everyday');
 
-            const _checkDailyExit = await ValData.checkIfExist<IValorantSave>(ValSaveDatabase, { userId: userId });
-
-            if(StoreNotify === true && !_checkDailyExit.isFind) {
-                const SaveAccount = new ValSaveDatabase({
-                    user: interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag,
-                    userId: interaction.user.id,
-                    guild: (interaction.guild?.id as string) + (interaction.guild?.ownerId as string) + String((interaction.guild?.createdTimestamp as number)),
-                    channelId: interaction.channel?.id as string,
-                });
-                await SaveAccount.save();
-            } else if (StoreNotify === false) {
-                //delete
-                await ValSaveDatabase.deleteMany({ userId: userId });
+            if (typeof StoreNotify !== 'boolean') {
+                return;
             }
+
+            await ValSaveDatabase.deleteMany({ userId: userId });
+            if (StoreNotify === false) {
+                return;
+            }
+
+            const SaveAccount = new ValSaveDatabase({
+                user: interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag,
+                userId: interaction.user.id,
+                guild: (interaction.guild?.id as string) + (interaction.guild?.ownerId as string) + String((interaction.guild?.createdTimestamp as number)),
+                channelId: interaction.channel?.id as string,
+            });
+            await SaveAccount.save();
         } else if (_subCommand === 'bundle') {
             //work in progress
             let sendMessageArray = [];
