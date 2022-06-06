@@ -169,16 +169,8 @@ async function START_ENGINE() {
     DiscordClient.setMaxListeners(100);
 
     //time event
-    const popTime = '0 0 8 * * *';
-    const popJob = new CronJob({
-        cronTime: popTime,
-        onTick: async function () {
-            await dailyStoreTrigger(DiscordClient);
-        },
-        start: false,
-        timeZone: 'Asia/Bangkok',
-    });
-    popJob.start();
+    // cornjob is not working
+    await dailyStoreTrigger(DiscordClient);
 };
 
 async function LOAD_ENGINE() {

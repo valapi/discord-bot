@@ -38,7 +38,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 const process = __importStar(require("process"));
 const fs = __importStar(require("fs"));
-const cron_1 = require("cron");
 const dailystore_1 = __importDefault(require("./utils/dailystore"));
 const discord_modals_1 = __importDefault(require("discord-modals"));
 const rest_1 = require("@discordjs/rest");
@@ -171,18 +170,8 @@ function START_ENGINE() {
         });
         DiscordClient.setMaxListeners(100);
         //time event
-        const popTime = '0 0 8 * * *';
-        const popJob = new cron_1.CronJob({
-            cronTime: popTime,
-            onTick: function () {
-                return __awaiter(this, void 0, void 0, function* () {
-                    yield (0, dailystore_1.default)(DiscordClient);
-                });
-            },
-            start: false,
-            timeZone: 'Asia/Bangkok',
-        });
-        popJob.start();
+        // cornjob is not working
+        yield (0, dailystore_1.default)(DiscordClient);
     });
 }
 ;
