@@ -169,8 +169,8 @@ async function START_ENGINE() {
     DiscordClient.setMaxListeners(100);
 
     //time event
-    // cornjob is not working
-    await dailyStoreTrigger(DiscordClient);
+    // wip
+    // await dailyStoreTrigger(DiscordClient);
 };
 
 async function LOAD_ENGINE() {

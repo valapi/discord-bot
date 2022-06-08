@@ -38,7 +38,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = __importStar(require("dotenv"));
 const process = __importStar(require("process"));
 const fs = __importStar(require("fs"));
-const dailystore_1 = __importDefault(require("./utils/dailystore"));
 const discord_modals_1 = __importDefault(require("discord-modals"));
 const rest_1 = require("@discordjs/rest");
 const v10_1 = require("discord-api-types/v10");
@@ -169,9 +168,6 @@ function START_ENGINE() {
             type: "PLAYING"
         });
         DiscordClient.setMaxListeners(100);
-        //time event
-        // cornjob is not working
-        yield (0, dailystore_1.default)(DiscordClient);
     });
 }
 ;

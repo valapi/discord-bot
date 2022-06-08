@@ -30,7 +30,7 @@ export default {
                 .addBooleanOption(option => 
                     option
                         .setName('notify_everyday')
-                        .setDescription('Sent your daily store at this channel every day')
+                        .setDescription('Sent your daily store at this channel every day (Work In Progress)')
                 )
         )
         .addSubcommand(subcommand =>
