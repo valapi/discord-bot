@@ -41,6 +41,7 @@ const IngCore = __importStar(require("@ing3kth/core"));
 const crypto_1 = require("../../../utils/crypto");
 const makeBuur_1 = __importDefault(require("../../../utils/makeBuur"));
 const database_1 = require("../../../utils/database");
+const lib_1 = require("@valapi/lib");
 const api_wrapper_1 = require("@valapi/api-wrapper");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
 exports.default = {
@@ -71,12 +72,14 @@ exports.default = {
         .addSubcommand(subcommand => subcommand
         .setName('remove')
         .setDescription("Remove Your Valorant Account"))
-        .addSubcommandGroup(subcommandgroup => subcommandgroup
+        .addSubcommand(subCommand => subCommand
         .setName('settings')
         .setDescription('Account Settings')
-        .addSubcommand(subcommand => subcommand
+        .addStringOption(option => option
         .setName('region')
-        .setDescription('Change Your Account Region')))
+        .setDescription('Change Your Account Region')
+        .addChoices({ name: lib_1.Region.from.ap, value: lib_1.Region.to.Asia_Pacific }, { name: lib_1.Region.from.br, value: lib_1.Region.to.Brazil }, { name: lib_1.Region.from.eu, value: lib_1.Region.to.Europe }, { name: lib_1.Region.from.kr, value: lib_1.Region.to.Korea }, { name: lib_1.Region.from.latam, value: lib_1.Region.to.Latin_America }, { name: lib_1.Region.from.na, value: lib_1.Region.to.North_America }, { name: lib_1.Region.from.pbe, value: lib_1.Region.to.Public_Beta_Environment })
+        .setRequired(true)))
         .addSubcommand(subcommand => subcommand
         .setName('get')
         .setDescription("Get Your Valorant Account")),
@@ -118,6 +121,19 @@ exports.default = {
                 });
             })));
             //success
+            function save(ValClient) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (ValAccountInDatabase.isFind) {
+                        yield ValDatabase.deleteMany({ discordId: userId });
+                    }
+                    const SaveAccount = new ValDatabase({
+                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey),
+                        discordId: userId,
+                        createdAt: createdTime,
+                    });
+                    yield SaveAccount.save();
+                });
+            }
             function success(ValClient) {
                 var _a;
                 return __awaiter(this, void 0, void 0, function* () {
@@ -147,15 +163,7 @@ exports.default = {
                     if (_subCommand === 'get') {
                         return;
                     }
-                    if (ValAccountInDatabase.isFind) {
-                        yield ValDatabase.deleteMany({ discordId: userId });
-                    }
-                    const SaveAccount = new ValDatabase({
-                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey),
-                        discordId: userId,
-                        createdAt: createdTime,
-                    });
-                    yield SaveAccount.save();
+                    yield save(ValClient);
                 });
             }
             //sub command
@@ -205,15 +213,7 @@ exports.default = {
                 //reconnect
                 yield ValClient.reconnect(true);
                 //save
-                if (ValAccountInDatabase.isFind) {
-                    yield ValDatabase.deleteMany({ discordId: userId });
-                }
-                const SaveAccount = new ValDatabase({
-                    account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey),
-                    discordId: userId,
-                    createdAt: createdTime,
-                });
-                yield SaveAccount.save();
+                yield save(ValClient);
             }
             else if (_subCommand === 'remove') {
                 //from cache
@@ -230,6 +230,13 @@ exports.default = {
                 yield interaction.editReply({
                     content: CommandLanguage['remove'],
                 });
+            }
+            else if (_subCommand === 'settings') {
+                //settings
+                const _choice = interaction.options.getString('region');
+                ValClient.setRegion(lib_1.Region.toString(_choice));
+                //save
+                yield save(ValClient);
             }
             else if (_subCommand === 'get') {
                 if (!ValAccountInDatabase.isFind) {

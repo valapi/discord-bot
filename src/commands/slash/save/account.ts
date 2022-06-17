@@ -7,6 +7,7 @@ import { decrypt, encrypt } from '../../../utils/crypto';
 import makeBuur from '../../../utils/makeBuur';
 import { ValData, type IValorantAccount, ValorantSchema } from '../../../utils/database';
 
+import { Region as TheValRegion } from '@valapi/lib';
 import { Client as ApiWrapper } from '@valapi/api-wrapper';
 import { Client as ValAPI } from '@valapi/valorant-api.com';
 
@@ -52,14 +53,24 @@ export default {
                 .setName('remove')
                 .setDescription("Remove Your Valorant Account")
         )
-        .addSubcommandGroup(subcommandgroup =>
-            subcommandgroup
+        .addSubcommand(subCommand => 
+            subCommand
                 .setName('settings')
                 .setDescription('Account Settings')
-                .addSubcommand(subcommand =>
-                    subcommand
+                .addStringOption(option =>
+                    option
                         .setName('region')
                         .setDescription('Change Your Account Region')
+                        .addChoices(
+                            { name: TheValRegion.from.ap, value: TheValRegion.to.Asia_Pacific },
+                            { name: TheValRegion.from.br, value: TheValRegion.to.Brazil },
+                            { name: TheValRegion.from.eu, value: TheValRegion.to.Europe },
+                            { name: TheValRegion.from.kr, value: TheValRegion.to.Korea },
+                            { name: TheValRegion.from.latam, value: TheValRegion.to.Latin_America },
+                            { name: TheValRegion.from.na, value: TheValRegion.to.North_America },
+                            { name: TheValRegion.from.pbe, value: TheValRegion.to.Public_Beta_Environment },
+                        )
+                        .setRequired(true)
                 )    
         )
         .addSubcommand(subcommand =>
@@ -110,6 +121,19 @@ export default {
         }));
 
         //success
+        async function save(ValClient: ApiWrapper) {
+            if(ValAccountInDatabase.isFind){
+                await ValDatabase.deleteMany({ discordId: userId });
+            }
+
+            const SaveAccount = new ValDatabase({
+                account: encrypt(JSON.stringify(ValClient.toJSON()), apiKey),
+                discordId: userId,
+                createdAt: createdTime,
+            });
+            await SaveAccount.save();
+        }
+
         async function success(ValClient: ApiWrapper) {
             if(ValClient.isError){
                 return;
@@ -149,16 +173,7 @@ export default {
                 return;
             }
 
-            if(ValAccountInDatabase.isFind){
-                await ValDatabase.deleteMany({ discordId: userId });
-            }
-
-            const SaveAccount = new ValDatabase({
-                account: encrypt(JSON.stringify(ValClient.toJSON()), apiKey),
-                discordId: userId,
-                createdAt: createdTime,
-            });
-            await SaveAccount.save();
+            await save(ValClient);
         }
 
         //sub command
@@ -213,16 +228,7 @@ export default {
             await ValClient.reconnect(true);
 
             //save
-            if(ValAccountInDatabase.isFind){
-                await ValDatabase.deleteMany({ discordId: userId });
-            }
-
-            const SaveAccount = new ValDatabase({
-                account: encrypt(JSON.stringify(ValClient.toJSON()), apiKey),
-                discordId: userId,
-                createdAt: createdTime,
-            });
-            await SaveAccount.save();
+            await save(ValClient);
         } else if (_subCommand === 'remove') {
             //from cache
             await _cache.clear(userId);
@@ -241,6 +247,14 @@ export default {
             await interaction.editReply({
                 content: CommandLanguage['remove'],
             });
+        } else if (_subCommand === 'settings') {
+            //settings
+            const _choice = interaction.options.getString('region') as keyof typeof TheValRegion.to;
+
+            ValClient.setRegion(TheValRegion.toString(_choice));
+
+            //save
+            await save(ValClient);
         } else if (_subCommand === 'get') {
             if(!ValAccountInDatabase.isFind) {
                 await interaction.editReply({
