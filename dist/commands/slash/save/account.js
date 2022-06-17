@@ -212,6 +212,7 @@ exports.default = {
             else if (_subCommand === 'reconnect') {
                 //reconnect
                 yield ValClient.reconnect(true);
+                yield interaction.editReply(`Reconnected !`);
                 //save
                 yield save(ValClient);
             }
@@ -235,6 +236,7 @@ exports.default = {
                 //settings
                 const _choice = interaction.options.getString('region');
                 ValClient.setRegion(lib_1.Region.toString(_choice));
+                yield interaction.editReply(`changed region to **${_choice.replace('_', ' ')}**`);
                 //save
                 yield save(ValClient);
             }

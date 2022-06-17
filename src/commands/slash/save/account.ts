@@ -227,6 +227,8 @@ export default {
             //reconnect
             await ValClient.reconnect(true);
 
+            await interaction.editReply(`Reconnected !`);
+
             //save
             await save(ValClient);
         } else if (_subCommand === 'remove') {
@@ -252,6 +254,8 @@ export default {
             const _choice = interaction.options.getString('region') as keyof typeof TheValRegion.to;
 
             ValClient.setRegion(TheValRegion.toString(_choice));
+
+            await interaction.editReply(`changed region to **${_choice.replace('_', ' ')}**`);
 
             //save
             await save(ValClient);
