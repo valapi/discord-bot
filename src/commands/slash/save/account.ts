@@ -44,6 +44,11 @@ export default {
         )
         .addSubcommand(subcommand =>
             subcommand
+                .setName('reconnect')
+                .setDescription('Reconnect Your Account')
+        )
+        .addSubcommand(subcommand =>
+            subcommand
                 .setName('remove')
                 .setDescription("Remove Your Valorant Account")
         )
@@ -203,6 +208,21 @@ export default {
 
             //success
             await success(ValClient);
+        } else if (_subCommand === 'reconnect') {
+            //reconnect
+            await ValClient.reconnect(true);
+
+            //save
+            if(ValAccountInDatabase.isFind){
+                await ValDatabase.deleteMany({ discordId: userId });
+            }
+
+            const SaveAccount = new ValDatabase({
+                account: encrypt(JSON.stringify(ValClient.toJSON()), apiKey),
+                discordId: userId,
+                createdAt: createdTime,
+            });
+            await SaveAccount.save();
         } else if (_subCommand === 'remove') {
             //from cache
             await _cache.clear(userId);

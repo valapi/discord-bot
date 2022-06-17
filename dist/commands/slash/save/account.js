@@ -66,6 +66,9 @@ exports.default = {
         .setDescription('Verify Code')
         .setRequired(true)))
         .addSubcommand(subcommand => subcommand
+        .setName('reconnect')
+        .setDescription('Reconnect Your Account'))
+        .addSubcommand(subcommand => subcommand
         .setName('remove')
         .setDescription("Remove Your Valorant Account"))
         .addSubcommandGroup(subcommandgroup => subcommandgroup
@@ -197,6 +200,20 @@ exports.default = {
                 yield ValClient.verify(_MFA_CODE);
                 //success
                 yield success(ValClient);
+            }
+            else if (_subCommand === 'reconnect') {
+                //reconnect
+                yield ValClient.reconnect(true);
+                //save
+                if (ValAccountInDatabase.isFind) {
+                    yield ValDatabase.deleteMany({ discordId: userId });
+                }
+                const SaveAccount = new ValDatabase({
+                    account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey),
+                    discordId: userId,
+                    createdAt: createdTime,
+                });
+                yield SaveAccount.save();
             }
             else if (_subCommand === 'remove') {
                 //from cache
