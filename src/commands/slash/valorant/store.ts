@@ -75,6 +75,13 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
+        if (ValAccountInDatabase.isFind === false) {
+            await interaction.editReply({
+                content: language.data.command['account']['not_account'],
+            });
+            return;
+        }
+
         const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
         const ValClient = ApiWrapper.fromJSON({
@@ -130,7 +137,7 @@ export default {
                             for (const _currency of getCurency.data.data) {
                                 Store_Cost = TheOffer.Cost[_currency.uuid];
 
-                                Store_Curency_Name = _currency.displayName;
+                                Store_Curency_Name = _currency.displayName as string;
                                 Store_Curency_ID = _currency.uuid;
 
                                 if (Store_Cost) {
@@ -185,7 +192,7 @@ export default {
             if (!GetWeaponSkinLevel.isError && GetWeaponSkinLevel.data.data) {
                 for (const _SkinLevel of GetWeaponSkinLevel.data.data) {
                     if (_SkinLevel.uuid === Store_ItemID) {
-                        Store_Display_Name = _SkinLevel.displayName;
+                        Store_Display_Name = _SkinLevel.displayName as string;
                         Store_Display_Icon = _SkinLevel.displayIcon;
 
                         break;
@@ -264,12 +271,11 @@ export default {
             const SaveAccount = new ValSaveDatabase({
                 user: interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag,
                 userId: interaction.user.id,
-                guild: (interaction.guild?.id as string) + (interaction.guild?.ownerId as string) + String((interaction.guild?.createdTimestamp as number)),
+                guild: String(interaction.guild?.id) + String(interaction.guild?.ownerId) + String(interaction.guild?.createdTimestamp),
                 channelId: interaction.channel?.id as string,
             });
             await SaveAccount.save();
         } else if (_subCommand === 'bundle') {
-            //work in progress
             let sendMessageArray = [];
 
             for (const ofTheBundle in ValorantStore.data.FeaturedBundle.Bundles) {

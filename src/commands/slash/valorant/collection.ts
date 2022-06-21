@@ -32,6 +32,13 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
+        if (ValAccountInDatabase.isFind === false) {
+            await interaction.editReply({
+                content: language.data.command['account']['not_account'],
+            });
+            return;
+        }
+
         const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
         const ValClient = ApiWrapper.fromJSON({

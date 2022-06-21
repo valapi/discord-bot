@@ -210,6 +210,15 @@ exports.default = {
                 yield success(ValClient);
             }
             else if (_subCommand === 'reconnect') {
+                //connect
+                if (!ValAccountInDatabase.isFind) {
+                    yield interaction.editReply({
+                        content: CommandLanguage['not_account'],
+                    });
+                    return;
+                }
+                const SaveAccount = ValAccountInDatabase.once.account;
+                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
                 //reconnect
                 yield ValClient.reconnect(true);
                 yield interaction.editReply(`Reconnected !`);

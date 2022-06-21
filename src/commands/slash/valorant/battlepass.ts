@@ -32,6 +32,13 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
+        if (ValAccountInDatabase.isFind === false) {
+            await interaction.editReply({
+                content: language.data.command['account']['not_account'],
+            });
+            return;
+        }
+
         const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
         const ValClient = ApiWrapper.fromJSON({
@@ -107,38 +114,38 @@ export default {
             case 'EquippableSkinLevel': //weapon skin
                 const SlotData_0 = await ValApiCom.Weapons.getSkinLevelByUuid(BP_Slot_ID);
                 if (SlotData_0.isError || !SlotData_0.data.data) throw new Error('Data Not Found!');
-                BP_Slot_Name = SlotData_0.data.data.displayName;
+                BP_Slot_Name = SlotData_0.data.data.displayName as string;
                 BP_Slot_Display = SlotData_0.data.data.displayIcon;
                 break;
             case 'EquippableCharmLevel': //buddy
                 const SlotData_1 = await ValApiCom.Buddies.getLevelByUuid(BP_Slot_ID);
                 if (SlotData_1.isError || !SlotData_1.data.data) throw new Error('Data 1 Not Found!');
-                BP_Slot_Name = SlotData_1.data.data.displayName;
+                BP_Slot_Name = SlotData_1.data.data.displayName as string;
                 BP_Slot_Display = SlotData_1.data.data.displayIcon;
                 break;
             case 'Currency':
                 const SlotData_2 = await ValApiCom.Currencies.getByUuid(BP_Slot_ID);
                 if (SlotData_2.isError || !SlotData_2.data.data) throw new Error('Data 2 Not Found!');
-                BP_Slot_Name = SlotData_2.data.data.displayName;
+                BP_Slot_Name = SlotData_2.data.data.displayName as string;
                 BP_Slot_Display = SlotData_2.data.data.displayIcon;
                 break;
             case 'PlayerCard':
                 const SlotData_3 = await ValApiCom.PlayerCards.getByUuid(BP_Slot_ID);
                 if (SlotData_3.isError || !SlotData_3.data.data) throw new Error('Data 3 Not Found!');
-                BP_Slot_Name = SlotData_3.data.data.displayName;
+                BP_Slot_Name = SlotData_3.data.data.displayName as string;
                 BP_Slot_Display = SlotData_3.data.data.displayIcon;
                 break;
             case 'Spray':
                 const SlotData_4 = await ValApiCom.Sprays.getByUuid(BP_Slot_ID);
                 if (SlotData_4.isError || !SlotData_4.data.data) throw new Error('Data 4 Not Found!');
-                BP_Slot_Name = SlotData_4.data.data.displayName;
+                BP_Slot_Name = SlotData_4.data.data.displayName as string;
                 BP_Slot_Display = SlotData_4.data.data.displayIcon;
                 break;
             case 'Title':
                 const SlotData_5 = await ValApiCom.PlayerTitles.getByUuid(BP_Slot_ID);
                 if (SlotData_5.isError || !SlotData_5.data.data) throw new Error('Data 5 Not Found!');
-                BP_Slot_Name = SlotData_5.data.data.displayName;
-                BP_Slot_Description = SlotData_5.data.data.titleText;
+                BP_Slot_Name = SlotData_5.data.data.displayName as string;
+                BP_Slot_Description = SlotData_5.data.data.titleText as string;
                 break;
             default:
                 throw new Error('Type of slot Not Found!');

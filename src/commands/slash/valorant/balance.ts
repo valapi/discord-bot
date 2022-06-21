@@ -37,6 +37,13 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
+        if (ValAccountInDatabase.isFind === false) {
+            await interaction.editReply({
+                content: language.data.command['account']['not_account'],
+            });
+            return;
+        }
+
         const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
         const ValClient = ApiWrapper.fromJSON({
@@ -84,7 +91,7 @@ export default {
             if (!isNaN(AllWallet[ofCurrency.uuid])) {
                 BalanceArray.push({
                     id: ofCurrency.uuid,
-                    name: ofCurrency.displayName,
+                    name: ofCurrency.displayName as string,
                     icon: ofCurrency.displayIcon,
                     value: Number(AllWallet[ofCurrency.uuid]),
                 });

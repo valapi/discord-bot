@@ -65,6 +65,12 @@ exports.default = {
             const ValApiCom = new valorant_api_com_1.Client({
                 language: (language.name).replace('_', '-'),
             });
+            if (ValAccountInDatabase.isFind === false) {
+                yield interaction.editReply({
+                    content: language.data.command['account']['not_account'],
+                });
+                return;
+            }
             const SaveAccount = ValAccountInDatabase.once.account;
             const ValClient = api_wrapper_1.Client.fromJSON({
                 region: "ap",
@@ -222,13 +228,12 @@ exports.default = {
                 const SaveAccount = new ValSaveDatabase({
                     user: interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag,
                     userId: interaction.user.id,
-                    guild: ((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) + ((_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.ownerId) + String((_c = interaction.guild) === null || _c === void 0 ? void 0 : _c.createdTimestamp),
+                    guild: String((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id) + String((_b = interaction.guild) === null || _b === void 0 ? void 0 : _b.ownerId) + String((_c = interaction.guild) === null || _c === void 0 ? void 0 : _c.createdTimestamp),
                     channelId: (_d = interaction.channel) === null || _d === void 0 ? void 0 : _d.id,
                 });
                 yield SaveAccount.save();
             }
             else if (_subCommand === 'bundle') {
-                //work in progress
                 let sendMessageArray = [];
                 for (const ofTheBundle in ValorantStore.data.FeaturedBundle.Bundles) {
                     const TheBundle = ValorantStore.data.FeaturedBundle.Bundles[ofTheBundle];

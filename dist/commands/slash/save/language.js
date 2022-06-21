@@ -76,7 +76,12 @@ exports.default = {
                 }
             }
             else {
-                yield _cache.input(String(_language.name), guildId);
+                if (_language.name !== controller_1.defaultLanguage) {
+                    yield _cache.input(String(_language.name), guildId);
+                }
+                else {
+                    yield _cache.clear(guildId);
+                }
                 yield interaction.editReply(_language.data.command['language']['succes']);
             }
         });

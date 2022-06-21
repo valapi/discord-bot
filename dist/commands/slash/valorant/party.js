@@ -36,6 +36,12 @@ exports.default = {
             const ValApiCom = new valorant_api_com_1.Client({
                 language: (language.name).replace('_', '-'),
             });
+            if (ValAccountInDatabase.isFind === false) {
+                yield interaction.editReply({
+                    content: language.data.command['account']['not_account'],
+                });
+                return;
+            }
             const SaveAccount = ValAccountInDatabase.once.account;
             const ValClient = api_wrapper_1.Client.fromJSON({
                 region: "ap",
@@ -61,6 +67,12 @@ exports.default = {
             let sendMessageArray = [];
             let currentArrayPosition = 0;
             // PARTY //
+            if (TheParty.data.message === 'Party does not exist' || TheParty.data.errorCode === 'PARTY_DNE') {
+                yield interaction.editReply({
+                    content: language.data.command['party']['not_party'],
+                });
+                return;
+            }
             let Party_QueueID = lib_1.QueueId.toString(TheParty.data.MatchmakingData.QueueID);
             let Party_RemoveRR = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
             let Party_Accessibility = TheParty.data.Accessibility;

@@ -30,6 +30,13 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
+        if (ValAccountInDatabase.isFind === false) {
+            await interaction.editReply({
+                content: language.data.command['account']['not_account'],
+            });
+            return;
+        }
+
         const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
         const ValClient = ApiWrapper.fromJSON({
@@ -63,6 +70,13 @@ export default {
         let currentArrayPosition:number = 0;
 
         // PARTY //
+
+        if (TheParty.data.message === 'Party does not exist' || TheParty.data.errorCode === 'PARTY_DNE') {
+            await interaction.editReply({
+                content: language.data.command['party']['not_party'],
+            });
+            return;
+        }
 
         let Party_QueueID:string = QueueId.toString(TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId.to) as string;
         let Party_RemoveRR:string = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;

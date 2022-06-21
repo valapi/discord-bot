@@ -1,9 +1,9 @@
 import * as fs from 'fs';
 import * as process from 'process';
 
-import type { ILanguage } from "./interface";
+import type { ILanguage, ILanguageName } from "./interface";
 
-const _defaultLanguage:string = 'en_US'
+const _defaultLanguage:ILanguageName = 'en_US';
 
 function getLanguage (language:string = _defaultLanguage):ILanguage | void {
     const langFolder = fs.readdirSync(process.cwd() + '/dist/language/data').filter(file => file.endsWith('.js'));

@@ -4,7 +4,7 @@ import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
 import * as IngCore from '@ing3kth/core';
 
-import { getLanguage } from '../../../language/controller';
+import { getLanguage, defaultLanguage } from '../../../language/controller';
 
 export default {
     data: new SlashCommandBuilder()
@@ -49,7 +49,11 @@ export default {
                 await interaction.editReply(_old_language.data.command['language']['fail']);
             }
         } else {
-            await _cache.input(String(_language.name), guildId);
+            if (_language.name !== defaultLanguage) {
+                await _cache.input(String(_language.name), guildId);
+            } else {
+                await _cache.clear(guildId);
+            }
 
             await interaction.editReply(_language.data.command['language']['succes']);
         }

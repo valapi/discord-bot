@@ -37,6 +37,9 @@ export default {
             },
             "collection": {
                 "default": `นี่คือรายการของสะสมของคุณ`,
+            },
+            "party": {
+                "not_party": `คุณไม่ได้อยู่ในเกม`,
             }
         },
     },

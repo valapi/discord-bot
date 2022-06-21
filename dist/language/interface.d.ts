@@ -1,5 +1,6 @@
+declare type ILanguageName = `en_US` | `th_TH`;
 interface ILanguage {
-    name: string;
+    name: ILanguageName;
     data: {
         not_guild: string;
         not_permission: string;
@@ -36,8 +37,11 @@ interface ILanguage {
             'collection': {
                 'default': string;
             };
+            'party': {
+                'not_party': string;
+            };
         };
     };
 }
-export type { ILanguage };
+export type { ILanguage, ILanguageName };
 //# sourceMappingURL=interface.d.ts.map

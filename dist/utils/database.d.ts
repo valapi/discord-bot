@@ -5,14 +5,14 @@ interface IValorantAccount {
     discordId: number;
     createdAt: Date;
 }
-declare const _valorantSchema: mongoose.Schema<IValorantAccount, mongoose.Model<IValorantAccount, any, any, any>, {}, {}, any>;
+declare const _valorantSchema: mongoose.Schema<IValorantAccount, mongoose.Model<IValorantAccount, any, any, any, any>, {}, {}, any, {}, "type", IValorantAccount>;
 interface IValorantSave {
     user: string;
     userId: string;
     guild: string;
     channelId: string;
 }
-declare const _saveSchema: mongoose.Schema<IValorantSave, mongoose.Model<IValorantSave, any, any, any>, {}, {}, any>;
+declare const _saveSchema: mongoose.Schema<IValorantSave, mongoose.Model<IValorantSave, any, any, any, any>, {}, {}, any, {}, "type", IValorantSave>;
 declare class ValData {
     constructor();
     /**

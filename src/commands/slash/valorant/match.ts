@@ -37,6 +37,13 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
+        if (ValAccountInDatabase.isFind === false) {
+            await interaction.editReply({
+                content: language.data.command['account']['not_account'],
+            });
+            return;
+        }
+
         const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
         const ValClient = ApiWrapper.fromJSON({
@@ -111,7 +118,7 @@ export default {
         const GetSeason = await ValApiCom.Seasons.getByUuid(AllMatchData.data.matchInfo.seasonId);
         if (GetSeason.isError || !GetSeason.data.data) throw new Error(GetSeason.data.error);
 
-        let Match_Season = GetSeason.data.data.displayName;
+        let Match_Season = GetSeason.data.data.displayName as string;
 
         sendMessageArray.push(
             new MessageEmbed()
@@ -162,7 +169,7 @@ export default {
         for (let _rank of AllRanks.data.data) {
             for (let _tier of _rank.tiers) {
                 if (_tier.tier == ThisPlayer?.competitiveTier) {
-                    Player_Rank = _tier.tierName;
+                    Player_Rank = _tier.tierName as string;
                     break;
                 }
             }
@@ -176,7 +183,7 @@ export default {
         const GetAgent = await ValApiCom.Agents.getByUuid(ThisPlayer?.characterId as string);
         if (GetAgent.isError || !GetAgent.data.data) throw new Error(GetAgent.data.error);
 
-        let Player_Agent_Name: string = GetAgent.data.data.displayName;
+        let Player_Agent_Name: string = GetAgent.data.data.displayName as string;
         let Player_Agent_Display: string = GetAgent.data.data.displayIcon;
         let Player_Agent_Color: string = String(GetAgent.data.data.backgroundGradientColors[2]).substring(0, GetAgent.data.data.backgroundGradientColors[2].length - 2);
 

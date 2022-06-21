@@ -224,6 +224,18 @@ export default {
             //success
             await success(ValClient);
         } else if (_subCommand === 'reconnect') {
+            //connect
+            if(!ValAccountInDatabase.isFind) {
+                await interaction.editReply({
+                    content: CommandLanguage['not_account'],
+                });
+                return;
+            }
+
+            const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
+
+            ValClient.fromJSON(JSON.parse(decrypt(SaveAccount, apiKey)));
+
             //reconnect
             await ValClient.reconnect(true);
 

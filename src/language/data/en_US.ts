@@ -37,6 +37,9 @@ export default {
             },
             "collection": {
                 "default": `This is your Valorant collection`,
+            },
+            "party": {
+                "not_party": `You are not in-game.`,
             }
         },
     },

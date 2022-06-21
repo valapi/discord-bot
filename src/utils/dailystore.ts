@@ -95,7 +95,7 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 								for (const _currency of getCurency.data.data) {
 									Store_Cost = TheOffer.Cost[_currency.uuid];
 
-									Store_Curency_Name = _currency.displayName;
+									Store_Curency_Name = _currency.displayName as string;
 									Store_Curency_ID = _currency.uuid;
 
 									if (Store_Cost) {
@@ -150,7 +150,7 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 				if (!GetWeaponSkinLevel.isError && GetWeaponSkinLevel.data.data) {
 					for (const _SkinLevel of GetWeaponSkinLevel.data.data) {
 						if (_SkinLevel.uuid === Store_ItemID) {
-							Store_Display_Name = _SkinLevel.displayName;
+							Store_Display_Name = _SkinLevel.displayName as string;
 							Store_Display_Icon = _SkinLevel.displayIcon;
 
 							break;

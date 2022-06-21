@@ -30,6 +30,13 @@ export default {
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
+        if (ValAccountInDatabase.isFind === false) {
+            await interaction.editReply({
+                content: language.data.command['account']['not_account'],
+            });
+            return;
+        }
+
         const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
         const ValClient = ApiWrapper.fromJSON({
@@ -72,7 +79,7 @@ export default {
         for (let _rank of AllRanks.data.data) {
             for (let _tier of _rank.tiers) {
                 if (_tier.tier == ThisRank.TierAfterUpdate) {
-                    Rank_Name = _tier.tierName;
+                    Rank_Name = _tier.tierName as string;
                     Rank_Icon = _tier.largeIcon;
                     Rank_Color = String(_tier.backgroundColor).substring(0, _tier.backgroundColor.length - 2);
                     break;

@@ -41,6 +41,12 @@ exports.default = {
             const ValApiCom = new valorant_api_com_1.Client({
                 language: (language.name).replace('_', '-'),
             });
+            if (ValAccountInDatabase.isFind === false) {
+                yield interaction.editReply({
+                    content: language.data.command['account']['not_account'],
+                });
+                return;
+            }
             const SaveAccount = ValAccountInDatabase.once.account;
             const ValClient = api_wrapper_1.Client.fromJSON({
                 region: "ap",
