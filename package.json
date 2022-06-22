@@ -4,8 +4,8 @@
     "description": "Valorant Example Discord By ING3_",
     "main": "dist/index.js",
     "engines": {
-        "node": "18.4.0",
-        "npm": "8.7.0"
+        "node": "18.x",
+        "npm": "8.x"
     },
     "scripts": {
         "typescript": "npx tsc --project tsconfig.json",
