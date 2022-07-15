@@ -5,4 +5,3 @@ declare const _default: {
     execute(modal: ModalSubmitInteraction, { client }: EventExtraData): Promise<void>;
 };
 export default _default;
-//# sourceMappingURL=reportbug.d.ts.map

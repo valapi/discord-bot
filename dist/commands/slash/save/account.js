@@ -1,48 +1,13 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
-const IngCore = __importStar(require("@ing3kth/core"));
+const IngCore = tslib_1.__importStar(require("@ing3kth/core"));
 const crypto_1 = require("../../../utils/crypto");
-const makeBuur_1 = __importDefault(require("../../../utils/makeBuur"));
 const database_1 = require("../../../utils/database");
 const lib_1 = require("@valapi/lib");
-const api_wrapper_1 = require("@valapi/api-wrapper");
+const web_client_1 = require("@valapi/web-client");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
@@ -103,30 +68,33 @@ exports.default = {
     },
     onlyGuild: true,
     execute({ interaction, createdTime, language, apiKey }) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             //script
-            const _subCommand = interaction.options.getSubcommand();
             const userId = interaction.user.id;
+            const _subCommand = interaction.options.getSubcommand();
             const CommandLanguage = language.data.command['account'];
-            const ValDatabase = (yield database_1.ValData.verify()).getCollection('account', database_1.ValorantSchema);
-            const ValAccountInDatabase = yield database_1.ValData.checkIfExist(ValDatabase, { discordId: userId });
+            const ValAccount = yield database_1.ValData.checkCollection({
+                name: 'account',
+                schema: database_1.ValorantSchema,
+                filter: { discordId: userId },
+            });
             const _cache = yield new IngCore.Cache('valorant');
             //valorant
-            const ValClient = new api_wrapper_1.Client({
+            const ValClient = new web_client_1.Client({
                 region: "ap",
             });
-            ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
+            ValClient.on('error', ((data) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
                     content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
             })));
             //success
             function save(ValClient) {
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (ValAccountInDatabase.isFind) {
-                        yield ValDatabase.deleteMany({ discordId: userId });
+                return tslib_1.__awaiter(this, void 0, void 0, function* () {
+                    if (ValAccount.isFind) {
+                        yield ValAccount.model.deleteMany({ discordId: userId });
                     }
-                    const SaveAccount = new ValDatabase({
+                    const SaveAccount = new ValAccount.model({
                         account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey),
                         discordId: userId,
                         createdAt: createdTime,
@@ -136,21 +104,16 @@ exports.default = {
             }
             function success(ValClient) {
                 var _a;
-                return __awaiter(this, void 0, void 0, function* () {
-                    if (ValClient.isError) {
-                        return;
-                    }
+                return tslib_1.__awaiter(this, void 0, void 0, function* () {
                     const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
                     const puuid = ValorantUserInfo.data.sub;
                     const ValorantInventory = yield ValClient.Player.Loadout(puuid);
-                    const ValorantPlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
-                    const ValorantPlayerCard = yield (new valorant_api_com_1.Client()).PlayerCards.getByUuid(ValorantPlayerCard_ID);
-                    const ValorantPlayerCard_Display = String((_a = ValorantPlayerCard.data.data) === null || _a === void 0 ? void 0 : _a.displayIcon);
+                    const ValorantPlayerCard = yield (new valorant_api_com_1.Client()).PlayerCards.getByUuid(ValorantInventory.data.Identity.PlayerCardID);
                     //sendMessage
                     const createEmbed = new discord_js_1.MessageEmbed()
                         .setColor(`#0099ff`)
                         .addFields({ name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true }, { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true }, { name: '\u200B', value: '\u200B' }, { name: `ID`, value: `${puuid}`, inline: true })
-                        .setThumbnail(ValorantPlayerCard_Display)
+                        .setThumbnail(String((_a = ValorantPlayerCard.data.data) === null || _a === void 0 ? void 0 : _a.displayIcon))
                         .setTimestamp(createdTime)
                         .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
                     yield interaction.editReply({
@@ -170,22 +133,21 @@ exports.default = {
             if (_subCommand === 'add') {
                 //auth
                 const _USERNAME = String(interaction.options.getString('username'));
-                const _PASSWORD = String(interaction.options.getString('password'));
-                yield ValClient.login(_USERNAME, _PASSWORD);
+                yield ValClient.login(_USERNAME, String(interaction.options.getString('password')));
                 //embed
                 const createEmbed = new discord_js_1.MessageEmbed()
                     .setColor(`#0099ff`)
                     .setTitle(`/${interaction.commandName} ${_subCommand}`)
-                    .setDescription(`Username: **${_USERNAME}**\nPassword: **${(0, makeBuur_1.default)({ message: _PASSWORD, percent: 70 })}**`)
+                    .setDescription(`Username: **${_USERNAME}**`)
                     .setTimestamp(createdTime)
                     .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
-                if (!ValClient.multifactor) {
+                if (!ValClient.isMultifactor) {
                     //success
                     yield success(ValClient);
                 }
                 else {
                     //multifactor
-                    yield _cache.input((0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSONAuth()), apiKey), userId);
+                    yield _cache.input((0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey), userId);
                     yield interaction.editReply({
                         content: CommandLanguage.verify,
                         embeds: [
@@ -196,7 +158,6 @@ exports.default = {
             }
             else if (_subCommand === 'verify') {
                 //auth
-                const _MFA_CODE = Number(interaction.options.getNumber("verify_code"));
                 const _save = yield _cache.output(userId);
                 if (!_save) {
                     yield interaction.editReply({
@@ -204,23 +165,22 @@ exports.default = {
                     });
                     return;
                 }
-                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(_save, apiKey)));
-                yield ValClient.verify(_MFA_CODE);
+                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(_save, apiKey)));
+                yield ValClient.verify(Number(interaction.options.getNumber("verify_code")));
                 //success
                 yield success(ValClient);
             }
             else if (_subCommand === 'reconnect') {
                 //connect
-                if (!ValAccountInDatabase.isFind) {
+                if (!ValAccount.isFind) {
                     yield interaction.editReply({
                         content: CommandLanguage['not_account'],
                     });
                     return;
                 }
-                const SaveAccount = ValAccountInDatabase.once.account;
-                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
+                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValAccount.once.account, apiKey)));
                 //reconnect
-                yield ValClient.reconnect(true);
+                yield ValClient.refresh(true);
                 yield interaction.editReply(`Reconnected !`);
                 //save
                 yield save(ValClient);
@@ -229,13 +189,13 @@ exports.default = {
                 //from cache
                 yield _cache.clear(userId);
                 //from database
-                if (!ValAccountInDatabase.isFind) {
+                if (!ValAccount.isFind) {
                     yield interaction.editReply({
                         content: CommandLanguage['not_account'],
                     });
                     return;
                 }
-                yield ValDatabase.deleteOne({ discordId: userId });
+                yield ValAccount.model.deleteOne({ discordId: userId });
                 //response
                 yield interaction.editReply({
                     content: CommandLanguage['remove'],
@@ -250,18 +210,16 @@ exports.default = {
                 yield save(ValClient);
             }
             else if (_subCommand === 'get') {
-                if (!ValAccountInDatabase.isFind) {
+                if (!ValAccount.isFind) {
                     yield interaction.editReply({
                         content: CommandLanguage['not_account'],
                     });
                     return;
                 }
-                const SaveAccount = ValAccountInDatabase.once.account;
-                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
-                yield ValClient.reconnect(false);
+                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValAccount.once.account, apiKey)));
+                yield ValClient.refresh(false);
                 yield success(ValClient);
             }
         });
     }
 };
-//# sourceMappingURL=account.js.map

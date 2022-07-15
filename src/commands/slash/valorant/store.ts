@@ -12,7 +12,8 @@ import {
 } from '../../../utils/database';
 
 //valorant
-import { Client as ApiWrapper } from '@valapi/api-wrapper';
+import { Region } from 'valorant.ts';
+import { Client as ApiWrapper } from '@valapi/web-client';
 import { Client as ValAPI } from '@valapi/valorant-api.com';
 import { Locale } from '@valapi/lib';
 
@@ -67,26 +68,27 @@ export default {
         const userId = interaction.user.id;
         const _subCommand = interaction.options.getSubcommand();
         
-        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
-        const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
+        const ValDatabase = await ValData.checkCollection<IValorantAccount>({
+            name: 'account',
+            schema: ValorantSchema,
+            filter: { discordId: interaction.user.id },
+        });
 
         //valorant
         const ValApiCom = new ValAPI({
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
-        if (ValAccountInDatabase.isFind === false) {
+        if (ValDatabase.isFind === false) {
             await interaction.editReply({
                 content: language.data.command['account']['not_account'],
             });
             return;
         }
-
-        const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
-        const ValClient = ApiWrapper.fromJSON({
-            region: "ap",
-        }, JSON.parse(decrypt(SaveAccount, apiKey)));
+        const ValClient = ApiWrapper.fromJSON(JSON.parse(decrypt((ValDatabase.once as IValorantAccount).account, apiKey)), {
+            region: Region.Asia_Pacific
+        });
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
@@ -94,16 +96,9 @@ export default {
             });
         }));
 
-        await ValClient.reconnect(false);
-
-        //get
-        if (!ValAccountInDatabase.isFind) {
-            await interaction.editReply({
-                content: language.data.command['account']['not_account'],
-            });
-            return;
-        }
-
+        await ValClient.refresh(false);
+        
+        //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;
 
@@ -256,7 +251,7 @@ export default {
             });
 
             //send me every day
-            const ValSaveDatabase = (await ValData.verify()).getCollection<IValorantSave>('daily', ValSaveSchema);
+            const ValSaveDatabase = (await ValData.create()).getCollection<IValorantSave>('daily', ValSaveSchema);
             const StoreNotify = interaction.options.getBoolean('notify_everyday');
 
             if (typeof StoreNotify !== 'boolean') {

@@ -27,4 +27,3 @@ function makeBuur(config) {
     return String(_buur.join('')).toUpperCase();
 }
 exports.default = makeBuur;
-//# sourceMappingURL=makeBuur.js.map

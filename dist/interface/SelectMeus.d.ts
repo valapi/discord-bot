@@ -18,4 +18,3 @@ interface CustomMenu {
     execute(data: CustomMenuExtendData): Promise<void | string>;
 }
 export type { CustomMenuExtendData, CustomMenu, };
-//# sourceMappingURL=SelectMeus.d.ts.map

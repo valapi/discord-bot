@@ -1,14 +1,6 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 //common
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
@@ -16,7 +8,8 @@ const discord_js_1 = require("discord.js");
 const crypto_1 = require("../../../utils/crypto");
 const database_1 = require("../../../utils/database");
 //valorant
-const api_wrapper_1 = require("@valapi/api-wrapper");
+const valorant_ts_1 = require("valorant.ts");
+const web_client_1 = require("@valapi/web-client");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
@@ -25,38 +18,33 @@ exports.default = {
     type: 'valorant',
     onlyGuild: true,
     execute({ interaction, language, apiKey, createdTime }) {
-        return __awaiter(this, void 0, void 0, function* () {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
             //script
             const userId = interaction.user.id;
-            const ValDatabase = (yield database_1.ValData.verify()).getCollection('account', database_1.ValorantSchema);
-            const ValAccountInDatabase = yield database_1.ValData.checkIfExist(ValDatabase, { discordId: userId });
+            const ValDatabase = yield database_1.ValData.checkCollection({
+                name: 'account',
+                schema: database_1.ValorantSchema,
+                filter: { discordId: interaction.user.id },
+            });
             //valorant
             const ValApiCom = new valorant_api_com_1.Client({
                 language: (language.name).replace('_', '-'),
             });
-            if (ValAccountInDatabase.isFind === false) {
+            if (ValDatabase.isFind === false) {
                 yield interaction.editReply({
                     content: language.data.command['account']['not_account'],
                 });
                 return;
             }
-            const SaveAccount = ValAccountInDatabase.once.account;
-            const ValClient = api_wrapper_1.Client.fromJSON({
-                region: "ap",
-            }, JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
-            ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
+            const ValClient = web_client_1.Client.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValDatabase.once.account, apiKey)), {
+                region: valorant_ts_1.Region.Asia_Pacific
+            });
+            ValClient.on('error', ((data) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
                     content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
             })));
-            yield ValClient.reconnect(false);
-            //get
-            if (!ValAccountInDatabase.isFind) {
-                yield interaction.editReply({
-                    content: language.data.command['account']['not_account'],
-                });
-                return;
-            }
+            yield ValClient.refresh(false);
             //success
             const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
             const puuid = ValorantUserInfo.data.sub;
@@ -101,4 +89,3 @@ exports.default = {
         });
     }
 };
-//# sourceMappingURL=rank.js.map

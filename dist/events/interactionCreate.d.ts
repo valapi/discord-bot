@@ -6,4 +6,3 @@ declare const _default: {
     execute(interaction: Interaction, _extraData: EventExtraData): Promise<void>;
 };
 export default _default;
-//# sourceMappingURL=interactionCreate.d.ts.map

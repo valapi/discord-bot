@@ -44,4 +44,3 @@ interface ILanguage {
     };
 }
 export type { ILanguage, ILanguageName };
-//# sourceMappingURL=interface.d.ts.map

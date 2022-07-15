@@ -33,4 +33,3 @@ interface CustomSlashCommands {
     execute(data: SlashCommandExtendData): Promise<void | string>;
 }
 export type { SlashCommandExtendData, EchoSubCommand, CustomSlashCommandsCategory, CustomSlashCommands, };
-//# sourceMappingURL=SlashCommand.d.ts.map

@@ -1,49 +1,18 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
+const tslib_1 = require("tslib");
 const core_1 = require("@ing3kth/core");
-const dotenv = __importStar(require("dotenv"));
-const process = __importStar(require("process"));
+const dotenv = tslib_1.__importStar(require("dotenv"));
+const process = tslib_1.__importStar(require("process"));
 const discord_js_1 = require("discord.js");
 const crypto_1 = require("../utils/crypto");
 const Milliseconds_1 = require("@ing3kth/core/dist/utils/Milliseconds");
 //valorant
 const database_1 = require("../utils/database");
-const api_wrapper_1 = require("@valapi/api-wrapper");
+const web_client_1 = require("@valapi/web-client");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
 function dailyStoreTrigger(DiscordClient) {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         dotenv.config({
             path: process.cwd() + '/.env'
         });
@@ -51,34 +20,34 @@ function dailyStoreTrigger(DiscordClient) {
          * Get Account
          */
         //token
-        const ValToken = (yield database_1.ValData.verify()).getCollection('daily', database_1.SaveSchema);
-        const ValTokenInDatabase = yield database_1.ValData.checkIfExist(ValToken);
-        if (ValTokenInDatabase.isFind === false) {
-            return;
-        }
-        for (let _token of ValTokenInDatabase.data) {
+        const ValDatabaseDaily = yield database_1.ValData.checkCollection({
+            name: 'daily',
+            schema: database_1.SaveSchema,
+        });
+        for (let _token of ValDatabaseDaily.data) {
             try {
                 //account
-                const ValDatabase = (yield database_1.ValData.verify()).getCollection('account', database_1.ValorantSchema);
-                const ValAccountInDatabase = yield database_1.ValData.checkIfExist(ValDatabase, { discordId: _token.userId });
+                const ValDatabase = yield database_1.ValData.checkCollection({
+                    name: 'account',
+                    schema: database_1.ValorantSchema,
+                    filter: { discordId: _token.userId }
+                });
                 //valorant
                 const ValApiCom = new valorant_api_com_1.Client();
-                const ValClient = new api_wrapper_1.Client({
+                const ValClient = new web_client_1.Client({
                     region: "ap",
                 });
-                ValClient.on('error', ((data) => __awaiter(this, void 0, void 0, function* () {
-                    yield ValToken.deleteMany({ userId: _token.userId });
+                ValClient.on('error', ((data) => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                    yield ValDatabase.model.deleteMany({ userId: _token.userId });
                     throw new Error('ValClient Error');
                 })));
                 //settings
-                if (!ValAccountInDatabase.isFind) {
-                    yield ValDatabase.deleteMany({ discordId: _token.userId });
+                if (!ValDatabaseDaily.isFind) {
+                    yield ValDatabase.model.deleteMany({ discordId: _token.userId });
                     continue;
                 }
-                const SaveAccount = ValAccountInDatabase.once.account;
-                const apiKey = (0, crypto_1.genarateApiKey)(_token.user, _token.guild, process.env['PUBLIC_KEY']);
-                ValClient.fromJSONAuth(JSON.parse((0, crypto_1.decrypt)(SaveAccount, apiKey)));
-                yield ValClient.reconnect(true);
+                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValDatabase.once.account, (0, crypto_1.genarateApiKey)(_token.user, _token.guild, process.env['PUBLIC_KEY']))));
+                yield ValClient.refresh(true);
                 /**
                  * Get Offers
                  */
@@ -87,7 +56,7 @@ function dailyStoreTrigger(DiscordClient) {
                 const GetWeaponSkin = yield ValApiCom.Weapons.getSkins();
                 function getOffersOf(ItemsId) {
                     var _a, _b, _c;
-                    return __awaiter(this, void 0, void 0, function* () {
+                    return tslib_1.__awaiter(this, void 0, void 0, function* () {
                         let Store_ItemID = '';
                         let Store_Quantity = '';
                         let Store_ID = '';
@@ -218,7 +187,7 @@ function dailyStoreTrigger(DiscordClient) {
                     yield core_1.Logs.log(`<${_token.userId}> sented today store in Valorant`, 'info');
                 }
                 else {
-                    yield ValToken.deleteMany({ userId: _token.userId });
+                    yield ValDatabaseDaily.model.deleteMany({ userId: _token.userId });
                 }
             }
             catch (error) {
@@ -230,4 +199,3 @@ function dailyStoreTrigger(DiscordClient) {
 }
 exports.default = dailyStoreTrigger;
 ;
-//# sourceMappingURL=dailystore.js.map

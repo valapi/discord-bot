@@ -6,4 +6,3 @@ declare const _default: {
     execute(guild: Guild, _extraData: EventExtraData): Promise<void>;
 };
 export default _default;
-//# sourceMappingURL=guildCreate.d.ts.map

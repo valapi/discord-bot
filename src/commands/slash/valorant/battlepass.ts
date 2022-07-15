@@ -8,11 +8,12 @@ import { decrypt } from '../../../utils/crypto';
 import { ValData, type IValorantAccount, ValorantSchema } from '../../../utils/database';
 
 //valorant
-import { Client as ApiWrapper } from '@valapi/api-wrapper';
+import { Region } from 'valorant.ts';
+import { Client as ApiWrapper } from '@valapi/web-client';
 import { Client as ValAPI } from '@valapi/valorant-api.com';
 import { Locale } from '@valapi/lib';
 
-const _CurrentBattlePassContractId = 'd80f3ef5-44f5-8d70-6935-f2840b2d3882';
+const _CurrentBattlePassContractId = '99ac9283-4dd3-5248-2e01-8baf778affb4';
 
 export default {
     data: new SlashCommandBuilder()
@@ -24,26 +25,27 @@ export default {
         //script
         const userId = interaction.user.id;
 
-        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
-        const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
+        const ValDatabase = await ValData.checkCollection<IValorantAccount>({
+            name: 'account',
+            schema: ValorantSchema,
+            filter: { discordId: interaction.user.id },
+        });
 
         //valorant
         const ValApiCom = new ValAPI({
             language: (language.name).replace('_', '-') as keyof typeof Locale.from,
         });
 
-        if (ValAccountInDatabase.isFind === false) {
+        if (ValDatabase.isFind === false) {
             await interaction.editReply({
                 content: language.data.command['account']['not_account'],
             });
             return;
         }
-
-        const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
         
-        const ValClient = ApiWrapper.fromJSON({
-            region: "ap",
-        }, JSON.parse(decrypt(SaveAccount, apiKey)));
+        const ValClient = ApiWrapper.fromJSON(JSON.parse(decrypt((ValDatabase.once as IValorantAccount).account, apiKey)), {
+            region: Region.Asia_Pacific
+        });
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
@@ -51,15 +53,7 @@ export default {
             });
         }));
 
-        await ValClient.reconnect(false);
-
-        //get
-        if (!ValAccountInDatabase.isFind) {
-            await interaction.editReply({
-                content: language.data.command['account']['not_account'],
-            });
-            return;
-        }
+        await ValClient.refresh(false);
 
         //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
@@ -113,7 +107,7 @@ export default {
         switch (BP_LevelSlot?.reward.type) {
             case 'EquippableSkinLevel': //weapon skin
                 const SlotData_0 = await ValApiCom.Weapons.getSkinLevelByUuid(BP_Slot_ID);
-                if (SlotData_0.isError || !SlotData_0.data.data) throw new Error('Data Not Found!');
+                if (SlotData_0.isError || !SlotData_0.data.data) throw new Error('Data 0 Not Found!');
                 BP_Slot_Name = SlotData_0.data.data.displayName as string;
                 BP_Slot_Display = SlotData_0.data.data.displayIcon;
                 break;

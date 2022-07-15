@@ -5,4 +5,3 @@ declare const _default: {
     execute(client: Client): Promise<void>;
 };
 export default _default;
-//# sourceMappingURL=ready.d.ts.map

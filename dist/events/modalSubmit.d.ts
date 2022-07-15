@@ -6,4 +6,3 @@ declare const _default: {
     execute(modal: ModalSubmitInteraction, _extraData: EventExtraData): Promise<void>;
 };
 export default _default;
-//# sourceMappingURL=modalSubmit.d.ts.map

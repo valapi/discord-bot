@@ -28,23 +28,27 @@ declare class ValData {
      */
     getCollection<YourCollectionInterface>(name: ICollectionName, schema: mongoose.Schema): mongoose.Model<YourCollectionInterface, any, any, any>;
     /**
-     * Check if collection is exist or not
-     * @param {mongoose.Model} model Model of the collection
-     * @param {mongoose.FilterQuery} filter filter to check
-     * @returns {Promise<number>}
-     */
-    static checkIfExist<YourCollectionInterface>(model: mongoose.Model<YourCollectionInterface, any, any, any>, filter?: mongoose.FilterQuery<YourCollectionInterface>): Promise<{
-        isFind: Boolean;
-        total: Number;
-        data: Array<YourCollectionInterface>;
-        once: YourCollectionInterface;
-    }>;
-    /**
      * login to mongodb database
      * @param {string} token token of access to database
      * @returns {Promise<ValData>}
      */
-    static verify(token?: string): Promise<ValData>;
+    static create(token?: string): Promise<ValData>;
+    /**
+     * Check if collection is exist or not
+     * @param config checking config
+     * @returns { isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }
+     */
+    static checkCollection<YourCollectionInterface>(config: {
+        name: ICollectionName;
+        schema: mongoose.Schema;
+        filter?: mongoose.FilterQuery<YourCollectionInterface>;
+        token?: string;
+    }): Promise<{
+        isFind: Boolean;
+        total: Number;
+        data: Array<YourCollectionInterface>;
+        once: YourCollectionInterface;
+        model: mongoose.Model<YourCollectionInterface, any, any, any>;
+    }>;
 }
 export { ValData, type IValorantAccount, _valorantSchema as ValorantSchema, type IValorantSave, _saveSchema as SaveSchema, };
-//# sourceMappingURL=database.d.ts.map

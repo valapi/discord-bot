@@ -28,7 +28,7 @@ async function START_ENGINE() {
 
 
     //database
-    await ValData.verify(process.env['MONGO_TOKEN']);
+    await ValData.create(process.env['MONGO_TOKEN']);
 
     //client
     const DiscordClient: DisClient = new DisClient({

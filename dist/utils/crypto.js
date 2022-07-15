@@ -1,10 +1,8 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.decrypt = exports.encrypt = exports.genarateApiKey = void 0;
-const crypto_js_1 = __importDefault(require("crypto-js"));
+const tslib_1 = require("tslib");
+const crypto_js_1 = tslib_1.__importDefault(require("crypto-js"));
 function genarateApiKey(key1, key2, key3) {
     key1 = String(key1);
     key2 = String(key2);
@@ -34,4 +32,3 @@ function decrypt(message, key) {
     return step0;
 }
 exports.decrypt = decrypt;
-//# sourceMappingURL=crypto.js.map

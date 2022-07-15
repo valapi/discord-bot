@@ -11,4 +11,3 @@ declare function getStatus(DiscordClient: Client, createdTime: number): Promise<
     };
 }>;
 export default getStatus;
-//# sourceMappingURL=getStatus.d.ts.map

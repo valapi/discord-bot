@@ -1,60 +1,26 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv = __importStar(require("dotenv"));
-const process = __importStar(require("process"));
-const fs = __importStar(require("fs"));
-const discord_modals_1 = __importDefault(require("discord-modals"));
+const tslib_1 = require("tslib");
+const dotenv = tslib_1.__importStar(require("dotenv"));
+const process = tslib_1.__importStar(require("process"));
+const fs = tslib_1.__importStar(require("fs"));
+const discord_modals_1 = tslib_1.__importDefault(require("discord-modals"));
 const rest_1 = require("@discordjs/rest");
 const v10_1 = require("discord-api-types/v10");
 const discord_js_1 = require("discord.js");
-const events_1 = __importDefault(require("events"));
+const events_1 = tslib_1.__importDefault(require("events"));
 const core_1 = require("@ing3kth/core");
 const database_1 = require("./utils/database");
 const DEVELOPMENT_MODE = false;
 function START_ENGINE() {
     var _a;
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         //dotenv
         dotenv.config({
             path: process.cwd() + '/.env'
         });
         //database
-        yield database_1.ValData.verify(process.env['MONGO_TOKEN']);
+        yield database_1.ValData.create(process.env['MONGO_TOKEN']);
         //client
         const DiscordClient = new discord_js_1.Client({
             intents: [
@@ -142,7 +108,7 @@ function START_ENGINE() {
                 commandArray: _commandArray,
             };
             if (event.once) {
-                DiscordClient.once(event.name, ((...args) => __awaiter(this, void 0, void 0, function* () {
+                DiscordClient.once(event.name, ((...args) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                     try {
                         yield event.execute(...args, _extraData);
                     }
@@ -152,7 +118,7 @@ function START_ENGINE() {
                 })));
             }
             else {
-                DiscordClient.on(event.name, ((...args) => __awaiter(this, void 0, void 0, function* () {
+                DiscordClient.on(event.name, ((...args) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                     try {
                         yield event.execute(...args, _extraData);
                     }
@@ -172,18 +138,17 @@ function START_ENGINE() {
 }
 ;
 function LOAD_ENGINE() {
-    return __awaiter(this, void 0, void 0, function* () {
+    return tslib_1.__awaiter(this, void 0, void 0, function* () {
         try {
             yield START_ENGINE();
         }
         catch (error) {
             yield core_1.Logs.log(error, 'error');
-            setTimeout((() => __awaiter(this, void 0, void 0, function* () { yield LOAD_ENGINE(); })), 1000);
+            setTimeout((() => tslib_1.__awaiter(this, void 0, void 0, function* () { yield LOAD_ENGINE(); })), 1000);
         }
     });
 }
-(() => __awaiter(void 0, void 0, void 0, function* () {
+(() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     //the loop will run 3 time on error
     yield LOAD_ENGINE();
 }))();
-//# sourceMappingURL=index.js.map

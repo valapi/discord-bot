@@ -44,4 +44,3 @@ exports.default = {
         },
     },
 };
-//# sourceMappingURL=th_TH.js.map

@@ -8,7 +8,7 @@ import makeBuur from '../../../utils/makeBuur';
 import { ValData, type IValorantAccount, ValorantSchema } from '../../../utils/database';
 
 import { Region as TheValRegion } from '@valapi/lib';
-import { Client as ApiWrapper } from '@valapi/api-wrapper';
+import { Client as ApiWrapper } from '@valapi/web-client';
 import { Client as ValAPI } from '@valapi/valorant-api.com';
 
 export default {
@@ -99,13 +99,16 @@ export default {
     onlyGuild: true,
     async execute({ interaction, createdTime, language, apiKey }) {
         //script
-        const _subCommand = interaction.options.getSubcommand();
         const userId = interaction.user.id;
+        const _subCommand = interaction.options.getSubcommand();
 
         const CommandLanguage = language.data.command['account'];
 
-        const ValDatabase = (await ValData.verify()).getCollection<IValorantAccount>('account', ValorantSchema);
-        const ValAccountInDatabase = await ValData.checkIfExist<IValorantAccount>(ValDatabase, { discordId: userId });
+        const ValAccount = await ValData.checkCollection<IValorantAccount>({
+            name: 'account',
+            schema: ValorantSchema,
+            filter: { discordId: userId },
+        });
 
         const _cache = await new IngCore.Cache('valorant');
 
@@ -122,11 +125,11 @@ export default {
 
         //success
         async function save(ValClient: ApiWrapper) {
-            if(ValAccountInDatabase.isFind){
-                await ValDatabase.deleteMany({ discordId: userId });
+            if(ValAccount.isFind){
+                await ValAccount.model.deleteMany({ discordId: userId });
             }
 
-            const SaveAccount = new ValDatabase({
+            const SaveAccount = new ValAccount.model({
                 account: encrypt(JSON.stringify(ValClient.toJSON()), apiKey),
                 discordId: userId,
                 createdAt: createdTime,
@@ -135,17 +138,11 @@ export default {
         }
 
         async function success(ValClient: ApiWrapper) {
-            if(ValClient.isError){
-                return;
-            }
-
             const ValorantUserInfo = await ValClient.Player.GetUserInfo();
             const puuid = ValorantUserInfo.data.sub;
 
             const ValorantInventory = await ValClient.Player.Loadout(puuid);
-            const ValorantPlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
-            const ValorantPlayerCard = await (new ValAPI()).PlayerCards.getByUuid(ValorantPlayerCard_ID);
-            const ValorantPlayerCard_Display = String(ValorantPlayerCard.data.data?.displayIcon);
+            const ValorantPlayerCard = await (new ValAPI()).PlayerCards.getByUuid(ValorantInventory.data.Identity.PlayerCardID);
 
             //sendMessage
             const createEmbed = new MessageEmbed()
@@ -156,7 +153,7 @@ export default {
                     { name: '\u200B', value: '\u200B' },
                     { name: `ID`, value: `${puuid}`, inline: true },
                 )
-                .setThumbnail(ValorantPlayerCard_Display)
+                .setThumbnail(String(ValorantPlayerCard.data.data?.displayIcon))
                 .setTimestamp(createdTime)
                 .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
 
@@ -180,24 +177,23 @@ export default {
         if (_subCommand === 'add') {
             //auth
             const _USERNAME = String(interaction.options.getString('username'));
-            const _PASSWORD = String(interaction.options.getString('password'));
 
-            await ValClient.login(_USERNAME, _PASSWORD);
+            await ValClient.login(_USERNAME, String(interaction.options.getString('password')));
 
             //embed
             const createEmbed = new MessageEmbed()
                 .setColor(`#0099ff`)
                 .setTitle(`/${interaction.commandName} ${_subCommand}`)
-                .setDescription(`Username: **${_USERNAME}**\nPassword: **${makeBuur({ message: _PASSWORD, percent: 70 })}**`)
+                .setDescription(`Username: **${_USERNAME}**`)
                 .setTimestamp(createdTime)
                 .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
 
-            if (!ValClient.multifactor) {
+            if (!ValClient.isMultifactor) {
                 //success
                 await success(ValClient);
             } else {
                 //multifactor
-                await _cache.input(encrypt(JSON.stringify(ValClient.toJSONAuth()), apiKey), userId);
+                await _cache.input(encrypt(JSON.stringify(ValClient.toJSON()), apiKey), userId);
 
                 await interaction.editReply({
                     content: CommandLanguage.verify,
@@ -208,8 +204,6 @@ export default {
             }
         } else if (_subCommand === 'verify') {
             //auth
-            const _MFA_CODE = Number(interaction.options.getNumber("verify_code"));
-
             const _save = await _cache.output(userId);
             if(!_save) {
                 await interaction.editReply({
@@ -218,26 +212,24 @@ export default {
                 return;
             }
 
-            ValClient.fromJSONAuth(JSON.parse(decrypt(_save, apiKey)));
-            await ValClient.verify(_MFA_CODE);
+            ValClient.fromJSON(JSON.parse(decrypt(_save, apiKey)));
+            await ValClient.verify(Number(interaction.options.getNumber("verify_code")));
 
             //success
             await success(ValClient);
         } else if (_subCommand === 'reconnect') {
             //connect
-            if(!ValAccountInDatabase.isFind) {
+            if(!ValAccount.isFind) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });
                 return;
             }
 
-            const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
-
-            ValClient.fromJSON(JSON.parse(decrypt(SaveAccount, apiKey)));
+            ValClient.fromJSON(JSON.parse(decrypt((ValAccount.once as IValorantAccount).account, apiKey)));
 
             //reconnect
-            await ValClient.reconnect(true);
+            await ValClient.refresh(true);
 
             await interaction.editReply(`Reconnected !`);
 
@@ -248,14 +240,14 @@ export default {
             await _cache.clear(userId);
 
             //from database
-            if(!ValAccountInDatabase.isFind) {
+            if(!ValAccount.isFind) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });
                 return;
             }
 
-            await ValDatabase.deleteOne({ discordId: userId });
+            await ValAccount.model.deleteOne({ discordId: userId });
 
             //response
             await interaction.editReply({
@@ -272,17 +264,15 @@ export default {
             //save
             await save(ValClient);
         } else if (_subCommand === 'get') {
-            if(!ValAccountInDatabase.isFind) {
+            if(!ValAccount.isFind) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });
                 return;
             }
 
-            const SaveAccount = (ValAccountInDatabase.once as IValorantAccount).account;
-
-            ValClient.fromJSON(JSON.parse(decrypt(SaveAccount, apiKey)));
-            await ValClient.reconnect(false);
+            ValClient.fromJSON(JSON.parse(decrypt((ValAccount.once as IValorantAccount).account, apiKey)));
+            await ValClient.refresh(false);
 
             await success(ValClient);
         }

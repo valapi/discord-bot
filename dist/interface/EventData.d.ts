@@ -6,4 +6,3 @@ interface EventExtraData {
     commandArray: Array<RESTPostAPIApplicationCommandsJSONBody>;
 }
 export type { EventExtraData };
-//# sourceMappingURL=EventData.d.ts.map

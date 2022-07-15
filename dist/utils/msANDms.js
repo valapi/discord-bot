@@ -11,4 +11,3 @@ function msANDms(ms1, ms2) {
     return ms1 - ms2;
 }
 exports.default = msANDms;
-//# sourceMappingURL=msANDms.js.map

@@ -13,4 +13,3 @@ interface CustomButton {
     execute(data: CustomButtonExtendData): Promise<void | string>;
 }
 export type { CustomButtonExtendData, CustomButton, };
-//# sourceMappingURL=Button.d.ts.map

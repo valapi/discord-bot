@@ -26,4 +26,3 @@ function genarateReportForm(language) {
     return modal;
 }
 exports.genarateReportForm = genarateReportForm;
-//# sourceMappingURL=ReportModal.js.map

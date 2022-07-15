@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton, MessageSelectMenu } from 'discord.js';
 import type { CustomSlashCommands } from '../../../interface/SlashCommand';
+import { PermissionFlagsBits } from 'discord-api-types/v10';
 
 import * as IngCore from '@ing3kth/core';
 

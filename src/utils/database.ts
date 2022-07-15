@@ -19,7 +19,7 @@ const _valorantSchema = new mongoose.Schema<IValorantAccount>({
     createdAt: {
         type: Date,
         immutable: true,
-        required: false, 
+        required: false,
         default: () => Date.now(),
         expires: 1296000000,
     },
@@ -86,33 +86,46 @@ class ValData {
         }
     }
 
-    /**
-     * Check if collection is exist or not
-     * @param {mongoose.Model} model Model of the collection
-     * @param {mongoose.FilterQuery} filter filter to check
-     * @returns {Promise<number>}
-     */
-    public static async checkIfExist<YourCollectionInterface>(model: mongoose.Model<YourCollectionInterface, any, any, any>, filter: mongoose.FilterQuery<YourCollectionInterface> = {}): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }> {
-        const _FindInDatabase: Array<YourCollectionInterface> = await model.find(filter);
-
-        return {
-            isFind: (Number(_FindInDatabase.length) > 0),
-            total: Number(_FindInDatabase.length),
-            data: _FindInDatabase,
-            once: _FindInDatabase[0],
-        };
-    }
+    //static
 
     /**
      * login to mongodb database
      * @param {string} token token of access to database
      * @returns {Promise<ValData>}
      */
-    public static async verify(token?: string): Promise<ValData> {
+    public static async create(token?: string): Promise<ValData> {
         const _database = new ValData();
-        _database.login(token);
+        await _database.login(token);
 
         return _database;
+    }
+
+    /**
+     * Check if collection is exist or not
+     * @param config checking config
+     * @returns { isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }
+     */
+    public static async checkCollection<YourCollectionInterface>(config: {
+        name: ICollectionName,
+        schema: mongoose.Schema,
+        filter?: mongoose.FilterQuery<YourCollectionInterface>,
+        token?: string,
+    }): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface, model: mongoose.Model<YourCollectionInterface, any, any, any> }> {
+
+        const _MyCollection = (await ValData.create(config.token)).getCollection<YourCollectionInterface>(config.name, config.schema);
+        const _FindInDatabase: Array<YourCollectionInterface> = await _MyCollection.find(config.filter || {});
+
+        return {
+            ...{
+                isFind: (Number(_FindInDatabase.length) > 0),
+                total: Number(_FindInDatabase.length),
+                data: _FindInDatabase,
+                once: _FindInDatabase[0],
+            },
+            ...{
+                model: _MyCollection
+            }
+        };
     }
 }
 
