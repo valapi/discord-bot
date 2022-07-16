@@ -103,7 +103,7 @@ async function START_ENGINE() {
     try {
         await Logs.log('Started refreshing application (/) commands.', 'info');
 
-        if(DEVELOPMENT_MODE) {
+        if(DEVELOPMENT_MODE === true) {
             await rest.put(
                 Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
                 { body: _commandArray },

@@ -27,7 +27,6 @@ const _saveSchema = new mongoose_1.default.Schema({
 exports.SaveSchema = _saveSchema;
 class ValData {
     constructor() {
-        //event
         mongoose_1.default.connection.on("error", ((error) => tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield core_1.Logs.log(error, 'error');
         })));
@@ -37,16 +36,10 @@ class ValData {
         mongoose_1.default.connection.on("disconnected", (() => tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield core_1.Logs.log('Disconnected from database', 'warning');
         })));
-        //dot ENV
         dotenv.config({
             path: process.cwd() + '/.env'
         });
     }
-    /**
-     * login to mongodb database
-     * @param {string} token token of access to database
-     * @returns {Promise<void>}
-     */
     login(token = String(process.env['MONGO_TOKEN'])) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             if (!token) {
@@ -55,11 +48,6 @@ class ValData {
             yield mongoose_1.default.connect(token);
         });
     }
-    /**
-     * Get {@link mongoose.Model} of the collection
-     * @param {string} name name of the collection
-     * @returns {mongoose.Model}
-     */
     getCollection(name, schema) {
         try {
             return mongoose_1.default.model(name, schema);
@@ -68,12 +56,6 @@ class ValData {
             return mongoose_1.default.model(name);
         }
     }
-    //static
-    /**
-     * login to mongodb database
-     * @param {string} token token of access to database
-     * @returns {Promise<ValData>}
-     */
     static create(token) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const _database = new ValData();
@@ -81,11 +63,6 @@ class ValData {
             return _database;
         });
     }
-    /**
-     * Check if collection is exist or not
-     * @param config checking config
-     * @returns { isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }
-     */
     static checkCollection(config) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const _MyCollection = (yield ValData.create(config.token)).getCollection(config.name, config.schema);

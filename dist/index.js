@@ -15,13 +15,10 @@ const DEVELOPMENT_MODE = false;
 function START_ENGINE() {
     var _a;
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        //dotenv
         dotenv.config({
             path: process.cwd() + '/.env'
         });
-        //database
         yield database_1.ValData.create(process.env['MONGO_TOKEN']);
-        //client
         const DiscordClient = new discord_js_1.Client({
             intents: [
                 discord_js_1.Intents.FLAGS.GUILDS,
@@ -36,7 +33,6 @@ function START_ENGINE() {
         events_1.default.defaultMaxListeners = 35;
         DiscordClient.setMaxListeners(50);
         (0, discord_modals_1.default)(DiscordClient);
-        //handle command
         const commandFolders = fs.readdirSync(`${process.cwd()}/dist/commands/slash`);
         const rest = new rest_1.REST({ version: '10' }).setToken(String(process.env['TOKEN']));
         const _commands = new discord_js_1.Collection();
@@ -83,7 +79,7 @@ function START_ENGINE() {
         }
         try {
             yield core_1.Logs.log('Started refreshing application (/) commands.', 'info');
-            if (DEVELOPMENT_MODE) {
+            if (DEVELOPMENT_MODE === true) {
                 yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), { body: _commandArray });
             }
             else {
@@ -95,7 +91,6 @@ function START_ENGINE() {
         catch (error) {
             yield core_1.Logs.log(error, 'error');
         }
-        //handle events
         const eventFiles = fs.readdirSync(process.cwd() + '/dist/events').filter(file => file.endsWith('.js'));
         for (const file of eventFiles) {
             const event = require(`./events/${file.replace('.js', '')}`).default;
@@ -128,7 +123,6 @@ function START_ENGINE() {
                 })));
             }
         }
-        //login
         yield DiscordClient.login(process.env['TOKEN']);
         (_a = DiscordClient.user) === null || _a === void 0 ? void 0 : _a.setActivity("ING PROJECT", {
             type: "PLAYING"
@@ -149,6 +143,5 @@ function LOAD_ENGINE() {
     });
 }
 (() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
-    //the loop will run 3 time on error
     yield LOAD_ENGINE();
 }))();

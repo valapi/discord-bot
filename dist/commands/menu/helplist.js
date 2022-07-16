@@ -7,12 +7,10 @@ exports.default = {
     execute({ interaction, command }) {
         var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //script
             const _CommandType = interaction.values[0];
             const createEmbed = new discord_js_1.MessageEmbed()
                 .setTitle(`Help - ${_CommandType}`)
                 .setColor('#0099ff');
-            //slash command
             let sendMessage = ``;
             for (let cmd of command.array) {
                 const _cmd = command.collection.get(cmd.name);
@@ -27,7 +25,6 @@ exports.default = {
                 }
             }
             createEmbed.setDescription(sendMessage);
-            // help list
             const createComponents = new discord_js_1.MessageActionRow()
                 .addComponents(new discord_js_1.MessageSelectMenu()
                 .setCustomId('helplist')
@@ -51,7 +48,6 @@ exports.default = {
                 description: 'Other Commands',
                 value: 'miscellaneous',
             }));
-            //sendMessage
             yield interaction.editReply({
                 embeds: [createEmbed],
                 components: [createComponents],

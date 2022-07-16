@@ -103,14 +103,14 @@ class ValData {
     /**
      * Check if collection is exist or not
      * @param config checking config
-     * @returns { isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface }
+     * @returns {Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }>}
      */
     public static async checkCollection<YourCollectionInterface>(config: {
         name: ICollectionName,
         schema: mongoose.Schema,
         filter?: mongoose.FilterQuery<YourCollectionInterface>,
         token?: string,
-    }): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, once: YourCollectionInterface, model: mongoose.Model<YourCollectionInterface, any, any, any> }> {
+    }): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }> {
 
         const _MyCollection = (await ValData.create(config.token)).getCollection<YourCollectionInterface>(config.name, config.schema);
         const _FindInDatabase: Array<YourCollectionInterface> = await _MyCollection.find(config.filter || {});

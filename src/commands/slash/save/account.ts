@@ -4,7 +4,6 @@ import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
 import * as IngCore from '@ing3kth/core';
 import { decrypt, encrypt } from '../../../utils/crypto';
-import makeBuur from '../../../utils/makeBuur';
 import { ValData, type IValorantAccount, ValorantSchema } from '../../../utils/database';
 
 import { Region as TheValRegion } from '@valapi/lib';
@@ -110,7 +109,7 @@ export default {
             filter: { discordId: userId },
         });
 
-        const _cache = await new IngCore.Cache('valorant');
+        const _cache = new IngCore.Cache('authentication');
 
         //valorant
         const ValClient = new ApiWrapper({
@@ -119,7 +118,7 @@ export default {
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
-                content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
+                content: `${language.data.error}  ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
         }));
 
@@ -130,7 +129,7 @@ export default {
             }
 
             const SaveAccount = new ValAccount.model({
-                account: encrypt(JSON.stringify(ValClient.toJSON()), apiKey),
+                account: encrypt(ValClient.toJSON().cookie.ssid, apiKey),
                 discordId: userId,
                 createdAt: createdTime,
             });
@@ -162,8 +161,10 @@ export default {
                 embeds: [ createEmbed ],
             });
 
-            //clear
+            //cache
             _cache.clear(userId);
+
+            await (new IngCore.Cache('accounts')).input(encrypt(JSON.stringify(ValClient.toJSON()), apiKey), userId);
 
             //save
             if(_subCommand === 'get'){
@@ -226,18 +227,20 @@ export default {
                 return;
             }
 
-            ValClient.fromJSON(JSON.parse(decrypt((ValAccount.once as IValorantAccount).account, apiKey)));
+            const NewValClient = await ApiWrapper.fromCookie(decrypt((ValAccount.data[0] as IValorantAccount).account, apiKey));
 
             //reconnect
-            await ValClient.refresh(true);
+            await NewValClient.refresh(true);
 
-            await interaction.editReply(`Reconnected !`);
+            await interaction.editReply(CommandLanguage['reconnect']);
 
             //save
-            await save(ValClient);
+            await success(NewValClient);
         } else if (_subCommand === 'remove') {
             //from cache
             await _cache.clear(userId);
+
+            await (new IngCore.Cache('accounts')).clear(userId);
 
             //from database
             if(!ValAccount.isFind) {
@@ -247,13 +250,20 @@ export default {
                 return;
             }
 
-            await ValAccount.model.deleteOne({ discordId: userId });
+            await ValAccount.model.deleteMany({ discordId: userId });
 
             //response
             await interaction.editReply({
                 content: CommandLanguage['remove'],
             });
         } else if (_subCommand === 'settings') {
+            if(!ValAccount.isFind) {
+                await interaction.editReply({
+                    content: CommandLanguage['not_account'],
+                });
+                return;
+            }
+
             //settings
             const _choice = interaction.options.getString('region') as keyof typeof TheValRegion.to;
 
@@ -271,10 +281,10 @@ export default {
                 return;
             }
 
-            ValClient.fromJSON(JSON.parse(decrypt((ValAccount.once as IValorantAccount).account, apiKey)));
-            await ValClient.refresh(false);
+            const NewValClient = await ApiWrapper.fromCookie(decrypt((ValAccount.data[0] as IValorantAccount).account, apiKey));
+            await NewValClient.refresh(false);
 
-            await success(ValClient);
+            await success(NewValClient);
         }
     }
 } as CustomSlashCommands;

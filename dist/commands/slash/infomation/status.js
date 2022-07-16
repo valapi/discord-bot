@@ -17,7 +17,6 @@ exports.default = {
             sendMessage += `Uptime: **${getStatus.uptime.day} Days : ${getStatus.uptime.hour} Hours : ${getStatus.uptime.minute} Minutes : ${getStatus.uptime.second} Seconds**\n`;
             sendMessage += `Status: **${getStatus.status}**\n`;
             sendMessage += `Ping: **${getStatus.ping.average} ms**`;
-            //embed test
             const createEmbed = new discord_js_1.MessageEmbed()
                 .setColor(`#0099ff`)
                 .setTitle(`/${yield interaction.commandName}`)

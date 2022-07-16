@@ -69,7 +69,6 @@ exports.default = {
     onlyGuild: true,
     execute({ interaction, createdTime, language, apiKey }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //script
             const userId = interaction.user.id;
             const _subCommand = interaction.options.getSubcommand();
             const CommandLanguage = language.data.command['account'];
@@ -78,24 +77,22 @@ exports.default = {
                 schema: database_1.ValorantSchema,
                 filter: { discordId: userId },
             });
-            const _cache = yield new IngCore.Cache('valorant');
-            //valorant
+            const _cache = new IngCore.Cache('authentication');
             const ValClient = new web_client_1.Client({
                 region: "ap",
             });
             ValClient.on('error', ((data) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
-                    content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
+                    content: `${language.data.error}  ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
             })));
-            //success
             function save(ValClient) {
                 return tslib_1.__awaiter(this, void 0, void 0, function* () {
                     if (ValAccount.isFind) {
                         yield ValAccount.model.deleteMany({ discordId: userId });
                     }
                     const SaveAccount = new ValAccount.model({
-                        account: (0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey),
+                        account: (0, crypto_1.encrypt)(ValClient.toJSON().cookie.ssid, apiKey),
                         discordId: userId,
                         createdAt: createdTime,
                     });
@@ -109,7 +106,6 @@ exports.default = {
                     const puuid = ValorantUserInfo.data.sub;
                     const ValorantInventory = yield ValClient.Player.Loadout(puuid);
                     const ValorantPlayerCard = yield (new valorant_api_com_1.Client()).PlayerCards.getByUuid(ValorantInventory.data.Identity.PlayerCardID);
-                    //sendMessage
                     const createEmbed = new discord_js_1.MessageEmbed()
                         .setColor(`#0099ff`)
                         .addFields({ name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true }, { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true }, { name: '\u200B', value: '\u200B' }, { name: `ID`, value: `${puuid}`, inline: true })
@@ -120,21 +116,17 @@ exports.default = {
                         content: CommandLanguage['succes'],
                         embeds: [createEmbed],
                     });
-                    //clear
                     _cache.clear(userId);
-                    //save
+                    yield (new IngCore.Cache('accounts')).input((0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey), userId);
                     if (_subCommand === 'get') {
                         return;
                     }
                     yield save(ValClient);
                 });
             }
-            //sub command
             if (_subCommand === 'add') {
-                //auth
                 const _USERNAME = String(interaction.options.getString('username'));
                 yield ValClient.login(_USERNAME, String(interaction.options.getString('password')));
-                //embed
                 const createEmbed = new discord_js_1.MessageEmbed()
                     .setColor(`#0099ff`)
                     .setTitle(`/${interaction.commandName} ${_subCommand}`)
@@ -142,11 +134,9 @@ exports.default = {
                     .setTimestamp(createdTime)
                     .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
                 if (!ValClient.isMultifactor) {
-                    //success
                     yield success(ValClient);
                 }
                 else {
-                    //multifactor
                     yield _cache.input((0, crypto_1.encrypt)(JSON.stringify(ValClient.toJSON()), apiKey), userId);
                     yield interaction.editReply({
                         content: CommandLanguage.verify,
@@ -157,7 +147,6 @@ exports.default = {
                 }
             }
             else if (_subCommand === 'verify') {
-                //auth
                 const _save = yield _cache.output(userId);
                 if (!_save) {
                     yield interaction.editReply({
@@ -167,46 +156,44 @@ exports.default = {
                 }
                 ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(_save, apiKey)));
                 yield ValClient.verify(Number(interaction.options.getNumber("verify_code")));
-                //success
                 yield success(ValClient);
             }
             else if (_subCommand === 'reconnect') {
-                //connect
                 if (!ValAccount.isFind) {
                     yield interaction.editReply({
                         content: CommandLanguage['not_account'],
                     });
                     return;
                 }
-                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValAccount.once.account, apiKey)));
-                //reconnect
-                yield ValClient.refresh(true);
-                yield interaction.editReply(`Reconnected !`);
-                //save
-                yield save(ValClient);
+                const NewValClient = yield web_client_1.Client.fromCookie((0, crypto_1.decrypt)(ValAccount.data[0].account, apiKey));
+                yield NewValClient.refresh(true);
+                yield interaction.editReply(CommandLanguage['reconnect']);
+                yield success(NewValClient);
             }
             else if (_subCommand === 'remove') {
-                //from cache
                 yield _cache.clear(userId);
-                //from database
+                yield (new IngCore.Cache('accounts')).clear(userId);
                 if (!ValAccount.isFind) {
                     yield interaction.editReply({
                         content: CommandLanguage['not_account'],
                     });
                     return;
                 }
-                yield ValAccount.model.deleteOne({ discordId: userId });
-                //response
+                yield ValAccount.model.deleteMany({ discordId: userId });
                 yield interaction.editReply({
                     content: CommandLanguage['remove'],
                 });
             }
             else if (_subCommand === 'settings') {
-                //settings
+                if (!ValAccount.isFind) {
+                    yield interaction.editReply({
+                        content: CommandLanguage['not_account'],
+                    });
+                    return;
+                }
                 const _choice = interaction.options.getString('region');
                 ValClient.setRegion(lib_1.Region.toString(_choice));
                 yield interaction.editReply(`changed region to **${_choice.replace('_', ' ')}**`);
-                //save
                 yield save(ValClient);
             }
             else if (_subCommand === 'get') {
@@ -216,9 +203,9 @@ exports.default = {
                     });
                     return;
                 }
-                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValAccount.once.account, apiKey)));
-                yield ValClient.refresh(false);
-                yield success(ValClient);
+                const NewValClient = yield web_client_1.Client.fromCookie((0, crypto_1.decrypt)(ValAccount.data[0].account, apiKey));
+                yield NewValClient.refresh(false);
+                yield success(NewValClient);
             }
         });
     }

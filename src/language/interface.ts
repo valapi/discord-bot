@@ -16,6 +16,7 @@ interface ILanguage {
                 'not_account': string,
                 'verify': string,
                 'remove': string,
+                'reconnect': string,
             },
             'language': {
                 'succes': string,

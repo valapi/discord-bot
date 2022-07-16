@@ -3,19 +3,13 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton, MessageSelectMenu } from 'discord.js';
 import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
-//valorant common
-import { decrypt } from '../../../utils/crypto';
-import { 
+//valorant
+import {
     ValData,
-    type IValorantAccount, ValorantSchema,
-    SaveSchema as ValSaveSchema, type IValorantSave,
+    type IValorantSave, SaveSchema,
 } from '../../../utils/database';
 
-//valorant
-import { Region } from 'valorant.ts';
-import { Client as ApiWrapper } from '@valapi/web-client';
-import { Client as ValAPI } from '@valapi/valorant-api.com';
-import { Locale } from '@valapi/lib';
+import ValAccount from '../../../utils/ValAccount';
 
 //extend
 import { ToMilliseconds } from '@ing3kth/core/dist/utils/Milliseconds';
@@ -68,35 +62,26 @@ export default {
         const userId = interaction.user.id;
         const _subCommand = interaction.options.getSubcommand();
         
-        const ValDatabase = await ValData.checkCollection<IValorantAccount>({
-            name: 'account',
-            schema: ValorantSchema,
-            filter: { discordId: interaction.user.id },
-        });
-
         //valorant
-        const ValApiCom = new ValAPI({
-            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
+        const { ValClient, ValApiCom, __isFind } = await ValAccount({
+            userId: userId,
+            apiKey: apiKey,
+            language: language,
+            region: "ap",
         });
 
-        if (ValDatabase.isFind === false) {
+        if (__isFind === false) {
             await interaction.editReply({
                 content: language.data.command['account']['not_account'],
             });
             return;
         }
-        
-        const ValClient = ApiWrapper.fromJSON(JSON.parse(decrypt((ValDatabase.once as IValorantAccount).account, apiKey)), {
-            region: Region.Asia_Pacific
-        });
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
                 content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
         }));
-
-        await ValClient.refresh(false);
         
         //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
@@ -251,7 +236,7 @@ export default {
             });
 
             //send me every day
-            const ValSaveDatabase = (await ValData.create()).getCollection<IValorantSave>('daily', ValSaveSchema);
+            const ValSaveDatabase = (await ValData.create()).getCollection<IValorantSave>('daily', SaveSchema);
             const StoreNotify = interaction.options.getBoolean('notify_everyday');
 
             if (typeof StoreNotify !== 'boolean') {

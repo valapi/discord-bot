@@ -15,8 +15,7 @@ import {
 	SaveSchema as ValSaveSchema, type IValorantSave, ValorantSchema,
 } from '../utils/database';
 
-import { Client as ApiWrapper } from '@valapi/web-client';
-import { Client as ValAPI } from '@valapi/valorant-api.com';
+import ValAccount from './ValAccount';
 
 export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 	dotenv.config({
@@ -36,31 +35,22 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 	for (let _token of ValDatabaseDaily.data) {
 		try {
 
-			//account
-			const ValDatabase = await ValData.checkCollection<IValorantAccount>({
-				name: 'account',
-				schema: ValorantSchema,
-				filter: { discordId: _token.userId }
-			});
-
 			//valorant
-			const ValApiCom = new ValAPI();
-			const ValClient = new ApiWrapper({
-				region: "ap",
+			const { ValApiCom, ValClient } = await ValAccount({
+				apiKey: genarateApiKey(_token.user, _token.guild, process.env['PUBLIC_KEY']),
+				userId: _token.userId,
 			});
 
 			ValClient.on('error', (async (data) => {
-				await ValDatabase.model.deleteMany({ userId: _token.userId });
 				throw new Error('ValClient Error');
 			}));
 
 			//settings
 			if (!ValDatabaseDaily.isFind) {
-				await ValDatabase.model.deleteMany({ discordId: _token.userId });
+				await ValDatabaseDaily.model.deleteMany({ discordId: _token.userId });
 				continue;
 			}
 
-			ValClient.fromJSON(JSON.parse(decrypt((ValDatabase.once as IValorantAccount).account, genarateApiKey(_token.user, _token.guild, process.env['PUBLIC_KEY']))));
 			await ValClient.refresh(true);
 
 			/**

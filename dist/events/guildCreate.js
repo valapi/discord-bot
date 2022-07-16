@@ -10,7 +10,6 @@ exports.default = {
         var _a, _b, _c;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             yield core_1.Logs.log(`<${guild.id}> join new guild`, 'info');
-            //message
             let sendMessage = ``;
             sendMessage += `Joined __**${guild.name}**__!\n`;
             sendMessage += `\nUse **/help** to see all commands.`;
@@ -29,7 +28,6 @@ exports.default = {
             else if (guild.splashURL()) {
                 createEmbed.setImage(String(guild.splashURL()));
             }
-            //sendMessage
             var SendGuildChannel;
             if (guild.publicUpdatesChannelId != null) {
                 SendGuildChannel = guild.publicUpdatesChannel;

@@ -9,7 +9,6 @@ exports.default = {
     type: 'miscellaneous',
     execute({ interaction, language }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //script
             const CommandLanguage = language.data.command['ping'];
             yield interaction.editReply(CommandLanguage.default);
         });

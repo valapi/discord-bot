@@ -16,6 +16,7 @@ export default {
                 "not_account": `Couldn't Find Your Account`,
                 "verify": `Please Verify Your Account\nBy Using: **/verify {VerifyCode}**`,
                 "remove": `Your Account Has Been Removed`,
+                "reconnect": `Reconnected !`,
             },
             "language": {
                 "fail": `Language Not Found`,

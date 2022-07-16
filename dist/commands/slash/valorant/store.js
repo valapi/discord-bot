@@ -1,17 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-//common
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
-//valorant common
-const crypto_1 = require("../../../utils/crypto");
 const database_1 = require("../../../utils/database");
-//valorant
-const valorant_ts_1 = require("valorant.ts");
-const web_client_1 = require("@valapi/web-client");
-const valorant_api_com_1 = require("@valapi/valorant-api.com");
-//extend
+const ValAccount_1 = tslib_1.__importDefault(require("../../../utils/ValAccount"));
 const Milliseconds_1 = require("@ing3kth/core/dist/utils/Milliseconds");
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
@@ -49,38 +42,28 @@ exports.default = {
     execute({ interaction, language, apiKey }) {
         var _a, _b, _c, _d, _e;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //script
             const userId = interaction.user.id;
             const _subCommand = interaction.options.getSubcommand();
-            const ValDatabase = yield database_1.ValData.checkCollection({
-                name: 'account',
-                schema: database_1.ValorantSchema,
-                filter: { discordId: interaction.user.id },
+            const { ValClient, ValApiCom, __isFind } = yield (0, ValAccount_1.default)({
+                userId: userId,
+                apiKey: apiKey,
+                language: language,
+                region: "ap",
             });
-            //valorant
-            const ValApiCom = new valorant_api_com_1.Client({
-                language: (language.name).replace('_', '-'),
-            });
-            if (ValDatabase.isFind === false) {
+            if (__isFind === false) {
                 yield interaction.editReply({
                     content: language.data.command['account']['not_account'],
                 });
                 return;
             }
-            const ValClient = web_client_1.Client.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValDatabase.once.account, apiKey)), {
-                region: valorant_ts_1.Region.Asia_Pacific
-            });
             ValClient.on('error', ((data) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
                     content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
             })));
-            yield ValClient.refresh(false);
-            //success
             const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
             const puuid = ValorantUserInfo.data.sub;
             const ValorantStore = yield ValClient.Store.GetStorefront(puuid);
-            //function
             const getCurency = yield ValApiCom.Currencies.get();
             const getOffers = yield ValClient.Store.GetOffers();
             const GetWeaponSkin = yield ValApiCom.Weapons.getSkins();
@@ -94,7 +77,6 @@ exports.default = {
                     let Store_Curency_Name = 'VP';
                     let Store_Curency_ID = '';
                     let Store_StartTime = '';
-                    // Main // 
                     for (const TheOffer of getOffers.data.Offers) {
                         for (const _offer of TheOffer.Rewards) {
                             Store_ItemID = _offer.ItemID;
@@ -119,7 +101,6 @@ exports.default = {
                             break;
                         }
                     }
-                    // Content Tier Id //
                     let Store_ContentTier_ID = '';
                     if (!GetWeaponSkin.isError && GetWeaponSkin.data.data) {
                         for (const _Skins of GetWeaponSkin.data.data) {
@@ -134,16 +115,13 @@ exports.default = {
                             }
                         }
                     }
-                    // Content Tier //
                     let Store_ContentTier_Name = '';
                     let Store_ContentTier_Display = '';
                     const GetContentTier = yield ValApiCom.ContentTiers.getByUuid(String(Store_ContentTier_ID));
                     Store_ContentTier_Name = String((_a = GetContentTier.data.data) === null || _a === void 0 ? void 0 : _a.devName);
                     Store_ContentTier_Display = String((_b = GetContentTier.data.data) === null || _b === void 0 ? void 0 : _b.displayIcon);
-                    //color
                     let ContentTiersColor = String((_c = GetContentTier.data.data) === null || _c === void 0 ? void 0 : _c.highlightColor);
                     const _Color = ContentTiersColor.substring(0, ContentTiersColor.length - 2);
-                    //display
                     let Store_Display_Name = '';
                     let Store_Display_Icon = '';
                     const GetWeaponSkinLevel = yield ValApiCom.Weapons.getSkinLevels();
@@ -199,12 +177,10 @@ exports.default = {
                         .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display });
                     sendMessageArray.push(createEmbed);
                 }
-                //sendMessage
                 yield interaction.editReply({
                     content: `Time Left: **${_time.all.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`,
                     embeds: sendMessageArray,
                 });
-                //send me every day
                 const ValSaveDatabase = (yield database_1.ValData.create()).getCollection('daily', database_1.SaveSchema);
                 const StoreNotify = interaction.options.getBoolean('notify_everyday');
                 if (typeof StoreNotify !== 'boolean') {
@@ -235,7 +211,6 @@ exports.default = {
                     const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
                     const TimeInMillisecondFormat = (0, Milliseconds_1.ToMilliseconds)(TimeLeft * 1000);
                     const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
-                    //price
                     let Price_Base = 0;
                     let Price_Discounted = 0;
                     const AllItems = TheBundle.Items;
@@ -243,14 +218,12 @@ exports.default = {
                         Price_Base += ofItem.BasePrice;
                         Price_Discounted += ofItem.DiscountedPrice;
                     }
-                    //currency
                     const GetCurrency = yield ValApiCom.Currencies.getByUuid(ThisBundleCurrency);
                     if (GetCurrency.isError || !GetCurrency.data.data) {
                         throw new Error(GetCurrency.data.error);
                     }
                     let ThePrice = GetCurrency.data.data.displayName;
                     let Price_DiscountCosts = (Price_Base - Price_Discounted) / Price_Base * 100;
-                    //embed
                     const createEmbed = new discord_js_1.MessageEmbed()
                         .setImage((_e = ThisBundleData.data.data) === null || _e === void 0 ? void 0 : _e.displayIcon)
                         .addFields({ name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true });
@@ -283,7 +256,6 @@ exports.default = {
                     for (let ofItem in _BonusStore) {
                         const ThisBonusStore = _BonusStore[ofItem];
                         const ItemId = ThisBonusStore.Offer.Rewards[0].ItemID;
-                        //script
                         let DiscountPercent = ThisBonusStore.DiscountPercent;
                         let IsSeen = Boolean(ThisBonusStore.IsSeen);
                         if (!IsSeen && !ForceToShow)

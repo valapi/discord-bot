@@ -13,10 +13,7 @@ exports.default = {
         .setName('language')
         .setDescription('Language')
         .setRequired(true)
-        .addChoices(
-    //name is displayName
-    //value is data of choice (can get from { .options.getString(); } function)
-    { name: 'English', value: 'en_US' }, { name: 'Thai', value: 'th_TH' })),
+        .addChoices({ name: 'English', value: 'en_US' }, { name: 'Thai', value: 'th_TH' })),
     type: 'settings',
     permissions: [
         discord_js_1.Permissions.STAGE_MODERATOR,

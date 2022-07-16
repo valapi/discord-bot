@@ -3,15 +3,8 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageActionRow, MessageButton, MessageSelectMenu } from 'discord.js';
 import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
-//valorant common
-import { decrypt } from '../../../utils/crypto';
-import { ValData, type IValorantAccount, ValorantSchema } from '../../../utils/database';
-
 //valorant
-import { Region } from 'valorant.ts';
-import { Client as ApiWrapper } from '@valapi/web-client';
-import { Client as ValAPI } from '@valapi/valorant-api.com';
-import { Locale } from '@valapi/lib';
+import ValAccount from '../../../utils/ValAccount';
 
 export default {
     data: new SlashCommandBuilder()
@@ -23,27 +16,20 @@ export default {
         //script
         const userId = interaction.user.id;
 
-        const ValDatabase = await ValData.checkCollection<IValorantAccount>({
-            name: 'account',
-            schema: ValorantSchema,
-            filter: { discordId: interaction.user.id },
-        });
-
         //valorant
-        const ValApiCom = new ValAPI({
-            language: (language.name).replace('_', '-') as keyof typeof Locale.from,
+        const { ValClient, ValApiCom, __isFind } = await ValAccount({
+            userId: userId,
+            apiKey: apiKey,
+            language: language,
+            region: "ap",
         });
 
-        if (ValDatabase.isFind === false) {
+        if (__isFind === false) {
             await interaction.editReply({
                 content: language.data.command['account']['not_account'],
             });
             return;
         }
-        
-        const ValClient = ApiWrapper.fromJSON(JSON.parse(decrypt((ValDatabase.once as IValorantAccount).account, apiKey)), {
-            region: Region.Asia_Pacific
-        });
 
         ValClient.on('error', (async (data) => {
             await interaction.editReply({
@@ -51,17 +37,13 @@ export default {
             });
         }));
 
-        await ValClient.refresh(false);
-
         //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;
 
         const ThisRank = (((await ValClient.MMR.FetchCompetitiveUpdates(puuid)).data.Matches as Array<any>).filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
         
-        let Rank_Rating_Earned:string = ThisRank.RankedRatingEarned;
         let Rank_Rating_Now:string = ThisRank.RankedRatingAfterUpdate;
-        let Rank_Rating_Old:string = ThisRank.RankedRatingBeforeUpdate;
         
         const AllRanks = await ValApiCom.CompetitiveTiers.get();
         if (AllRanks.isError || !AllRanks.data.data) throw new Error(AllRanks.data.error);
@@ -98,7 +80,7 @@ export default {
                         { name: '\u200B', value: '\u200B' },
                         {
                             name: "Rating",
-                            value: `${Rank_Rating_Now} RR\n(*${Formatters.strikethrough(Rank_Rating_Old)}* / ${Rank_Rating_Earned})`,
+                            value: `${Rank_Rating_Now} RR`,
                         },
                     )
                     .setThumbnail(Rank_Icon),

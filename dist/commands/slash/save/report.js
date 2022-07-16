@@ -19,7 +19,6 @@ exports.default = {
     },
     execute({ interaction, DiscordClient, language }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //create model
             const modal = (0, ReportModal_1.genarateReportForm)(language);
             yield (0, discord_modals_1.showModal)(modal, {
                 client: DiscordClient,

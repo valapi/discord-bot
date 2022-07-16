@@ -1,16 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-//common
 const builders_1 = require("@discordjs/builders");
 const discord_js_1 = require("discord.js");
-//valorant common
-const crypto_1 = require("../../../utils/crypto");
-const database_1 = require("../../../utils/database");
-//valorant
-const valorant_ts_1 = require("valorant.ts");
-const web_client_1 = require("@valapi/web-client");
-const valorant_api_com_1 = require("@valapi/valorant-api.com");
+const ValAccount_1 = tslib_1.__importDefault(require("../../../utils/ValAccount"));
 const _CurrentBattlePassContractId = '99ac9283-4dd3-5248-2e01-8baf778affb4';
 exports.default = {
     data: new builders_1.SlashCommandBuilder()
@@ -21,33 +14,24 @@ exports.default = {
     execute({ interaction, language, apiKey, createdTime }) {
         var _a, _b, _c, _d;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //script
             const userId = interaction.user.id;
-            const ValDatabase = yield database_1.ValData.checkCollection({
-                name: 'account',
-                schema: database_1.ValorantSchema,
-                filter: { discordId: interaction.user.id },
+            const { ValClient, ValApiCom, __isFind } = yield (0, ValAccount_1.default)({
+                userId: userId,
+                apiKey: apiKey,
+                language: language,
+                region: "ap",
             });
-            //valorant
-            const ValApiCom = new valorant_api_com_1.Client({
-                language: (language.name).replace('_', '-'),
-            });
-            if (ValDatabase.isFind === false) {
+            if (__isFind === false) {
                 yield interaction.editReply({
                     content: language.data.command['account']['not_account'],
                 });
                 return;
             }
-            const ValClient = web_client_1.Client.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValDatabase.once.account, apiKey)), {
-                region: valorant_ts_1.Region.Asia_Pacific
-            });
             ValClient.on('error', ((data) => tslib_1.__awaiter(this, void 0, void 0, function* () {
                 yield interaction.editReply({
                     content: `${language.data.error} ${discord_js_1.Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
                 });
             })));
-            yield ValClient.refresh(false);
-            //success
             const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
             const puuid = ValorantUserInfo.data.sub;
             const AllContracts = (yield ValClient.Contract.Fetch(puuid)).data.Contracts;
@@ -58,7 +42,6 @@ exports.default = {
             let BP_TotalEarnedXp = (_a = BattlePassContract === null || BattlePassContract === void 0 ? void 0 : BattlePassContract.ContractProgression) === null || _a === void 0 ? void 0 : _a.TotalProgressionEarned;
             const TheBattlePass = yield ValApiCom.Contracts.getByUuid(BP_Id);
             let BP_Name = (_b = TheBattlePass.data.data) === null || _b === void 0 ? void 0 : _b.displayName;
-            //slot
             let _ofSlot = BP_CurrentLevel % 5;
             let _Slot = 0;
             for (let i = 0; i < Number((_c = TheBattlePass.data.data) === null || _c === void 0 ? void 0 : _c.content.chapters.length); i++) {
@@ -69,21 +52,20 @@ exports.default = {
             }
             let BP_CurrentSlot = (_d = TheBattlePass.data.data) === null || _d === void 0 ? void 0 : _d.content.chapters[_Slot];
             let BP_LevelSlot = BP_CurrentSlot === null || BP_CurrentSlot === void 0 ? void 0 : BP_CurrentSlot.levels[_ofSlot];
-            //slot data
             let BP_Slot_ID = BP_LevelSlot === null || BP_LevelSlot === void 0 ? void 0 : BP_LevelSlot.reward.uuid;
             let BP_Slot_XpNeed = BP_LevelSlot === null || BP_LevelSlot === void 0 ? void 0 : BP_LevelSlot.xp;
             let BP_Slot_Name = ``;
             let BP_Slot_Description = ``;
             let BP_Slot_Display = ``;
             switch (BP_LevelSlot === null || BP_LevelSlot === void 0 ? void 0 : BP_LevelSlot.reward.type) {
-                case 'EquippableSkinLevel': //weapon skin
+                case 'EquippableSkinLevel':
                     const SlotData_0 = yield ValApiCom.Weapons.getSkinLevelByUuid(BP_Slot_ID);
                     if (SlotData_0.isError || !SlotData_0.data.data)
                         throw new Error('Data 0 Not Found!');
                     BP_Slot_Name = SlotData_0.data.data.displayName;
                     BP_Slot_Display = SlotData_0.data.data.displayIcon;
                     break;
-                case 'EquippableCharmLevel': //buddy
+                case 'EquippableCharmLevel':
                     const SlotData_1 = yield ValApiCom.Buddies.getLevelByUuid(BP_Slot_ID);
                     if (SlotData_1.isError || !SlotData_1.data.data)
                         throw new Error('Data 1 Not Found!');

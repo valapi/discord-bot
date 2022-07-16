@@ -10,7 +10,6 @@ exports.default = {
     type: 'infomation',
     execute({ interaction }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            //script
             const createEmbed = new discord_js_1.MessageEmbed()
                 .setTitle('Help')
                 .setDescription('You can select one of the categories below')
@@ -28,7 +27,6 @@ exports.default = {
                 inline: true,
             })
                 .setColor('#0099ff');
-            // help list
             const createComponents = new discord_js_1.MessageActionRow()
                 .addComponents(new discord_js_1.MessageSelectMenu()
                 .setCustomId('helplist')

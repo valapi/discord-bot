@@ -7,50 +7,31 @@ const process = tslib_1.__importStar(require("process"));
 const discord_js_1 = require("discord.js");
 const crypto_1 = require("../utils/crypto");
 const Milliseconds_1 = require("@ing3kth/core/dist/utils/Milliseconds");
-//valorant
 const database_1 = require("../utils/database");
-const web_client_1 = require("@valapi/web-client");
-const valorant_api_com_1 = require("@valapi/valorant-api.com");
+const ValAccount_1 = tslib_1.__importDefault(require("./ValAccount"));
 function dailyStoreTrigger(DiscordClient) {
     return tslib_1.__awaiter(this, void 0, void 0, function* () {
         dotenv.config({
             path: process.cwd() + '/.env'
         });
-        /**
-         * Get Account
-         */
-        //token
         const ValDatabaseDaily = yield database_1.ValData.checkCollection({
             name: 'daily',
             schema: database_1.SaveSchema,
         });
         for (let _token of ValDatabaseDaily.data) {
             try {
-                //account
-                const ValDatabase = yield database_1.ValData.checkCollection({
-                    name: 'account',
-                    schema: database_1.ValorantSchema,
-                    filter: { discordId: _token.userId }
-                });
-                //valorant
-                const ValApiCom = new valorant_api_com_1.Client();
-                const ValClient = new web_client_1.Client({
-                    region: "ap",
+                const { ValApiCom, ValClient } = yield (0, ValAccount_1.default)({
+                    apiKey: (0, crypto_1.genarateApiKey)(_token.user, _token.guild, process.env['PUBLIC_KEY']),
+                    userId: _token.userId,
                 });
                 ValClient.on('error', ((data) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                    yield ValDatabase.model.deleteMany({ userId: _token.userId });
                     throw new Error('ValClient Error');
                 })));
-                //settings
                 if (!ValDatabaseDaily.isFind) {
-                    yield ValDatabase.model.deleteMany({ discordId: _token.userId });
+                    yield ValDatabaseDaily.model.deleteMany({ discordId: _token.userId });
                     continue;
                 }
-                ValClient.fromJSON(JSON.parse((0, crypto_1.decrypt)(ValDatabase.once.account, (0, crypto_1.genarateApiKey)(_token.user, _token.guild, process.env['PUBLIC_KEY']))));
                 yield ValClient.refresh(true);
-                /**
-                 * Get Offers
-                 */
                 const getCurency = yield ValApiCom.Currencies.get();
                 const getOffers = yield ValClient.Store.GetOffers();
                 const GetWeaponSkin = yield ValApiCom.Weapons.getSkins();
@@ -64,7 +45,6 @@ function dailyStoreTrigger(DiscordClient) {
                         let Store_Curency_Name = 'VP';
                         let Store_Curency_ID = '';
                         let Store_StartTime = '';
-                        // Main // 
                         for (const TheOffer of getOffers.data.Offers) {
                             for (const _offer of TheOffer.Rewards) {
                                 Store_ItemID = _offer.ItemID;
@@ -89,7 +69,6 @@ function dailyStoreTrigger(DiscordClient) {
                                 break;
                             }
                         }
-                        // Content Tier Id //
                         let Store_ContentTier_ID = '';
                         if (!GetWeaponSkin.isError && GetWeaponSkin.data.data) {
                             for (const _Skins of GetWeaponSkin.data.data) {
@@ -104,16 +83,13 @@ function dailyStoreTrigger(DiscordClient) {
                                 }
                             }
                         }
-                        // Content Tier //
                         let Store_ContentTier_Name = '';
                         let Store_ContentTier_Display = '';
                         const GetContentTier = yield ValApiCom.ContentTiers.getByUuid(String(Store_ContentTier_ID));
                         Store_ContentTier_Name = String((_a = GetContentTier.data.data) === null || _a === void 0 ? void 0 : _a.devName);
                         Store_ContentTier_Display = String((_b = GetContentTier.data.data) === null || _b === void 0 ? void 0 : _b.displayIcon);
-                        //color
                         let ContentTiersColor = String((_c = GetContentTier.data.data) === null || _c === void 0 ? void 0 : _c.highlightColor);
                         const _Color = ContentTiersColor.substring(0, ContentTiersColor.length - 2);
-                        //display
                         let Store_Display_Name = '';
                         let Store_Display_Icon = '';
                         const GetWeaponSkinLevel = yield ValApiCom.Weapons.getSkinLevels();
@@ -149,13 +125,9 @@ function dailyStoreTrigger(DiscordClient) {
                         };
                     });
                 }
-                /**
-                 * Get Daily Store
-                 */
                 const ValorantUserInfo = yield ValClient.Player.GetUserInfo();
                 const puuid = ValorantUserInfo.data.sub;
                 const ValorantStore = yield ValClient.Store.GetStorefront(puuid);
-                //store
                 const TimeLeft = Number(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds);
                 const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers;
                 const _time = (0, Milliseconds_1.ToMilliseconds)(TimeLeft * 1000);
@@ -175,9 +147,6 @@ function dailyStoreTrigger(DiscordClient) {
                         .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display });
                     sendMessageArray.push(createEmbed);
                 }
-                /**
-                 * Sent Message
-                 */
                 const _channel = DiscordClient.channels.cache.get(_token.channelId);
                 if ((_channel === null || _channel === void 0 ? void 0 : _channel.isText()) || (_channel === null || _channel === void 0 ? void 0 : _channel.isThread())) {
                     yield _channel.send({

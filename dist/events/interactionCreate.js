@@ -15,13 +15,8 @@ exports.default = {
         var _a, _b, _c, _d, _e, _f;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const createdTime = new Date();
-            //language
             const _language = (0, controller_1.getLanguageAndUndefined)(yield IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
-            //script
             if (interaction.isCommand()) {
-                /**
-                 * SLASH COMMAND
-                 */
                 const GetSlashCommand = _extraData.commands.get(interaction.commandName);
                 if (!GetSlashCommand) {
                     return;
@@ -47,9 +42,7 @@ exports.default = {
                     },
                 };
                 const command = new Object(Object.assign(Object.assign({}, _defaultCommandAddto), GetSlashCommand));
-                //script
                 try {
-                    // Loading Command //
                     if (command.showDeferReply === true) {
                         yield interaction.deferReply({
                             ephemeral: Boolean(command.privateMessage),
@@ -67,15 +60,12 @@ exports.default = {
                         });
                         return;
                     }
-                    // Sub Command //
-                    //echo
                     if (((_a = command.echo) === null || _a === void 0 ? void 0 : _a.subCommand) && ((_b = command.echo) === null || _b === void 0 ? void 0 : _b.subCommand.isSubCommand) === true) {
                         interaction.options.getSubcommand = ((required) => {
                             var _a, _b;
                             return String((_b = (_a = command.echo) === null || _a === void 0 ? void 0 : _a.subCommand) === null || _b === void 0 ? void 0 : _b.baseCommand);
                         });
                     }
-                    // Permissions //
                     if (command.permissions && Array(command.permissions).length > 0 && interaction.guild) {
                         if (!((_c = interaction.memberPermissions) === null || _c === void 0 ? void 0 : _c.has(command.permissions))) {
                             yield interaction.editReply({
@@ -84,10 +74,7 @@ exports.default = {
                             return;
                         }
                     }
-                    // Interaction //
-                    //logs
                     yield IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`, 'info');
-                    //run commands
                     const _SlashCommandExtendData = {
                         interaction: interaction,
                         DiscordClient: _extraData.client,
@@ -99,7 +86,6 @@ exports.default = {
                     if (typeof CommandExecute === 'string') {
                         yield interaction.editReply({ content: CommandExecute });
                     }
-                    //end
                     yield IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${(0, msANDms_1.default)(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
                 }
                 catch (error) {
@@ -112,9 +98,6 @@ exports.default = {
                 }
             }
             else if (interaction.isButton()) {
-                /**
-                 * B U T T O N
-                 */
                 yield IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId}\x1b[0m`, 'info');
                 const ButtonFolder = yield fs.readdirSync(`${process.cwd()}/dist/commands/button`).filter(file => file.endsWith('.js'));
                 ButtonFolder.forEach((file) => tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -127,7 +110,6 @@ exports.default = {
                             execute: (({ interaction }) => tslib_1.__awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
                         };
                         const _file = new Object(Object.assign(Object.assign({}, _defaultButtonFile), _getButtonFile));
-                        // SCRIPT //
                         if (_file.showDeferReply) {
                             yield interaction.deferReply({
                                 ephemeral: Boolean(_file.privateMessage),
@@ -143,13 +125,9 @@ exports.default = {
                         return;
                     }
                 }));
-                //end
                 yield IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId} [${(0, msANDms_1.default)(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
             }
             else if (interaction.isSelectMenu()) {
-                /**
-                 * M E N U
-                 */
                 yield IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`, 'info');
                 const MenusFolder = yield fs.readdirSync(`${process.cwd()}/dist/commands/menu`).filter(file => file.endsWith('.js'));
                 MenusFolder.forEach((file) => tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -162,7 +140,6 @@ exports.default = {
                             execute: (({ interaction }) => tslib_1.__awaiter(this, void 0, void 0, function* () { yield interaction.editReply('This is Default message.'); })),
                         };
                         const _file = new Object(Object.assign(Object.assign({}, _defaultMenuFile), _getMenuFile));
-                        // SCRIPT //
                         if (_file.showDeferReply) {
                             yield interaction.deferUpdate();
                         }
@@ -180,7 +157,6 @@ exports.default = {
                         return;
                     }
                 }));
-                //end
                 yield IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId} [${(0, msANDms_1.default)(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
             }
         });
