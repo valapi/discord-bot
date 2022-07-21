@@ -20,7 +20,7 @@ export default {
     },
     async execute({ interaction, DiscordClient, language }) {
         //create model
-        
+
         const modal = genarateReportForm(language);
 
         await showModal(modal, {

@@ -3,12 +3,12 @@ import { Permissions, MessageAttachment, MessageEmbed, Formatters, MessageAction
 import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 
 export default {
-	data: new SlashCommandBuilder()
-		.setName('help')
-		.setDescription('Show all Commands'),
+    data: new SlashCommandBuilder()
+        .setName('help')
+        .setDescription('Show all Commands'),
     type: 'infomation',
-	async execute({ interaction }) {
-		//script
+    async execute({ interaction }) {
+        //script
         const createEmbed = new MessageEmbed()
             .setTitle('Help')
             .setDescription('You can select one of the categories below')
@@ -65,8 +65,8 @@ export default {
             );
 
         await interaction.editReply({
-            embeds: [ createEmbed ],
-            components: [ createComponents ],
+            embeds: [createEmbed],
+            components: [createComponents],
         });
-	},
+    },
 } as CustomSlashCommands;

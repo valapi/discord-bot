@@ -52,7 +52,7 @@ export default {
                 .setName('remove')
                 .setDescription("Remove Your Valorant Account")
         )
-        .addSubcommand(subCommand => 
+        .addSubcommand(subCommand =>
             subCommand
                 .setName('settings')
                 .setDescription('Account Settings')
@@ -70,7 +70,7 @@ export default {
                             { name: TheValRegion.from.pbe, value: TheValRegion.to.Public_Beta_Environment },
                         )
                         .setRequired(true)
-                )    
+                )
         )
         .addSubcommand(subcommand =>
             subcommand
@@ -124,7 +124,7 @@ export default {
 
         //success
         async function save(ValClient: ApiWrapper) {
-            if(ValAccount.isFind){
+            if (ValAccount.isFind) {
                 await ValAccount.model.deleteMany({ discordId: userId });
             }
 
@@ -158,16 +158,16 @@ export default {
 
             await interaction.editReply({
                 content: CommandLanguage['succes'],
-                embeds: [ createEmbed ],
+                embeds: [createEmbed],
             });
 
             //cache
             _cache.clear(userId);
 
-            await (new IngCore.Cache('accounts')).input(encrypt(JSON.stringify(ValClient.toJSON()), apiKey), userId);
+            (new IngCore.Cache('accounts')).input(encrypt(JSON.stringify(ValClient.toJSON()), apiKey), userId);
 
             //save
-            if(_subCommand === 'get'){
+            if (_subCommand === 'get') {
                 return;
             }
 
@@ -194,7 +194,7 @@ export default {
                 await success(ValClient);
             } else {
                 //multifactor
-                await _cache.input(encrypt(JSON.stringify(ValClient.toJSON()), apiKey), userId);
+                _cache.input(encrypt(JSON.stringify(ValClient.toJSON()), apiKey), userId);
 
                 await interaction.editReply({
                     content: CommandLanguage.verify,
@@ -206,7 +206,7 @@ export default {
         } else if (_subCommand === 'verify') {
             //auth
             const _save = await _cache.output(userId);
-            if(!_save) {
+            if (!_save) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });
@@ -220,7 +220,7 @@ export default {
             await success(ValClient);
         } else if (_subCommand === 'reconnect') {
             //connect
-            if(!ValAccount.isFind) {
+            if (!ValAccount.isFind) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });
@@ -238,12 +238,12 @@ export default {
             await success(NewValClient);
         } else if (_subCommand === 'remove') {
             //from cache
-            await _cache.clear(userId);
+            _cache.clear(userId);
 
-            await (new IngCore.Cache('accounts')).clear(userId);
+            (new IngCore.Cache('accounts')).clear(userId);
 
             //from database
-            if(!ValAccount.isFind) {
+            if (!ValAccount.isFind) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });
@@ -257,7 +257,7 @@ export default {
                 content: CommandLanguage['remove'],
             });
         } else if (_subCommand === 'settings') {
-            if(!ValAccount.isFind) {
+            if (!ValAccount.isFind) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });
@@ -274,7 +274,7 @@ export default {
             //save
             await save(ValClient);
         } else if (_subCommand === 'get') {
-            if(!ValAccount.isFind) {
+            if (!ValAccount.isFind) {
                 await interaction.editReply({
                     content: CommandLanguage['not_account'],
                 });

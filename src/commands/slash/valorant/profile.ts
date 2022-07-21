@@ -40,7 +40,7 @@ export default {
         //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;
-        
+
         const ValorantInventory = await ValClient.Player.Loadout(puuid);
 
         const PlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
@@ -71,7 +71,7 @@ export default {
 
         await interaction.editReply({
             content: language.data.command['profile']['default'],
-            embeds: [ createEmbed ],
+            embeds: [createEmbed],
         });
     }
 } as CustomSlashCommands;

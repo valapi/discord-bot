@@ -7,7 +7,7 @@ import type { CustomSlashCommands } from '../../../interface/SlashCommand';
 import ValAccount from '../../../utils/ValAccount';
 import { QueueId } from '@valapi/lib';
 
-import { Milliseconds } from '@ing3kth/core';
+import { ToMilliseconds } from '@ing3kth/core';
 
 export default {
     data: new SlashCommandBuilder()
@@ -82,7 +82,7 @@ export default {
         //time
         let Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);
 
-        let Match_LongInMillisecondFormat = Milliseconds(AllMatchData.data.matchInfo.gameLengthMillis);
+        let Match_LongInMillisecondFormat = ToMilliseconds(AllMatchData.data.matchInfo.gameLengthMillis);
         const _time = `**${Match_LongInMillisecondFormat.data.hour}** hour(s)\n**${Match_LongInMillisecondFormat.data.minute}** minute(s)\n**${Match_LongInMillisecondFormat.data.second}** second(s)`;
 
         //map
@@ -180,7 +180,7 @@ export default {
                 .setThumbnail(Player_Agent_Display)
         )
 
-        if(Match_Type === 'competitive'){
+        if (Match_Type === 'competitive') {
             sendMessageArray.at(1)?.addField('Rank', Player_Rank, true);
         }
 
@@ -188,8 +188,8 @@ export default {
             { name: '\u200B', value: '\u200B' },
             { name: 'Agent', value: Player_Agent_Name, inline: true },
         );
-        
-        if(Match_Type !== 'deathmatch'){
+
+        if (Match_Type !== 'deathmatch') {
             sendMessageArray.at(1)?.addField('Team', Player_Team, true);
         }
 

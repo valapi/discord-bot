@@ -103,7 +103,7 @@ export default {
 				// Interaction //
 
 				//logs
-				await IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`, 'info');
+				IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`, 'info');
 
 				//run commands
 				const _SlashCommandExtendData: SlashCommandExtendData = {
@@ -121,9 +121,9 @@ export default {
 				}
 
 				//end
-				await IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
+				IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
 			} catch (error) {
-				await IngCore.Logs.log(error, 'error');
+				IngCore.Logs.log(error, 'error');
 				await interaction.editReply({
 					content: _language.data.error || `Something Went Wrong, Please Try Again Later`,
 					embeds: [],
@@ -135,7 +135,7 @@ export default {
 			 * B U T T O N
 			 */
 
-			await IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId}\x1b[0m`, 'info');
+			IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId}\x1b[0m`, 'info');
 
 			const ButtonFolder = await fs.readdirSync(`${process.cwd()}/dist/commands/button`).filter(file => file.endsWith('.js'));
 
@@ -171,13 +171,13 @@ export default {
 			});
 
 			//end
-			await IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
+			IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
 		} else if (interaction.isSelectMenu()) {
 			/**
 			 * M E N U
 			 */
 
-			await IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`, 'info');
+			IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`, 'info');
 
 			const MenusFolder = await fs.readdirSync(`${process.cwd()}/dist/commands/menu`).filter(file => file.endsWith('.js'));
 

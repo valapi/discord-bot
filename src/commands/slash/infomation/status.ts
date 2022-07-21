@@ -22,10 +22,10 @@ export default {
             .setColor(`#0099ff`)
             .setTitle(`/${await interaction.commandName}`)
             .setURL(`https://ingkth.wordpress.com`)
-            .setAuthor({ name: `${await DiscordClient.user?.tag}`, iconURL: await DiscordClient.user?.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
+            .setAuthor({ name: `${DiscordClient.user?.tag}`, iconURL: DiscordClient.user?.displayAvatarURL(), url: `https://ingkth.wordpress.com` })
             .setDescription(await sendMessage)
             .setTimestamp(createdTime)
-            .setFooter({ text: `${await interaction.user.username}#${await interaction.user.discriminator}` });
+            .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
 
         await interaction.editReply({
             content: `Invite Link: **https://discord.com/api/oauth2/authorize?client_id=930354659493822515&permissions=8&scope=bot%20applications.commands**\nWebsite: **https://ingkth.wordpress.com/**\nDiscord: **https://discord.gg/pbyWbUYjyt**\n`,

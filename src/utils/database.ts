@@ -43,15 +43,15 @@ class ValData {
     constructor() {
         //event
         mongoose.connection.on("error", (async (error) => {
-            await Logs.log(error, 'error');
+            Logs.log(error, 'error');
         }));
 
         mongoose.connection.on("connected", (async () => {
-            await Logs.log('Successfully connected to database', 'system');
+            Logs.log('Successfully connected to database', 'system');
         }));
 
         mongoose.connection.on("disconnected", (async () => {
-            await Logs.log('Disconnected from database', 'warning');
+            Logs.log('Disconnected from database', 'warning');
         }));
 
         //dot ENV
@@ -67,7 +67,7 @@ class ValData {
      */
     public async login(token: string = String(process.env['MONGO_TOKEN'])): Promise<void> {
         if (!token) {
-            await Logs.log('token is not defined', 'error');
+            Logs.log('token is not defined', 'error');
         }
 
         await mongoose.connect(token);

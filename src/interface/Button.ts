@@ -3,8 +3,8 @@ import type { ILanguage } from '../language/interface';
 
 interface CustomButtonExtendData {
     interaction: ButtonInteraction,
-	DiscordClient: Client,
-	createdTime: Date,
+    DiscordClient: Client,
+    createdTime: Date,
     language: ILanguage,
 }
 

@@ -6,20 +6,20 @@ interface makeBuurConfig {
     percent?: number,
 }
 
-function makeBuur(config:makeBuurConfig | string): string {
-    if(typeof config === 'string'){
+function makeBuur(config: makeBuurConfig | string): string {
+    if (typeof config === 'string') {
         config = {
             message: config,
         }
     }
 
-    const _defaultSettings:makeBuurConfig = {
+    const _defaultSettings: makeBuurConfig = {
         message: '',
         replaceWith: '?',
         percent: 45,
     }
-    const _config:makeBuurConfig = new Object({ ..._defaultSettings, ...config }) as makeBuurConfig;
-    
+    const _config: makeBuurConfig = new Object({ ..._defaultSettings, ...config }) as makeBuurConfig;
+
     const split_message = String(_config.message).split('');
     const _buur = [];
 

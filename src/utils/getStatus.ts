@@ -1,5 +1,5 @@
 import * as process from 'process';
-import { ToMilliseconds } from '@ing3kth/core/dist/utils/Milliseconds';
+import { ToMilliseconds } from '@ing3kth/core';
 
 import type { Client } from 'discord.js';
 
@@ -29,13 +29,13 @@ async function getStatus(DiscordClient: Client, createdTime: number) {
     //return
     return {
         uptime: _uptime.data,
-        status: _status, 
-        ping: { 
-            data: { 
-                discordApi: discord_ping, 
-                client: client_ping 
-            }, 
-            average: Math.round((discord_ping + client_ping) / 2) 
+        status: _status,
+        ping: {
+            data: {
+                discordApi: discord_ping,
+                client: client_ping
+            },
+            average: Math.round((discord_ping + client_ping) / 2)
         },
     };
 }

@@ -22,7 +22,7 @@ export default {
             subcommand
                 .setName('daily')
                 .setDescription('Daily Store')
-                .addBooleanOption(option => 
+                .addBooleanOption(option =>
                     option
                         .setName('notify_everyday')
                         .setDescription('Sent your daily store at this channel every day (Work In Progress)')
@@ -57,11 +57,11 @@ export default {
         ],
     },
     onlyGuild: true,
-    async execute({ interaction, language, apiKey}) {
+    async execute({ interaction, language, apiKey }) {
         //script
         const userId = interaction.user.id;
         const _subCommand = interaction.options.getSubcommand();
-        
+
         //valorant
         const { ValClient, ValApiCom, __isFind } = await ValAccount({
             userId: userId,
@@ -82,7 +82,7 @@ export default {
                 content: `${language.data.error} ${Formatters.codeBlock('json', JSON.stringify({ errorCode: data.errorCode, message: data.message }))}`,
             });
         }));
-        
+
         //success
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;
@@ -265,7 +265,7 @@ export default {
                 const ThisBundleCurrency = TheBundle.CurrencyID;
 
                 const ThisBundleData = await ValApiCom.Bundles.getByUuid(ThisBundleId);
-                if(!ThisBundleData.data.data){
+                if (!ThisBundleData.data.data) {
                     throw new Error(ThisBundleData.data.error);
                 }
 
@@ -275,8 +275,8 @@ export default {
                 const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
 
                 //price
-                let Price_Base:number = 0;
-                let Price_Discounted:number = 0;
+                let Price_Base: number = 0;
+                let Price_Discounted: number = 0;
                 const AllItems = TheBundle.Items as Array<{
                     Item: {
                         ItemTypeID: string;
@@ -290,20 +290,20 @@ export default {
                     IsPromoItem: Boolean;
                 }>;
 
-                for(let ofItem of AllItems){
+                for (let ofItem of AllItems) {
                     Price_Base += ofItem.BasePrice;
                     Price_Discounted += ofItem.DiscountedPrice;
                 }
 
                 //currency
                 const GetCurrency = await ValApiCom.Currencies.getByUuid(ThisBundleCurrency);
-                if(GetCurrency.isError || !GetCurrency.data.data){
+                if (GetCurrency.isError || !GetCurrency.data.data) {
                     throw new Error(GetCurrency.data.error);
                 }
 
                 let ThePrice = GetCurrency.data.data.displayName;
 
-                let Price_DiscountCosts:number = (Price_Base - Price_Discounted) / Price_Base * 100;
+                let Price_DiscountCosts: number = (Price_Base - Price_Discounted) / Price_Base * 100;
 
                 //embed
                 const createEmbed = new MessageEmbed()
@@ -312,7 +312,7 @@ export default {
                         { name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true },
                     );
 
-                if (Price_Base === Price_Discounted){
+                if (Price_Base === Price_Discounted) {
                     createEmbed.addField(`Price`, `${Price_Base}`, true);
                 } else {
                     createEmbed.addField(`Price`, `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(Price_DiscountCosts)}%)**`, true);
@@ -352,7 +352,7 @@ export default {
                     let DiscountPercent = ThisBonusStore.DiscountPercent;
                     let IsSeen = Boolean(ThisBonusStore.IsSeen);
 
-                    if(!IsSeen && !ForceToShow) continue;
+                    if (!IsSeen && !ForceToShow) continue;
 
                     const _Offer = await getOffersOf(ItemId);
                     let DiscountCosts = ThisBonusStore.DiscountCosts[_Offer.Curency.Id];
@@ -372,8 +372,8 @@ export default {
                     )
                 }
 
-                let _message:string = `Time Left: **${_time.data.day} day(s) ${_time.data.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`
-                if(sendMessageArray.length === 0){
+                let _message: string = `Time Left: **${_time.data.day} day(s) ${_time.data.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`
+                if (sendMessageArray.length === 0) {
                     _message += `\n\n` + language.data.command['store']['no_nightmarket'];
                 }
 

@@ -11,16 +11,16 @@ import * as fs from 'fs';
 export default {
 	name: 'modalSubmit',
 	once: true,
-	async execute(modal:ModalSubmitInteraction, _extraData:EventExtraData) {
-		const ModalFolder = await fs.readdirSync(`${process.cwd()}/dist/commands/modal`).filter(file => file.endsWith('.js'));
-		
+	async execute(modal: ModalSubmitInteraction, _extraData: EventExtraData) {
+		const ModalFolder = fs.readdirSync(`${process.cwd()}/dist/commands/modal`).filter(file => file.endsWith('.js'));
+
 		ModalFolder.forEach(async (file) => {
 			const _file = require(`${process.cwd()}/dist/commands/modal/${file.replace('.js', '')}`).default as {
 				customId: string,
 				execute: Function,
 			};
-			
-			if(_file.customId === modal.customId){
+
+			if (_file.customId === modal.customId) {
 				await _file.execute(modal, _extraData);
 				return;
 			}

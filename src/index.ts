@@ -18,7 +18,7 @@ import { EventExtraData } from './interface/EventData';
 import { ValData } from './utils/database';
 import type { CustomSlashCommands, EchoSubCommand } from './interface/SlashCommand';
 
-const DEVELOPMENT_MODE:boolean = false;
+const DEVELOPMENT_MODE: boolean = false;
 
 async function START_ENGINE() {
     //dotenv
@@ -78,12 +78,14 @@ async function START_ENGINE() {
                             if (OptionCommand && OptionCommand.type === 1) {
                                 if (!OptionCommand.options) OptionCommand.options = [];
 
-                                let NewSlashCommand = new Object({ ...ofNewCommand, ...{
-                                    type: OptionCommand.type,
-                                    name: cmd.newCommandName,
-                                    description: OptionCommand.description,
-                                    options: OptionCommand.options,
-                                } }) as RESTPostAPIApplicationCommandsJSONBody;
+                                let NewSlashCommand = new Object({
+                                    ...ofNewCommand, ...{
+                                        type: OptionCommand.type,
+                                        name: cmd.newCommandName,
+                                        description: OptionCommand.description,
+                                        options: OptionCommand.options,
+                                    }
+                                }) as RESTPostAPIApplicationCommandsJSONBody;
 
                                 _commands.set(NewSlashCommand.name, new Object({ ...command, ...{ data: NewSlashCommand, echo: { from: command.data.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } }, privateMessage: !!command.privateMessage } }) as CustomSlashCommands);
                                 _commandArray.push(NewSlashCommand);
@@ -94,16 +96,16 @@ async function START_ENGINE() {
                     }
                 });
             }
-            
+
             _commands.set(command.data.name, command);
             _commandArray.push(command.data.toJSON());
         }
     }
 
     try {
-        await Logs.log('Started refreshing application (/) commands.', 'info');
+        Logs.log('Started refreshing application (/) commands.', 'info');
 
-        if(DEVELOPMENT_MODE === true) {
+        if (DEVELOPMENT_MODE === true) {
             await rest.put(
                 Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
                 { body: _commandArray },
@@ -113,16 +115,16 @@ async function START_ENGINE() {
                 Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
                 { body: [] },
             );
-    
+
             await rest.put(
                 Routes.applicationCommands(String(process.env['CLIENT_ID'])),
                 { body: _commandArray },
             );
         }
 
-        await Logs.log('Successfully reloaded application (/) commands.', 'info');
+        Logs.log('Successfully reloaded application (/) commands.', 'info');
     } catch (error) {
-        await Logs.log(error, 'error');
+        Logs.log(error, 'error');
     }
 
     //handle events
@@ -146,7 +148,7 @@ async function START_ENGINE() {
                 try {
                     await event.execute(...args, _extraData)
                 } catch (error) {
-                    await Logs.log(error, 'error');
+                    Logs.log(error, 'error');
                 }
             }));
         } else {
@@ -154,7 +156,7 @@ async function START_ENGINE() {
                 try {
                     await event.execute(...args, _extraData)
                 } catch (error) {
-                    await Logs.log(error, 'error');
+                    Logs.log(error, 'error');
                 }
             }));
         }
@@ -178,7 +180,7 @@ async function LOAD_ENGINE() {
         await START_ENGINE();
     }
     catch (error) {
-        await Logs.log(error, 'error');
+        Logs.log(error, 'error');
         setTimeout((async () => { await LOAD_ENGINE() }), 1000);
     }
 }

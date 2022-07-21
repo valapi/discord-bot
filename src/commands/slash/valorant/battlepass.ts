@@ -130,7 +130,7 @@ export default {
         }
 
         let ShowSlot = `${_Slot + 1}`;
-        if(_Slot >= 11) ShowSlot = 'Epilogue';
+        if (_Slot >= 11) ShowSlot = 'Epilogue';
 
         const createEmbed = new MessageEmbed()
             .setColor('#0099ff')

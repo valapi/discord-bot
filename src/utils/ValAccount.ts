@@ -49,7 +49,7 @@ async function ValAccount(data: {
 
             const ValClient = await ApiWrapper.fromCookie(decrypt(ValDatabase.data[0].account, data.apiKey), { region: data.region || "ap" });
 
-            await _cache.input(encrypt(JSON.stringify(ValClient.toJSON()), data.apiKey), data.userId);
+            _cache.input(encrypt(JSON.stringify(ValClient.toJSON()), data.apiKey), data.userId);
 
             return {
                 __isFind: true,

@@ -38,7 +38,7 @@ export default {
         const _choice = interaction.options.getString('language') as string;
         const guildId = String(interaction.guild?.id);
 
-        const _cache = await new IngCore.Cache('language');
+        const _cache = new IngCore.Cache('language');
 
         const _old_language = getLanguage(await _cache.output(guildId));
         const _language = getLanguage(_choice);
@@ -51,9 +51,9 @@ export default {
             }
         } else {
             if (_language.name !== defaultLanguage) {
-                await _cache.input(String(_language.name), guildId);
+                _cache.input(String(_language.name), guildId);
             } else {
-                await _cache.clear(guildId);
+                _cache.clear(guildId);
             }
 
             await interaction.editReply(_language.data.command['language']['succes']);

@@ -9,7 +9,7 @@ export default {
 	type: 'miscellaneous',
 	async execute({ interaction, language }) {
 		//script
-        const CommandLanguage = language.data.command['ping'];
+		const CommandLanguage = language.data.command['ping'];
 
 		await interaction.editReply(CommandLanguage.default);
 	},

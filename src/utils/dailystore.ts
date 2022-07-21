@@ -19,8 +19,8 @@ import ValAccount from './ValAccount';
 
 export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 	dotenv.config({
-        path: process.cwd() + '/.env'
-    });
+		path: process.cwd() + '/.env'
+	});
 
 	/**
 	 * Get Account
@@ -214,13 +214,13 @@ export default async function dailyStoreTrigger(DiscordClient: DisClient) {
 					content: `This is the store of ${Formatters.userMention(_token.userId)} today in Valorant\n\nTime Left: **${_time.all.hour} hour(s) ${_time.data.minute} minute(s) ${_time.data.second} second(s)**`,
 					embeds: sendMessageArray,
 				});
-				await Logs.log(`<${_token.userId}> sented today store in Valorant`, 'info');
+				Logs.log(`<${_token.userId}> sented today store in Valorant`, 'info');
 			} else {
 				await ValDatabaseDaily.model.deleteMany({ userId: _token.userId });
 			}
 
 		} catch (error) {
-			await Logs.log(`<${_token.userId}> failed to send today store in Valorant`, 'error');
+			Logs.log(`<${_token.userId}> failed to send today store in Valorant`, 'error');
 			continue;
 		}
 	}

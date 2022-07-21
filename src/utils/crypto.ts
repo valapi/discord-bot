@@ -1,6 +1,6 @@
 import CryptoJS from "crypto-js";
 
-function genarateApiKey(key1:any, key2:any, key3:any):string {
+function genarateApiKey(key1: any, key2: any, key3: any): string {
     key1 = String(key1);
     key2 = String(key2);
     key3 = String(key3);
@@ -13,7 +13,7 @@ function genarateApiKey(key1:any, key2:any, key3:any):string {
     const KEY = String(_key1 + key2 + _key3).toLocaleLowerCase();
 
     const ApiKey = CryptoJS.HmacSHA1(MESSAGE, KEY).toString(CryptoJS.enc.Hex);
-    
+
     return ApiKey;
 }
 

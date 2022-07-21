@@ -10,7 +10,7 @@ import { QueueId } from '@valapi/lib';
 export default {
     data: new SlashCommandBuilder()
         .setName('party')
-        .setDescription('Valorant InGame Party'),   
+        .setDescription('Valorant InGame Party'),
     type: 'valorant',
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
@@ -42,11 +42,11 @@ export default {
         const ValorantUserInfo = await ValClient.Player.GetUserInfo();
         const puuid = ValorantUserInfo.data.sub;
 
-        let Party_ID:string = (await ValClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
+        let Party_ID: string = (await ValClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
         const TheParty = await ValClient.Party.FetchParty(Party_ID);
 
-        let sendMessageArray:Array<MessageEmbed> = [];
-        let currentArrayPosition:number = 0;
+        let sendMessageArray: Array<MessageEmbed> = [];
+        let currentArrayPosition: number = 0;
 
         // PARTY //
 
@@ -57,10 +57,10 @@ export default {
             return;
         }
 
-        let Party_QueueID:string = QueueId.toString(TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId.to) as string;
-        let Party_RemoveRR:string = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
-        let Party_Accessibility:string = TheParty.data.Accessibility;
-        
+        let Party_QueueID: string = QueueId.toString(TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId.to) as string;
+        let Party_RemoveRR: string = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
+        let Party_Accessibility: string = TheParty.data.Accessibility;
+
         sendMessageArray.push(
             new MessageEmbed()
                 .setColor(`#0099ff`)
@@ -71,7 +71,7 @@ export default {
                 ),
         );
 
-        if(Party_RemoveRR){
+        if (Party_RemoveRR) {
             sendMessageArray.at(currentArrayPosition)?.addFields(
                 { name: '\u200B', value: '\u200B' },
                 {
@@ -86,22 +86,22 @@ export default {
 
         // MEMBER //
 
-        const AllMembers:Array<any> = TheParty.data.Members;
-        
+        const AllMembers: Array<any> = TheParty.data.Members;
+
         sendMessageArray.push(
             new MessageEmbed()
                 .setColor(`#0099ff`)
                 .setTitle(`Members`),
         )
 
-        for (let member of AllMembers){
+        for (let member of AllMembers) {
             const ThatPlayer = await ValClient.Player.GetUsername(member.PlayerIdentity.Subject);
-            const ThatPlayerArg = (ThatPlayer.data as Array<{ Subject:string, GameName:string, TagLine:string,}>).find(player => player.Subject = member.Subject);
+            const ThatPlayerArg = (ThatPlayer.data as Array<{ Subject: string, GameName: string, TagLine: string, }>).find(player => player.Subject = member.Subject);
 
             let sendMessage = `Level: **${member.PlayerIdentity.AccountLevel}**\nWin: **${member.SeasonalBadgeInfo.NumberOfWins}**`
-            if(member.IsOwner){
+            if (member.IsOwner) {
                 sendMessage = `*Owner*\n${sendMessage}`
-            } else if (member.IsModerator){
+            } else if (member.IsModerator) {
                 sendMessage = `*Moderator*\n${sendMessage}`
             }
 
@@ -112,7 +112,7 @@ export default {
             );
         }
 
-        if(AllMembers.length > 1){
+        if (AllMembers.length > 1) {
             sendMessageArray.at(currentArrayPosition)?.setColor('#00ff00');
         }
 
@@ -123,6 +123,6 @@ export default {
         await interaction.editReply({
             embeds: sendMessageArray,
         });
-        
+
     }
 } as CustomSlashCommands;

@@ -8,7 +8,7 @@ import { getLanguageAndUndefined } from "../../language/controller";
 export default {
     customId: 'reportbug',
     async execute(modal: ModalSubmitInteraction, { client }: EventExtraData) {
-        const _language = getLanguageAndUndefined(await IngCore.Cache.output({ name: 'language', interactionId: String(modal.guildId) }));
+        const _language = getLanguageAndUndefined(IngCore.Cache.output({ name: 'language', interactionId: String(modal.guildId) }));
 
         // on submit //
 
@@ -32,7 +32,7 @@ export default {
 
         await modal.reply({
             content: `${_language.data.command['report']['thanks']}`,
-            components: [ createButtons ],
+            components: [createButtons],
             ephemeral: true
         });
     }

@@ -7,27 +7,27 @@ export default {
     customId: 'helplist',
     async execute({ interaction, command }) {
         //script
-        const _CommandType:string = interaction.values[0] as CustomSlashCommandsCategory;
+        const _CommandType: string = interaction.values[0] as CustomSlashCommandsCategory;
 
         const createEmbed = new MessageEmbed()
             .setTitle(`Help - ${_CommandType}`)
             .setColor('#0099ff')
-        
-        //slash command
-        let sendMessage:string = ``;
 
-        for(let cmd of command.array){
+        //slash command
+        let sendMessage: string = ``;
+
+        for (let cmd of command.array) {
             const _cmd = command.collection.get(cmd.name) as CustomSlashCommands;
 
-            if(_cmd.inDevlopment === true) {
+            if (_cmd.inDevlopment === true) {
                 continue;
             }
 
-            if(_cmd.type != (_CommandType.toLocaleLowerCase())) {
+            if (_cmd.type != (_CommandType.toLocaleLowerCase())) {
                 continue;
             }
 
-            if(!_cmd.echo || !_cmd.echo?.from) {
+            if (!_cmd.echo || !_cmd.echo?.from) {
                 sendMessage += `${Formatters.inlineCode('/' + _cmd.data.name)} - ${_cmd.data.description}\n`;
             }
         }
@@ -68,8 +68,8 @@ export default {
 
         //sendMessage
         await interaction.editReply({
-            embeds: [ createEmbed ],
-            components: [ createComponents ],
+            embeds: [createEmbed],
+            components: [createComponents],
         });
     }
 } as CustomMenu

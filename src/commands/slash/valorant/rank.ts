@@ -42,15 +42,15 @@ export default {
         const puuid = ValorantUserInfo.data.sub;
 
         const ThisRank = (((await ValClient.MMR.FetchCompetitiveUpdates(puuid)).data.Matches as Array<any>).filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
-        
-        let Rank_Rating_Now:string = ThisRank.RankedRatingAfterUpdate;
-        
+
+        let Rank_Rating_Now: string = ThisRank.RankedRatingAfterUpdate;
+
         const AllRanks = await ValApiCom.CompetitiveTiers.get();
         if (AllRanks.isError || !AllRanks.data.data) throw new Error(AllRanks.data.error);
 
-        let Rank_Name:string = '';
-        let Rank_Icon:string = '';
-        let Rank_Color:string = '';
+        let Rank_Name: string = '';
+        let Rank_Icon: string = '';
+        let Rank_Color: string = '';
 
         for (let _rank of AllRanks.data.data) {
             for (let _tier of _rank.tiers) {

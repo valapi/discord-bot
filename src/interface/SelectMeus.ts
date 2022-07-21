@@ -5,8 +5,8 @@ import type { ILanguage } from '../language/interface';
 
 interface CustomMenuExtendData {
     interaction: SelectMenuInteraction;
-	DiscordClient: Client;
-	createdTime: Date;
+    DiscordClient: Client;
+    createdTime: Date;
     language: ILanguage;
     command: {
         collection: Collection<any, any>;

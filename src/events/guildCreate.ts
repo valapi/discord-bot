@@ -7,7 +7,7 @@ export default {
     name: 'guildCreate',
     once: true,
     async execute(guild: Guild, _extraData: EventExtraData) {
-        await Logs.log(`<${guild.id}> join new guild`, 'info');
+        Logs.log(`<${guild.id}> join new guild`, 'info');
 
         //message
         let sendMessage = ``;
@@ -26,9 +26,9 @@ export default {
             .setTimestamp(new Date())
             .setFooter({ text: guild.name });
 
-        if(guild.bannerURL()) {
+        if (guild.bannerURL()) {
             createEmbed.setImage(String(guild.bannerURL()));
-        } else if(guild.iconURL()) {
+        } else if (guild.iconURL()) {
             createEmbed.setImage(String(guild.iconURL()));
         } else if (guild.splashURL()) {
             createEmbed.setImage(String(guild.splashURL()));
@@ -42,18 +42,18 @@ export default {
         else if (guild.widgetChannelId != null) { SendGuildChannel = guild.widgetChannel }
         else if (guild.rulesChannelId != null) { SendGuildChannel = guild.rulesChannel }
         else {
-            const CHANNEL = await _extraData.client.users.cache.get(guild.ownerId);
+            const CHANNEL = _extraData.client.users.cache.get(guild.ownerId);
 
             await CHANNEL?.send({
                 content: sendMessage,
-                embeds: [ createEmbed ],
+                embeds: [createEmbed],
             });
             return;
         }
 
         await SendGuildChannel?.send({
             content: sendMessage,
-            embeds: [ createEmbed ],
+            embeds: [createEmbed],
         });
     },
 };

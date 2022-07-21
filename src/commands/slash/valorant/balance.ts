@@ -79,13 +79,13 @@ export default {
         //sendMessage
         const createEmbed = new MessageEmbed()
             .setThumbnail((BalanceArray.at(Random(0, BalanceArray.length - 1) as number))?.icon as string);
-            
+
         BalanceArray.forEach((item) => {
             createEmbed.addField(item.name, String(item.value));
         });
 
         await interaction.editReply({
-            embeds: [ createEmbed ],
+            embeds: [createEmbed],
         });
     }
 } as CustomSlashCommands;
