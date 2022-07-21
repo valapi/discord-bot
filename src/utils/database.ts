@@ -1,11 +1,11 @@
-import mongoose from "mongoose";
+//import
+
+import * as mongoose from "mongoose";
 import * as process from 'process';
 
 import { Logs } from "@ing3kth/core";
 
-import * as dotenv from 'dotenv';
-
-type ICollectionName = 'account' | 'daily'
+type ICollectionName = 'account' | 'daily';
 
 interface IValorantAccount {
     account: string;
@@ -39,8 +39,10 @@ const _saveSchema = new mongoose.Schema<IValorantSave>({
     channelId: { type: String, required: true },
 });
 
-class ValData {
-    constructor() {
+//script
+
+class ValorDatabase {
+    public constructor() {
         //event
         mongoose.connection.on("error", (async (error) => {
             Logs.log(error, 'error');
@@ -53,11 +55,6 @@ class ValData {
         mongoose.connection.on("disconnected", (async () => {
             Logs.log('Disconnected from database', 'warning');
         }));
-
-        //dot ENV
-        dotenv.config({
-            path: process.cwd() + '/.env'
-        });
     }
 
     /**
@@ -91,10 +88,10 @@ class ValData {
     /**
      * login to mongodb database
      * @param {string} token token of access to database
-     * @returns {Promise<ValData>}
+     * @returns {Promise<ValorDatabase>}
      */
-    public static async create(token?: string): Promise<ValData> {
-        const _database = new ValData();
+    public static async create(token?: string): Promise<ValorDatabase> {
+        const _database = new ValorDatabase();
         await _database.login(token);
 
         return _database;
@@ -103,35 +100,31 @@ class ValData {
     /**
      * Check if collection is exist or not
      * @param config checking config
-     * @returns {Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }>}
+     * @returns {Promise<{ isFind: Boolean, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }>}
      */
     public static async checkCollection<YourCollectionInterface>(config: {
         name: ICollectionName,
         schema: mongoose.Schema,
         filter?: mongoose.FilterQuery<YourCollectionInterface>,
         token?: string,
-    }): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }> {
+    }): Promise<{ isFind: Boolean, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }> {
 
-        const _MyCollection = (await ValData.create(config.token)).getCollection<YourCollectionInterface>(config.name, config.schema);
+        const _MyCollection = (await ValorDatabase.create(config.token)).getCollection<YourCollectionInterface>(config.name, config.schema);
         const _FindInDatabase: Array<YourCollectionInterface> = await _MyCollection.find(config.filter || {});
 
         return {
-            ...{
-                isFind: (Number(_FindInDatabase.length) > 0),
-                total: Number(_FindInDatabase.length),
-                data: _FindInDatabase,
-                once: _FindInDatabase[0],
-            },
-            ...{
-                model: _MyCollection
-            }
+            isFind: (_FindInDatabase.length > 0),
+            data: _FindInDatabase,
+            model: _MyCollection,
         };
     }
 }
 
+//export
+
 export {
     //controller
-    ValData,
+    ValorDatabase,
 
     //valorant account
     type IValorantAccount,
