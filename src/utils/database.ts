@@ -57,11 +57,6 @@ class ValorDatabase {
         }));
     }
 
-    /**
-     * login to mongodb database
-     * @param {string} token token of access to database
-     * @returns {Promise<void>}
-     */
     public async login(token: string = String(process.env['MONGO_TOKEN'])): Promise<void> {
         if (!token) {
             Logs.log('token is not defined', 'error');
@@ -70,11 +65,6 @@ class ValorDatabase {
         await mongoose.connect(token);
     }
 
-    /**
-     * Get {@link mongoose.Model} of the collection
-     * @param {string} name name of the collection
-     * @returns {mongoose.Model}
-     */
     public getCollection<YourCollectionInterface>(name: ICollectionName, schema: mongoose.Schema): mongoose.Model<YourCollectionInterface, any, any, any> {
         try {
             return mongoose.model<YourCollectionInterface>(name, schema);
@@ -85,11 +75,6 @@ class ValorDatabase {
 
     //static
 
-    /**
-     * login to mongodb database
-     * @param {string} token token of access to database
-     * @returns {Promise<ValorDatabase>}
-     */
     public static async create(token?: string): Promise<ValorDatabase> {
         const _database = new ValorDatabase();
         await _database.login(token);
@@ -97,11 +82,6 @@ class ValorDatabase {
         return _database;
     }
 
-    /**
-     * Check if collection is exist or not
-     * @param config checking config
-     * @returns {Promise<{ isFind: Boolean, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }>}
-     */
     public static async checkCollection<YourCollectionInterface>(config: {
         name: ICollectionName,
         schema: mongoose.Schema,

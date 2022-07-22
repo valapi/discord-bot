@@ -38,6 +38,7 @@
     "homepage": "https://github.com/KTNG-3/valorant-discord-bot#readme",
     "dependencies": {
         "@ing3kth/core": "^2.0.1",
+        "crypto-js": "^4.1.1",
         "discord-api-types": "^0.36.3",
         "discord.js": "^14.0.3",
         "dotenv": "^16.0.1",
@@ -45,6 +46,7 @@
         "nodemon": "^2.0.19"
     },
     "devDependencies": {
+        "@types/crypto-js": "^4.1.1",
         "@types/node": "^18.0.6",
         "ts-node": "^10.9.1",
         "tslib": "^2.4.0",

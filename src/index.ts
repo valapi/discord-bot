@@ -6,16 +6,16 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import * as IngCore from '@ing3kth/core';
 
-import { Client, GatewayIntentBits, ActivityType } from 'discord.js';
+import { Client, GatewayIntentBits, ActivityType, Collection, RESTPostAPIApplicationCommandsJSONBody } from 'discord.js';
 import { REST } from '@discordjs/rest';
+import { Routes } from 'discord-api-types/v10';
 
 import { ValorDatabase } from './utils/database';
 
-import type { IEventHandler } from './modules';
+import type { ICommandHandler, IEventHandler } from './modules';
 
 //script
 
-const __Folders: string = `src`;
 const __DevelopmentMode: boolean = true;
 
 (async () => {
@@ -28,7 +28,7 @@ const __DevelopmentMode: boolean = true;
     //ValorDatabase.create(process.env['MONGO_TOKEN']);
 
     //client
-    const DiscordClient = new Client({
+    const DiscordBot = new Client({
         intents: [
             GatewayIntentBits.Guilds,
             GatewayIntentBits.GuildMembers,
@@ -45,30 +45,84 @@ const __DevelopmentMode: boolean = true;
         failIfNotExists: __DevelopmentMode,
     });
 
-    //handle event
-    DiscordClient.setMaxListeners(50);
-    
-    for (const _file of fs.readdirSync(`${process.cwd()}/${__Folders}/events`)) {
-        const event: IEventHandler.File<any> = require(`./events/${_file}`).default;
+    //commands
+    const _commands = new Collection();
+    const _commandArray: Array<RESTPostAPIApplicationCommandsJSONBody> = [];
 
-        console.log(event)
+    for (const _folder of fs.readdirSync(path.join(`${__dirname}/commands`))) {
+        for (const _file of fs.readdirSync(path.join(`${__dirname}/commands/${_folder}`))) {
+            const command: ICommandHandler.File = require(`./commands/${_folder}/${_file}`).default;
+
+            if (!command) {
+                continue;
+            }
+
+            _commands.set(command.command.name, command);
+            _commandArray.push(command.command.toJSON());
+        }
+    }
+
+    const rest = new REST({ version: '10' }).setToken(String(process.env['TOKEN']));
+
+    try {
+        IngCore.Logs.log('Started refreshing application (/) commands', 'info');
+
+        if (__DevelopmentMode === true) {
+            await rest.put(
+                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
+                {
+                    body: _commandArray,
+                },
+            );
+        } else {
+            await rest.put(
+                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
+                {
+                    body: [],
+                },
+            );
+
+            await rest.put(
+                Routes.applicationCommands(String(process.env['CLIENT_ID'])),
+                {
+                    body: _commandArray,
+                }
+            );
+        }
+
+        IngCore.Logs.log('Successfully reloaded application (/) commands', 'info');
+    } catch (error) {
+        IngCore.Logs.log(error, 'error');
+    }
+
+    //events
+    DiscordBot.setMaxListeners(50);
+
+    const _EventInput: IEventHandler.Input = {
+        DiscordBot,
+        _commands,
+        _commandArray,
+    };
+    
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
+        const event: IEventHandler.File<any> = require(`./events/${_file}`).default;
 
         if (!event) {
             continue;
         }
 
         if (event.once) {
-            DiscordClient.once(event.name, (async (...args) => {
+            DiscordBot.once(event.name, (async (...args) => {
                 try {
-                    await event.execute(...args);
+                    await event.execute(_EventInput, ...args);
                 } catch (error) {
                     IngCore.Logs.log(error, 'error');
                 }
             }));
         } else {
-            DiscordClient.on(event.name, (async (...args) => {
+            DiscordBot.on(event.name, (async (...args) => {
                 try {
-                    await event.execute(...args);
+                    await event.execute(_EventInput, ...args);
                 } catch (error) {
                     IngCore.Logs.log(error, 'error');
                 }
@@ -77,9 +131,9 @@ const __DevelopmentMode: boolean = true;
     }
 
     //login
-    await DiscordClient.login(process.env['TOKEN']);
+    await DiscordBot.login(process.env['TOKEN']);
 
-    DiscordClient.user?.setActivity({
+    DiscordBot.user?.setActivity({
         name: "ING PROJECT",
         type: ActivityType.Playing,
     });

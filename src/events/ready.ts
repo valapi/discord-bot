@@ -1,6 +1,6 @@
 //import
 
-import { IEventHandler } from "../modules";
+import type { IEventHandler } from "../modules";
 
 import * as IngCore from '@ing3kth/core';
 
@@ -9,7 +9,7 @@ import * as IngCore from '@ing3kth/core';
 const __event: IEventHandler.File<'ready'> = {
     name: 'ready',
     once: true,
-    async execute(client) {
+    async execute({}, client) {
         IngCore.Logs.log(`Ready! Logged in as ${client.user.tag}`, 'system');
     },
 }
