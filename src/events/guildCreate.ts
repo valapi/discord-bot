@@ -31,9 +31,9 @@ const __event: IEventHandler.File<'guildCreate'> = {
             .setTimestamp(new Date())
             .setFooter({ text: guild.name });
 
-        if(guild.bannerURL()) {
+        if (guild.bannerURL()) {
             createEmbed.setImage(String(guild.bannerURL()));
-        } else if(guild.iconURL()) {
+        } else if (guild.iconURL()) {
             createEmbed.setImage(String(guild.iconURL()));
         } else if (guild.splashURL()) {
             createEmbed.setImage(String(guild.splashURL()));
@@ -51,14 +51,14 @@ const __event: IEventHandler.File<'guildCreate'> = {
 
             await CHANNEL?.send({
                 content: sendMessage,
-                embeds: [ createEmbed ],
+                embeds: [createEmbed],
             });
             return;
         }
 
         await SendGuildChannel?.send({
             content: sendMessage,
-            embeds: [ createEmbed ],
+            embeds: [createEmbed],
         });
     },
 }
