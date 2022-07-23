@@ -1,6 +1,6 @@
 //import
 
-import type { Client, ClientEvents, Collection, CommandInteraction, MessagePayload, SlashCommandBuilder, WebhookEditMessageOptions } from 'discord.js';
+import type { Client, ClientEvents, Collection, CommandInteraction, SlashCommandBuilder, InteractionReplyOptions } from 'discord.js';
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
 
 //interface
@@ -8,8 +8,11 @@ import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v
 namespace IEventHandler {
     export interface Input {
         DiscordBot: Client;
-        _commands: Collection<any, any>;
-        _commandArray: Array<RESTPostAPIApplicationCommandsJSONBody>;
+        _SlashCommand: {
+            commands: Collection<any, any>,
+            commandArray: Array<RESTPostAPIApplicationCommandsJSONBody>,
+        };
+        _DevelopmentMode: boolean;
     }
 
     export interface File<Event extends keyof ClientEvents> {
@@ -32,11 +35,10 @@ namespace ICommandHandler {
     export interface File {
         command: SlashCommandBuilder;
         category: ICommandHandler.Category;
-        permissions?: Array<bigint>,
-        isPrivateMessage?: boolean,
+        permissions?: Array<bigint>;
         onlyGuild?: boolean;
         inDevlopment?: boolean;
-        execute: (input: ICommandHandler.Input) => Promise<MessagePayload | WebhookEditMessageOptions>;
+        execute: (input: ICommandHandler.Input) => Promise<InteractionReplyOptions>;
     }
 }
 

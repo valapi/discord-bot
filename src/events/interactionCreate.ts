@@ -14,28 +14,26 @@ import { genarateApiKey } from "../utils/crypto";
 const __event: IEventHandler.File<'interactionCreate'> = {
     name: 'interactionCreate',
     once: false,
-    async execute({ _commands, DiscordBot }, interaction) {
+    async execute({ _SlashCommand, _DevelopmentMode, DiscordBot }, interaction) {
+        if (_DevelopmentMode === true && interaction.guild?.id !== String(process.env['GUILD_ID'])) {
+            return;
+        }
+
         const createdTime = new Date();
 
         // Slash Command
-        if (interaction.isChatInputCommand()) {
+        if (interaction.type === InteractionType.ApplicationCommand) {
             const command: ICommandHandler.File = {
                 ...{
                     command: ((new SlashCommandBuilder().setName('default')).setDescription('Default command')),
                     category: 'miscellaneous',
                     permissions: [],
-                    isPrivateMessage: false,
                     onlyGuild: false,
                     inDevlopment: false,
                     execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.'); }),
                 },
-                ..._commands.get(interaction.commandName)
+                ..._SlashCommand.commands.get(interaction.commandName)
             }
-
-            // await interaction.deferReply({
-            //     ephemeral: command.isPrivateMessage,
-            //     fetchReply: true,
-            // });
 
             try {
                 //load
@@ -77,16 +75,21 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                     apiKey: genarateApiKey(String(`${interaction.user.id}${interaction.user.createdTimestamp}${interaction.user.username}${interaction.user.tag}`), String(`${interaction.guild?.id}${interaction.guild?.ownerId}`) + String(`${interaction.guild?.createdTimestamp}`), String(process.env['PUBLIC_KEY'])),
                 });
 
-                await interaction.reply(TheCommand);
+                if (interaction.isRepliable() === true) {
+                    await interaction.reply({ ...TheCommand, ...{ tts: false } });
+                }
 
                 IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
             } catch (error) {
                 IngCore.Logs.log(error, 'error');
 
                 await interaction.reply({
+                    tts: false,
                     content: `Something Went Wrong, Please Try Again Later`,
                     embeds: [],
                     components: [],
+                    files: [],
+                    attachments: [],
                 });
             }
         }

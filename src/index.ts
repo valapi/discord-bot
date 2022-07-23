@@ -6,7 +6,7 @@ import * as fs from 'fs';
 import * as dotenv from 'dotenv';
 import * as IngCore from '@ing3kth/core';
 
-import { Client, GatewayIntentBits, ActivityType, Collection, RESTPostAPIApplicationCommandsJSONBody } from 'discord.js';
+import { Client, GatewayIntentBits, Partials ,ActivityType, Collection, RESTPostAPIApplicationCommandsJSONBody } from 'discord.js';
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v10';
 
@@ -16,7 +16,7 @@ import type { ICommandHandler, IEventHandler } from './modules';
 
 //script
 
-const __DevelopmentMode: boolean = true;
+const _DevelopmentMode: boolean = true;
 
 (async () => {
     //.env
@@ -25,7 +25,7 @@ const __DevelopmentMode: boolean = true;
     });
 
     //database
-    //ValorDatabase.create(process.env['MONGO_TOKEN']);
+    await (new ValorDatabase()).login(process.env['MONGO_TOKEN']);
 
     //client
     const DiscordBot = new Client({
@@ -38,11 +38,18 @@ const __DevelopmentMode: boolean = true;
             GatewayIntentBits.DirectMessageReactions,
             GatewayIntentBits.GuildIntegrations,
         ],
+        partials: [
+            Partials.Channel,
+            Partials.GuildMember,
+            Partials.Message,
+            Partials.Reaction,
+            Partials.User,
+        ],
         allowedMentions: {
             parse: [ 'users', 'roles' ],
             repliedUser: true, //get ping or not?
         },
-        failIfNotExists: __DevelopmentMode,
+        failIfNotExists: _DevelopmentMode,
     });
 
     //commands
@@ -67,7 +74,7 @@ const __DevelopmentMode: boolean = true;
     try {
         IngCore.Logs.log('Started refreshing application (/) commands', 'info');
 
-        if (__DevelopmentMode === true) {
+        if (_DevelopmentMode === true) {
             await rest.put(
                 Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
                 {
@@ -75,13 +82,6 @@ const __DevelopmentMode: boolean = true;
                 },
             );
         } else {
-            await rest.put(
-                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
-                {
-                    body: [],
-                },
-            );
-
             await rest.put(
                 Routes.applicationCommands(String(process.env['CLIENT_ID'])),
                 {
@@ -100,8 +100,11 @@ const __DevelopmentMode: boolean = true;
 
     const _EventInput: IEventHandler.Input = {
         DiscordBot,
-        _commands,
-        _commandArray,
+        _SlashCommand: {
+            commands: _commands,
+            commandArray: _commandArray,
+        },
+        _DevelopmentMode,
     };
     
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
@@ -133,9 +136,15 @@ const __DevelopmentMode: boolean = true;
     //login
     await DiscordBot.login(process.env['TOKEN']);
 
-    DiscordBot.user?.setActivity({
-        name: "ING PROJECT",
-        type: ActivityType.Playing,
-    });
+    if (_DevelopmentMode === true) {
+        DiscordBot.user?.setStatus('invisible');
+    } else {
+        DiscordBot.user?.setStatus('online');
+
+        DiscordBot.user?.setActivity({
+            name: "ING PROJECT",
+            type: ActivityType.Playing,
+        });
+    }
 
 })();

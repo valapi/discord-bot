@@ -1,6 +1,6 @@
 //import
 
-import * as mongoose from "mongoose";
+import mongoose from "mongoose";
 import * as process from 'process';
 
 import { Logs } from "@ing3kth/core";
@@ -65,7 +65,7 @@ class ValorDatabase {
         await mongoose.connect(token);
     }
 
-    public getCollection<YourCollectionInterface>(name: ICollectionName, schema: mongoose.Schema): mongoose.Model<YourCollectionInterface, any, any, any> {
+    public getModel<YourCollectionInterface>(name: ICollectionName, schema: mongoose.Schema): mongoose.Model<YourCollectionInterface, any, any, any> {
         try {
             return mongoose.model<YourCollectionInterface>(name, schema);
         } catch (error) {
@@ -75,13 +75,6 @@ class ValorDatabase {
 
     //static
 
-    public static async create(token?: string): Promise<ValorDatabase> {
-        const _database = new ValorDatabase();
-        await _database.login(token);
-
-        return _database;
-    }
-
     public static async checkCollection<YourCollectionInterface>(config: {
         name: ICollectionName,
         schema: mongoose.Schema,
@@ -89,7 +82,10 @@ class ValorDatabase {
         token?: string,
     }): Promise<{ isFind: Boolean, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }> {
 
-        const _MyCollection = (await ValorDatabase.create(config.token)).getCollection<YourCollectionInterface>(config.name, config.schema);
+        const MyDatabase = new ValorDatabase();
+        await MyDatabase.login(config.token);
+
+        const _MyCollection = MyDatabase.getModel<YourCollectionInterface>(config.name, config.schema);
         const _FindInDatabase: Array<YourCollectionInterface> = await _MyCollection.find(config.filter || {});
 
         return {
