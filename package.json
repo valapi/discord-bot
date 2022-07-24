@@ -2,14 +2,15 @@
     "name": "@valapi/discord-bot",
     "version": "1.0.0",
     "description": "Valorant Discord Bot By ING3_",
-    "main": "dist/index.js",
+    "main": "src/index.ts",
+    "type": "commonjs",
     "engines": {
         "node": "18.x",
         "npm": "8.x"
     },
     "scripts": {
         "typescript": "npx tsc --project tsconfig.json",
-        "dev": "ts-node src/index.ts",
+        "dev": "ts-node src/index.ts --typeCheck --logError",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -50,6 +51,7 @@
     "devDependencies": {
         "@types/crypto-js": "^4.1.1",
         "@types/node": "^18.0.6",
+        "@types/nodemon": "^1.19.2",
         "ts-node": "^10.9.1",
         "tslib": "^2.4.0",
         "typescript": "^4.7.4"

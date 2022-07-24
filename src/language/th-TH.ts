@@ -45,7 +45,19 @@ const _language: ILanguage.File = {
             },
             party: {
                 "not_party": `คุณไม่ได้อยู่ในเกม`,
-            }
+            },
+            help: {
+                "select_category": `คุณสามารถเลือกประเภทของคำสั่งได้ที่ด่านล่าง`,
+                "not_category": `ไม่พบคำสั่งที่อยู่ในประเภทนี้`,
+                "placeholder": `เลือกประเภทของคำสั่ง`,
+                "type_settings": `เปลี่ยนการตั้งค่า`,
+                "type_infomation": `แสดงข้อมูล`,
+                "type_valorant": `ข้อมูลในเกม VALORANT`,
+                "type_miscellaneous": `อื่นๆ`,
+            },
+            match: {
+                "not_match": `ไม่พบประวัติการแข่งขัน`,
+            },
         },
     },
 }

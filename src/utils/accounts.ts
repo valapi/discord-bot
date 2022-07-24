@@ -48,7 +48,7 @@ async function ValorAccount(config: {
                     new ValDatabase.model({
                         account: _OnlyOne,
                         discordId: config.userId,
-                        createdAt: new Date(),
+                        createdAt: ValDatabase.data[0].createdAt,
                     })
                 ).save();
             }

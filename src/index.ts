@@ -17,7 +17,7 @@ import type { ICommandHandler, IEventHandler, IMenuHandler } from './modules';
 
 //script
 
-const _DevelopmentMode: boolean = true;
+const _DevelopmentMode: any = false;
 
 (async () => {
     //.env
@@ -69,33 +69,22 @@ const _DevelopmentMode: boolean = true;
     const _CommandCollection = new Collection();
     const _CommandList: Array<RESTPostAPIApplicationCommandsJSONBody> = [];
 
+    IngCore.Logs.log('Started refreshing application (/) commands', 'info');
+
     for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
         for (const _file of fs.readdirSync(path.join(`${__dirname}/components/commands/${_folder}`))) {
             const command: ICommandHandler.File = require(`./components/commands/${_folder}/${_file}`).default;
 
             if (!command) {
                 IngCore.Logs.log(command, 'error');
-                continue;
-            }
-
-            if (_DevelopmentMode === true) {
-                command.command.setDescription(`${command.command.description} (For Developer)`);
-                let _JsonCommand = command.command.toJSON();
-
-                _JsonCommand.options?.forEach((option) => {
-                    option.description = `${option.description} (For Developer)`
-                });
-
-                _CommandCollection.set(command.command.name, { ...command, ...{ command: _JsonCommand } });
-                _CommandList.push(_JsonCommand);
-
+                
                 continue;
             }
 
             if (command.echo && command.echo.data.length > 0) {
                 command.echo.data.forEach((cmd: string | { oldName: string, newName: string }) => {
                     if (typeof cmd === 'string') {
-                        _CommandCollection.set(cmd, { ...command, ...{ data: { name: cmd }, echo: { from: command.command.name, command: [], data: { from: command.command.name } } } });
+                        _CommandCollection.set(cmd, { ...command, ...{ data: { name: cmd }, echo: { from: command.command.name, data: [] } } });
                         _CommandList.push({ ...command.command.toJSON(), ...{ name: cmd } });
                     } else {
                         let ofNewCommand: RESTPostAPIApplicationCommandsJSONBody = command.command.toJSON();
@@ -131,23 +120,26 @@ const _DevelopmentMode: boolean = true;
     const rest = new REST({ version: '10' }).setToken(String(process.env['TOKEN']));
 
     try {
-        IngCore.Logs.log('Started refreshing application (/) commands', 'info');
-
-
-        if (_DevelopmentMode === true) {
-            await rest.put(
-                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
-                {
-                    body: _CommandList,
-                },
-            );
-        } else {
+        async function RestCommands(GlobalCommands: Array<RESTPostAPIApplicationCommandsJSONBody>, GuildCommands: Array<RESTPostAPIApplicationCommandsJSONBody>) {
             await rest.put(
                 Routes.applicationCommands(String(process.env['CLIENT_ID'])),
                 {
-                    body: _CommandList,
+                    body: GlobalCommands,
                 }
             );
+
+            await rest.put(
+                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
+                {
+                    body: GuildCommands,
+                },
+            );
+        }
+
+        if (_DevelopmentMode === true) {
+            await RestCommands([], _CommandList);
+        } else {
+            await RestCommands(_CommandList, []);
         }
 
         IngCore.Logs.log('Successfully reloaded application (/) commands', 'info');

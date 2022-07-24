@@ -45,7 +45,19 @@ const _language: ILanguage.File = {
             },
             party: {
                 "not_party": `You are not in-game.`,
-            }
+            },
+            help: {
+                "select_category": `You can select one of the categories below`,
+                "not_category": `No command in this category`,
+                "placeholder": `Select Command Type`,
+                "type_settings": `Change Settings`,
+                "type_infomation": `Show Infomations`,
+                "type_valorant": `VALORANT In-game Info`,
+                "type_miscellaneous": `Other Commands`,
+            },
+            match: {
+                "not_match": `No match history was found.`,
+            },
         },
     },
 }

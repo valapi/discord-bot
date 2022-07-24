@@ -77,10 +77,10 @@ async function ValorDatabase<CollectionInterface>(config: {
 
     //find
 
-    const MyData: Array<CollectionInterface> = MyModel.find(config.filter || {});
+    const MyData: Array<CollectionInterface> = await MyModel.find(config.filter || {});
 
     return {
-        isFind: (MyData.length > 0),
+        isFind: MyData.length > 0,
         data: MyData,
         model: MyModel,
     };

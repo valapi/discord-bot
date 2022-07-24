@@ -39,7 +39,7 @@ const __event: IEventHandler.File<'guildCreate'> = {
             createEmbed.setImage(String(guild.splashURL()));
         }
 
-        //sendMessage
+        //send
         var SendGuildChannel: TextChannel | null;
 
         if (guild.publicUpdatesChannelId != null) { SendGuildChannel = guild.publicUpdatesChannel }

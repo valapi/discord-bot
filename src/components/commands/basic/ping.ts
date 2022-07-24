@@ -1,7 +1,7 @@
 //import
 
 import * as IngCore from '@ing3kth/core';
-import { Permissions, SlashCommandBuilder, AttachmentBuilder, EmbedBuilder, Formatters, ComponentType, ButtonBuilder, ButtonStyle, SelectMenuBuilder, ModalBuilder } from 'discord.js';
+import { SlashCommandBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
 //script

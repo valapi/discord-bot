@@ -33,6 +33,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                     command: ((new SlashCommandBuilder().setName('default')).setDescription('Default command')),
                     category: 'miscellaneous',
                     permissions: [],
+                    isPrivateMessage: false,
                     onlyGuild: false,
                     inDevlopment: false,
                     execute: (async ({ }) => { return { content: 'This is Default message.', }; }),
@@ -40,17 +41,17 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 ..._SlashCommand.Collection.get(interaction.commandName)
             }
 
-            interaction.editReply = (async () => {
-                throw new Error(
-                    `Do not allow to edit reply`
-                );
+            //load
+
+            await interaction.deferReply({
+                ephemeral: command.isPrivateMessage,
+                fetchReply: true,
             });
 
             try {
-                //load
 
                 if (command.inDevlopment === true && interaction.user.id !== '549231132382855189') {
-                    await interaction.reply({
+                    await interaction.editReply({
                         content: language.data['dev_cmd'] || 'This command is in development.',
                     });
 
@@ -58,7 +59,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 }
 
                 if (!interaction.guild && command.onlyGuild === true) {
-                    await interaction.reply({
+                    await interaction.editReply({
                         content: language.data['not_guild'] || 'Slash Command are only available in server.',
                     });
 
@@ -81,14 +82,12 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                     }
                 }
 
-                if (command.permissions && command.permissions.length > 0 && interaction.guild) {
-                    if (!interaction.memberPermissions?.has(command.permissions)) {
-                        await interaction.reply({
-                            content: language.data['not_permission'] || `You don't have permission to use this command.`,
-                        });
+                if (command.permissions && !interaction.memberPermissions?.has(command.permissions)) {
+                    await interaction.editReply({
+                        content: language.data['not_permission'] || `You don't have permission to use this command.`,
+                    });
 
-                        return;
-                    }
+                    return;
                 }
 
                 //execute
@@ -103,22 +102,26 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                     apiKey: genarateApiKey(String(`${interaction.user.id}${interaction.user.createdTimestamp}${interaction.user.username}${interaction.user.tag}`), String(`${interaction.guild?.id}${interaction.guild?.ownerId}`) + String(`${interaction.guild?.createdTimestamp}`), String(process.env['PUBLIC_KEY'])),
                 });
 
-                await interaction.reply({
-                    ...TheCommand,
-                    ...{
-                        tts: false,
-                        fetchReply: true
-                    },
-                });
+                if (TheCommand) {
+                    await interaction.editReply(TheCommand);
+                } else {
+                    await interaction.editReply({
+                        content: language.data['error'],
+                    });
+                }
 
                 IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
             } catch (error) {
                 //error
 
-                IngCore.Logs.log(error, 'error');
+                if (_DevelopmentMode === true) {
+                    console.error(error);
+                } else {
+                    IngCore.Logs.log(error, 'error');
+                }
 
-                await interaction.reply({
-                    content: language.data.error || `Something Went Wrong, Please Try Again Later`,
+                await interaction.editReply({
+                    content: language.data['error'] || `Something Went Wrong, Please Try Again Later`,
                     embeds: [],
                     components: [],
                     files: [],
@@ -132,16 +135,23 @@ const __event: IEventHandler.File<'interactionCreate'> = {
             const menu: IMenuHandler.File = {
                 ...{
                     customId: 'default',
+                    replyMode: 'edit',
                     execute: (async ({ }) => { return { content: 'This is Default message.', }; }),
                 },
                 ..._Menu.get(interaction.customId)
             }
 
-            interaction.editReply = (async () => {
-                throw new Error(
-                    `Do not allow to edit reply`
-                );
-            });
+            //load
+
+            if (menu.replyMode === 'edit') {
+                await interaction.deferUpdate({
+                    fetchReply: true,
+                });
+            } else if (menu.replyMode === 'new') {
+                await interaction.deferReply({
+                    fetchReply: true,
+                });
+            }
 
             try {
                 //execute
@@ -151,19 +161,24 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 const TheMenu = await menu.execute({
                     interaction,
                     DiscordBot,
+                    language,
                     _SlashCommand,
                 });
 
-                await interaction.reply({ ...TheMenu, ...{ tts: false, fetchReply: true } });
+                await interaction.editReply({ ...TheMenu, ...{ tts: false, fetchReply: true } });
 
                 IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId} [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
             } catch (error) {
                 //error
 
-                IngCore.Logs.log(error, 'error');
+                if (_DevelopmentMode === true) {
+                    console.error(error);
+                } else {
+                    IngCore.Logs.log(error, 'error');
+                }
 
-                await interaction.reply({
-                    content: language.data.error || `Something Went Wrong, Please Try Again Later`,
+                await interaction.editReply({
+                    content: language.data['error'] || `Something Went Wrong, Please Try Again Later`,
                     embeds: [],
                     components: [],
                     files: [],

@@ -52,6 +52,18 @@ namespace ILanguage {
                 party: {
                     'not_party': string,
                 },
+                help: {
+                    'select_category': string,
+                    'not_category': string,
+                    'placeholder': string,
+                    'type_settings': string,
+                    'type_infomation': string,
+                    'type_valorant': string,
+                    'type_miscellaneous': string,
+                },
+                match: {
+                    'not_match': string;
+                }
             },
         };
     }

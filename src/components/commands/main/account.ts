@@ -1,7 +1,7 @@
 //import
 
 import * as IngCore from '@ing3kth/core';
-import { Permissions, SlashCommandBuilder, AttachmentBuilder, EmbedBuilder, Formatters, ComponentType, ButtonBuilder, ButtonStyle, SelectMenuBuilder, ModalBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, Formatters } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
 import { encrypt, decrypt } from '../../../utils/crypto';
@@ -38,7 +38,7 @@ const __command: ICommandHandler.File = {
             )
             .addSubcommand(subcommand =>
                 subcommand
-                    .setName('mfa')
+                    .setName('multifactor')
                     .setDescription('Multi-Factor Authentication')
                     .addNumberOption(option =>
                         option
@@ -83,12 +83,13 @@ const __command: ICommandHandler.File = {
                     .setDescription("Get Your Valorant Account")
             )
     ),
-    category: 'miscellaneous',
+    category: 'settings',
     onlyGuild: true,
+    isPrivateMessage: true,
     echo: {
         data: [
             { oldName: 'add', newName: 'login' },
-            { oldName: 'mfa', newName: 'verify' },
+            { oldName: 'multifactor', newName: 'verify' },
             { oldName: 'remove', newName: 'logout' },
         ],
     },
@@ -119,10 +120,6 @@ const __command: ICommandHandler.File = {
             region: Region.Asia_Pacific,
         });
 
-        WebClient.on('error', (async (data) => {
-            throw data;
-        }));
-
         async function ValorSave(WebClient: ValWebClient) {
             if (ValAccount.isFind === true) {
                 await ValAccount.model.deleteMany({ discordId: userId });
@@ -132,19 +129,15 @@ const __command: ICommandHandler.File = {
                 new ValAccount.model({
                     account: encrypt(WebClient.toJSON().cookie.ssid, apiKey),
                     discordId: userId,
-                    createdAt: createdTime,
+                    createdAt: (ValAccount.data.at(0))?.createdAt || new Date(),
                 })
             ).save();
         }
 
-        async function ValorSuccess(WebClient: ValWebClient) {
-            //cache
-            _cache.clear(userId);
+        async function ValorSuccess(WebClient: ValWebClient, isSave: boolean) {
+            if (isSave === true) {
+                _cache.clear(userId);
 
-            (new IngCore.Cache('accounts')).input(encrypt(JSON.stringify(WebClient.toJSON()), apiKey), userId);
-
-            //save
-            if (thisSubCommand !== 'get') {
                 await ValorSave(WebClient);
             }
 
@@ -185,7 +178,7 @@ const __command: ICommandHandler.File = {
             await WebClient.login(_InputUsername, String(interaction.options.getString('password')));
 
             if (WebClient.isMultifactor === false) {
-                return await ValorSuccess(WebClient);
+                return await ValorSuccess(WebClient, true);
             }
 
             _cache.input(encrypt(JSON.stringify(WebClient.toJSON()), apiKey), userId);
@@ -205,7 +198,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        if (thisSubCommand === 'mfa') {
+        if (thisSubCommand === 'multifactor') {
             //load
 
             const _save = _cache.output(userId);
@@ -219,11 +212,12 @@ const __command: ICommandHandler.File = {
             //script
 
             WebClient.fromJSON(JSON.parse(decrypt(_save, apiKey)));
+
             await WebClient.verify(Number(interaction.options.getNumber("verify_code")));
 
             //return
 
-            return await ValorSuccess(WebClient);
+            return await ValorSuccess(WebClient, true);
         }
 
         if (thisSubCommand === 'reconnect') {
@@ -238,8 +232,9 @@ const __command: ICommandHandler.File = {
             //script
 
             const NewWebClient = await ValWebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
-
             await NewWebClient.refresh(true);
+
+            await ValorSave(NewWebClient);
 
             //return
 
@@ -275,7 +270,7 @@ const __command: ICommandHandler.File = {
         if (thisSubCommand === 'settings') {
             //load
 
-            if(ValAccount.isFind === false) {
+            if (ValAccount.isFind === false) {
                 return {
                     content: CommandLanguage['not_account'],
                 };
@@ -283,23 +278,23 @@ const __command: ICommandHandler.File = {
 
             //script
 
-            const _choice = interaction.options.getString('region') as keyof typeof _Region.to;
+            const _choice = interaction.options.getString('region') as keyof typeof _Region.from;
 
-            WebClient.setRegion(_Region.toString(_choice));
+            WebClient.setRegion(_choice);
 
             await ValorSave(WebClient);
 
             //return
 
             return {
-                content: `changed region to **${_choice.replace('_', ' ')}**`,
+                content: `changed region to **${String(_Region.fromString(_choice)).replace('_', ' ')}**`,
             };
         }
 
         if (thisSubCommand === 'get') {
             //load
 
-            if(ValAccount.isFind === false) {
+            if (ValAccount.isFind === false) {
                 return {
                     content: CommandLanguage['not_account'],
                 };
@@ -312,12 +307,8 @@ const __command: ICommandHandler.File = {
 
             //return
 
-            await ValorSuccess(NewWebClient);
+            return await ValorSuccess(NewWebClient, false);
         }
-
-        return {
-            content: `Unknown sub command`,
-        };
     },
 }
 

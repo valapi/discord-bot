@@ -1,7 +1,7 @@
 //import
 
 import * as IngCore from '@ing3kth/core';
-import { Permissions, SlashCommandBuilder, AttachmentBuilder, EmbedBuilder, Formatters, ComponentType, ButtonBuilder, ButtonStyle, SelectMenuBuilder, ModalBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ComponentType, SelectMenuBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
 //script
@@ -12,15 +12,19 @@ const __command: ICommandHandler.File = {
             .setName('help')
             .setDescription('Show all Commands')
     ),
-    category: 'miscellaneous',
-    async execute({ }) {
+    category: 'infomation',
+    async execute({ language }) {
+        //load
+
+        const CommandLanguage = language.data.command.help;
+
         //return
 
         return {
             embeds: [
                 new EmbedBuilder()
                     .setTitle('Help')
-                    .setDescription('You can select one of the categories below')
+                    .setDescription(CommandLanguage['select_category'])
                     .addFields(
                         {
                             name: '/reportbug',
@@ -46,33 +50,33 @@ const __command: ICommandHandler.File = {
                     components: [
                         new SelectMenuBuilder()
                             .setCustomId('helplist')
-                            .setPlaceholder('Select Command Type')
+                            .setPlaceholder(CommandLanguage['placeholder'])
                             .setMinValues(1)
                             .setMaxValues(1)
                             .addOptions(
                                 {
                                     label: 'Settings',
-                                    description: 'Change Settings',
+                                    description: CommandLanguage['type_settings'],
                                     value: 'settings',
                                 },
                                 {
                                     label: 'Infomation',
-                                    description: 'Show Infomations',
+                                    description: CommandLanguage['type_infomation'],
                                     value: 'infomation',
                                 },
                                 {
                                     label: 'Valorant',
-                                    description: 'Valorant InGame Info',
+                                    description: CommandLanguage['type_valorant'],
                                     value: 'valorant',
                                 },
                                 {
                                     label: 'Miscellaneous',
-                                    description: 'Other Commands',
+                                    description: CommandLanguage['type_miscellaneous'],
                                     value: 'miscellaneous',
                                 },
                             ),
                     ],
-                }
+                },
             ],
         };
     },

@@ -8,14 +8,16 @@ import type { IMenuHandler, ICommandHandler } from "../../modules";
 
 const __menu: IMenuHandler.File = {
     customId: 'helplist',
-    async execute({ interaction, _SlashCommand }) {
+    async execute({ interaction, _SlashCommand, language }) {
         //load
 
-        const _CommandType: string = interaction.values[0] as ICommandHandler.Category;
+        const CommandLanguage = language.data.command.help;
+
+        const _CommandType = interaction.values[0] as ICommandHandler.Category;
 
         const createEmbed = new EmbedBuilder()
             .setTitle(`Help - ${_CommandType}`)
-            .setColor('#0099ff')
+            .setColor('#0099ff');
 
         //script
 
@@ -28,11 +30,11 @@ const __menu: IMenuHandler.File = {
                 continue;
             }
 
-            if (_cmd.category != (_CommandType.toLocaleLowerCase())) {
+            if (_cmd.category !== _CommandType) {
                 continue;
             }
 
-            if(!_cmd.echo || !_cmd.echo?.from) {
+            if (_cmd.echo && _cmd.echo.from) {
                 continue;
             }
 
@@ -40,7 +42,7 @@ const __menu: IMenuHandler.File = {
         }
 
         if (!sendMessage) {
-            sendMessage = `No command in this category.`;
+            sendMessage += CommandLanguage['not_category'];
         }
 
         createEmbed.setDescription(sendMessage);
@@ -55,33 +57,33 @@ const __menu: IMenuHandler.File = {
                     components: [
                         new SelectMenuBuilder()
                             .setCustomId('helplist')
-                            .setPlaceholder('Select Command Type')
+                            .setPlaceholder(CommandLanguage['placeholder'])
                             .setMinValues(1)
                             .setMaxValues(1)
                             .addOptions(
                                 {
                                     label: 'Settings',
-                                    description: 'Change Settings',
+                                    description: CommandLanguage['type_settings'],
                                     value: 'settings',
                                 },
                                 {
                                     label: 'Infomation',
-                                    description: 'Show Infomations',
+                                    description: CommandLanguage['type_infomation'],
                                     value: 'infomation',
                                 },
                                 {
                                     label: 'Valorant',
-                                    description: 'Valorant InGame Info',
+                                    description: CommandLanguage['type_valorant'],
                                     value: 'valorant',
                                 },
                                 {
                                     label: 'Miscellaneous',
-                                    description: 'Other Commands',
+                                    description: CommandLanguage['type_miscellaneous'],
                                     value: 'miscellaneous',
                                 },
                             ),
-                    ]
-                }
+                    ],
+                },
             ],
         };
     },

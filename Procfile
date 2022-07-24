@@ -1,0 +1,1 @@
+worker: npx nodemon --ignore '/*' --exec 'npx ts-node --project tsconfig.json' ./src/index.ts

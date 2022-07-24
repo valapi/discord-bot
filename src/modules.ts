@@ -1,6 +1,6 @@
 //import
 
-import type { Client, ClientEvents, Collection, CommandInteraction, SlashCommandBuilder, InteractionReplyOptions, SelectMenuInteraction, SlashCommandSubcommandsOnlyBuilder, SlashCommandSubcommandGroupBuilder, ChatInputCommandInteraction } from 'discord.js';
+import type { Client, ClientEvents, Collection, SlashCommandBuilder, SelectMenuInteraction, SlashCommandSubcommandsOnlyBuilder, ChatInputCommandInteraction, WebhookEditMessageOptions, SlashCommandOptionsOnlyBuilder, PermissionResolvable } from 'discord.js';
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
 
 import type { ILanguage } from './lang';
@@ -37,9 +37,10 @@ namespace ICommandHandler {
     export type Category = 'settings' | 'infomation' | 'valorant' | 'miscellaneous';
 
     export interface File {
-        command: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder;
+        command: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder | SlashCommandOptionsOnlyBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
         category: ICommandHandler.Category;
-        permissions?: Array<bigint>;
+        permissions?: PermissionResolvable;
+        isPrivateMessage?: boolean;
         onlyGuild?: boolean;
         inDevlopment?: boolean;
         echo?: {
@@ -50,7 +51,7 @@ namespace ICommandHandler {
                 isSubCommand: boolean,
             },
         },
-        execute: (input: ICommandHandler.Input) => Promise<InteractionReplyOptions>;
+        execute: (input: ICommandHandler.Input) => Promise<WebhookEditMessageOptions | undefined>;
     }
 }
 
@@ -58,6 +59,7 @@ namespace IMenuHandler {
     export interface Input {
         interaction: SelectMenuInteraction;
         DiscordBot: Client;
+        language: ILanguage.File;
         _SlashCommand: {
             Collection: Collection<any, any>,
             List: Array<RESTPostAPIApplicationCommandsJSONBody>,
@@ -66,7 +68,8 @@ namespace IMenuHandler {
 
     export interface File {
         customId: string;
-        execute: (input: IMenuHandler.Input) => Promise<InteractionReplyOptions>;
+        replyMode?: 'new' | 'edit';
+        execute: (input: IMenuHandler.Input) => Promise<WebhookEditMessageOptions>;
     }
 }
 
