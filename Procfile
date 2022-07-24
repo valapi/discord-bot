@@ -1,1 +1,1 @@
-worker: npx nodemon --ignore '/*' --exec 'npx ts-node --project tsconfig.json' ./src/index.ts
+worker: nodemon --ignore '/*' ./dist/index.js
