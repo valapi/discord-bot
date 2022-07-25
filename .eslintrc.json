@@ -25,6 +25,7 @@
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-namespace": "off",
         "@typescript-eslint/no-unused-vars": "off", // <--- change to "warn" for checking
+        "@typescript-eslint/no-var-requires": "off", // <--- for handler command
 
         "no-debugger": "error",
         "no-var": "error",

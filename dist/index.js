@@ -54,7 +54,7 @@ const _DevelopmentMode = false;
     IngCore.Logs.log('Started refreshing application (/) commands', 'info');
     for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
         for (const _file of fs.readdirSync(path.join(`${__dirname}/components/commands/${_folder}`))) {
-            const command = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/commands/${_folder}/${_file}`)).toString()).default;
+            const command = require(`./components/commands/${_folder}/${_file}`).default;
             if (!command) {
                 IngCore.Logs.log(command, 'error');
                 continue;
@@ -113,8 +113,8 @@ const _DevelopmentMode = false;
         IngCore.Logs.log(error, 'error');
     }
     const _MenuCollection = new discord_js_1.Collection();
-    for (const _file of fs.readdirSync(path.join(``))) {
-        const menu = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/menu/${_file}`)).toString()).default;
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menu`))) {
+        const menu = require(`./components/menu/${_file}`).default;
         if (!menu) {
             IngCore.Logs.log(menu, 'error');
             continue;
@@ -132,7 +132,7 @@ const _DevelopmentMode = false;
         _DevelopmentMode,
     };
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
-        const event = JSON.parse(fs.readFileSync(path.join(`${__dirname}/events/${_file}`)).toString()).default;
+        const event = require(`./events/${_file}`).default;
         if (!event) {
             continue;
         }

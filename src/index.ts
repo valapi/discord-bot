@@ -71,7 +71,7 @@ const _DevelopmentMode: any = false;
 
     for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
         for (const _file of fs.readdirSync(path.join(`${__dirname}/components/commands/${_folder}`))) {
-            const command: ICommandHandler.File = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/commands/${_folder}/${_file}`)).toString()).default;
+            const command: ICommandHandler.File = require(`./components/commands/${_folder}/${_file}`).default;
 
             if (!command) {
                 IngCore.Logs.log(command, 'error');
@@ -148,8 +148,8 @@ const _DevelopmentMode: any = false;
     //menu
     const _MenuCollection = new Collection();
 
-    for (const _file of fs.readdirSync(path.join(``))) {
-        const menu: IMenuHandler.File = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/menu/${_file}`)).toString()).default;
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menu`))) {
+        const menu: IMenuHandler.File = require(`./components/menu/${_file}`).default;
 
         if (!menu) {
             IngCore.Logs.log(menu, 'error');
@@ -173,7 +173,7 @@ const _DevelopmentMode: any = false;
     };
 
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
-        const event: IEventHandler.File<any> = JSON.parse(fs.readFileSync(path.join(`${__dirname}/events/${_file}`)).toString()).default;
+        const event: IEventHandler.File<any> = require(`./events/${_file}`).default;
 
         if (!event) {
             continue;
