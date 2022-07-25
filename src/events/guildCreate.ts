@@ -16,8 +16,8 @@ const __event: IEventHandler.File<'guildCreate'> = {
 
         //message
         let sendMessage = ``;
-        sendMessage += `Joined __**${guild.name}**__!\n`
-        sendMessage += `\nUse **/help** to see all commands.`
+        sendMessage += `Joined __**${guild.name}**__!\n`;
+        sendMessage += `\nUse **/help** to see all commands.`;
 
         const createEmbed = new EmbedBuilder()
             .setColor(`#0099ff`)
@@ -40,12 +40,12 @@ const __event: IEventHandler.File<'guildCreate'> = {
         }
 
         //send
-        var SendGuildChannel: TextChannel | null;
+        let SendGuildChannel: TextChannel | null;
 
-        if (guild.publicUpdatesChannelId != null) { SendGuildChannel = guild.publicUpdatesChannel }
-        else if (guild.systemChannel != null) { SendGuildChannel = guild.systemChannel }
-        else if (guild.widgetChannelId != null) { SendGuildChannel = guild.widgetChannel }
-        else if (guild.rulesChannelId != null) { SendGuildChannel = guild.rulesChannel }
+        if (guild.publicUpdatesChannelId != null) { SendGuildChannel = guild.publicUpdatesChannel; }
+        else if (guild.systemChannel != null) { SendGuildChannel = guild.systemChannel; }
+        else if (guild.widgetChannelId != null) { SendGuildChannel = guild.widgetChannel; }
+        else if (guild.rulesChannelId != null) { SendGuildChannel = guild.rulesChannel; }
         else {
             const CHANNEL = DiscordBot.users.cache.get(guild.ownerId);
 
@@ -61,7 +61,7 @@ const __event: IEventHandler.File<'guildCreate'> = {
             embeds: [createEmbed],
         });
     },
-}
+};
 
 //export
 

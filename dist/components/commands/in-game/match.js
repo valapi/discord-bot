@@ -47,29 +47,29 @@ const __command = {
                     content: language.data.command['match']['not_match'],
                 };
             }
-            let sendMessageArray = [];
-            let Match_ID = _MatchHistory.MatchID;
+            const sendMessageArray = [];
+            const Match_ID = _MatchHistory.MatchID;
             const AllMatchData = yield WebClient.Match.FetchMatchDetails(Match_ID);
             if (AllMatchData.data.matchInfo.isCompleted === false) {
                 return {
                     content: 'Match not completed',
                 };
             }
-            let Match_Type = AllMatchData.data.matchInfo.queueID;
-            let Match_Name = String(lib_1.QueueId.fromString(Match_Type)).replace('_', ' ');
-            let Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
-            let Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);
-            let Match_LongInMillisecondFormat = IngCore.ToMilliseconds(AllMatchData.data.matchInfo.gameLengthMillis);
+            const Match_Type = AllMatchData.data.matchInfo.queueID;
+            const Match_Name = String(lib_1.QueueId.fromString(Match_Type)).replace('_', ' ');
+            const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
+            const Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);
+            const Match_LongInMillisecondFormat = IngCore.ToMilliseconds(AllMatchData.data.matchInfo.gameLengthMillis);
             const _time = `**${Match_LongInMillisecondFormat.data.hour}** hour(s)\n**${Match_LongInMillisecondFormat.data.minute}** minute(s)\n**${Match_LongInMillisecondFormat.data.second}** second(s)`;
             const GetMap = yield ValorantApiCom.Maps.get();
             if (GetMap.isError || !GetMap.data.data)
                 throw new Error(GetMap.data.error);
             const ThisMap = GetMap.data.data.find(map => map.mapUrl === AllMatchData.data.matchInfo.mapId);
-            let Match_Display = ThisMap === null || ThisMap === void 0 ? void 0 : ThisMap.listViewIcon;
+            const Match_Display = ThisMap === null || ThisMap === void 0 ? void 0 : ThisMap.listViewIcon;
             const GetSeason = yield ValorantApiCom.Seasons.getByUuid(AllMatchData.data.matchInfo.seasonId);
             if (GetSeason.isError || !GetSeason.data.data)
                 throw new Error(GetSeason.data.error);
-            let Match_Season = GetSeason.data.data.displayName;
+            const Match_Season = GetSeason.data.data.displayName;
             sendMessageArray.push(new discord_js_1.EmbedBuilder()
                 .setColor(`#0099ff`)
                 .setTitle('Match Info')
@@ -77,17 +77,17 @@ const __command = {
                 .setImage(Match_Display));
             const AllPlayers = AllMatchData.data.players;
             const ThisPlayer = AllPlayers.find(player => player.subject === puuid);
-            let Player_Kills = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.stats.kills;
-            let Player_Deaths = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.stats.deaths;
-            let Player_Assists = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.stats.assists;
-            let Player_Level = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.accountLevel;
-            let Player_Team = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.teamId;
+            const Player_Kills = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.stats.kills;
+            const Player_Deaths = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.stats.deaths;
+            const Player_Assists = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.stats.assists;
+            const Player_Level = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.accountLevel;
+            const Player_Team = ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.teamId;
             let Player_Rank = ``;
             const AllRanks = yield ValorantApiCom.CompetitiveTiers.get();
             if (AllRanks.isError || !AllRanks.data.data)
                 throw new Error(AllRanks.data.error);
-            for (let _rank of AllRanks.data.data) {
-                for (let _tier of _rank.tiers) {
+            for (const _rank of AllRanks.data.data) {
+                for (const _tier of _rank.tiers) {
                     if (_tier.tier == (ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.competitiveTier)) {
                         Player_Rank = _tier.tierName;
                         break;
@@ -100,9 +100,9 @@ const __command = {
             const GetAgent = yield ValorantApiCom.Agents.getByUuid(ThisPlayer === null || ThisPlayer === void 0 ? void 0 : ThisPlayer.characterId);
             if (GetAgent.isError || !GetAgent.data.data)
                 throw new Error(GetAgent.data.error);
-            let Player_Agent_Name = GetAgent.data.data.displayName;
-            let Player_Agent_Display = GetAgent.data.data.displayIcon;
-            let Player_Agent_Color = String(GetAgent.data.data.backgroundGradientColors[2]).substring(0, GetAgent.data.data.backgroundGradientColors[2].length - 2);
+            const Player_Agent_Name = GetAgent.data.data.displayName;
+            const Player_Agent_Display = GetAgent.data.data.displayIcon;
+            const Player_Agent_Color = String(GetAgent.data.data.backgroundGradientColors[2]).substring(0, GetAgent.data.data.backgroundGradientColors[2].length - 2);
             sendMessageArray.push(new discord_js_1.EmbedBuilder()
                 .setColor(`#${Player_Agent_Color}`)
                 .setTitle('Player Info')
@@ -120,17 +120,17 @@ const __command = {
                 sendMessageArray.push(new discord_js_1.EmbedBuilder()
                     .setColor(`#0099ff`)
                     .setTitle('Teams'));
-                for (let _team of AllTeams) {
-                    let Teams_Name = _team.teamId;
-                    let Teams_Score = _team.numPoints;
-                    let Teams_Won = _team.roundsWon;
+                for (const _team of AllTeams) {
+                    const Teams_Name = _team.teamId;
+                    const Teams_Score = _team.numPoints;
+                    const Teams_Won = _team.roundsWon;
                     (_d = sendMessageArray.at(2)) === null || _d === void 0 ? void 0 : _d.addFields({
                         name: `${Teams_Name}`,
                         value: `Score: **${Teams_Score}**\nWon (rounds)*:* **${Teams_Won}**`,
                         inline: true
                     });
                 }
-                let Team_isWin = (_e = (AllTeams.find(team => team.teamId === Player_Team))) === null || _e === void 0 ? void 0 : _e.won;
+                const Team_isWin = (_e = (AllTeams.find(team => team.teamId === Player_Team))) === null || _e === void 0 ? void 0 : _e.won;
                 if (Team_isWin === true) {
                     sendMessageArray.forEach(embed => embed.setColor('#00ff00'));
                 }

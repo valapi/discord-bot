@@ -11,8 +11,6 @@ import { Client, GatewayIntentBits, Partials, ActivityType, Collection, RESTPost
 import { REST } from '@discordjs/rest';
 import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v10';
 
-import { ValorDatabase } from './utils/database';
-
 import type { ICommandHandler, IEventHandler, IMenuHandler } from './modules';
 
 //script
@@ -73,7 +71,7 @@ const _DevelopmentMode: any = false;
 
     for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
         for (const _file of fs.readdirSync(path.join(`${__dirname}/components/commands/${_folder}`))) {
-            const command: ICommandHandler.File = require(`./components/commands/${_folder}/${_file}`).default;
+            const command: ICommandHandler.File = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/commands/${_folder}/${_file}`)).toString()).default;
 
             if (!command) {
                 IngCore.Logs.log(command, 'error');
@@ -87,10 +85,10 @@ const _DevelopmentMode: any = false;
                         _CommandCollection.set(cmd, { ...command, ...{ data: { name: cmd }, echo: { from: command.command.name, data: [] } } });
                         _CommandList.push({ ...command.command.toJSON(), ...{ name: cmd } });
                     } else {
-                        let ofNewCommand: RESTPostAPIApplicationCommandsJSONBody = command.command.toJSON();
+                        const ofNewCommand: RESTPostAPIApplicationCommandsJSONBody = command.command.toJSON();
 
                         if (ofNewCommand.options) {
-                            let OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.oldName);
+                            const OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.oldName);
                             if (OptionCommand && OptionCommand.type === ApplicationCommandOptionType.Subcommand) {
                                 if (!OptionCommand.options) OptionCommand.options = [];
 
@@ -119,23 +117,23 @@ const _DevelopmentMode: any = false;
 
     const rest = new REST({ version: '10' }).setToken(String(process.env['TOKEN']));
 
+    async function RestCommands(GlobalCommands: Array<RESTPostAPIApplicationCommandsJSONBody>, GuildCommands: Array<RESTPostAPIApplicationCommandsJSONBody>): Promise<void> {
+        await rest.put(
+            Routes.applicationCommands(String(process.env['CLIENT_ID'])),
+            {
+                body: GlobalCommands,
+            }
+        );
+
+        await rest.put(
+            Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
+            {
+                body: GuildCommands,
+            },
+        );
+    }
+
     try {
-        async function RestCommands(GlobalCommands: Array<RESTPostAPIApplicationCommandsJSONBody>, GuildCommands: Array<RESTPostAPIApplicationCommandsJSONBody>) {
-            await rest.put(
-                Routes.applicationCommands(String(process.env['CLIENT_ID'])),
-                {
-                    body: GlobalCommands,
-                }
-            );
-
-            await rest.put(
-                Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
-                {
-                    body: GuildCommands,
-                },
-            );
-        }
-
         if (_DevelopmentMode === true) {
             await RestCommands([], _CommandList);
         } else {
@@ -150,8 +148,8 @@ const _DevelopmentMode: any = false;
     //menu
     const _MenuCollection = new Collection();
 
-    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menu`))) {
-        const menu: IMenuHandler.File = require(`./components/menu/${_file}`).default;
+    for (const _file of fs.readdirSync(path.join(``))) {
+        const menu: IMenuHandler.File = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/menu/${_file}`)).toString()).default;
 
         if (!menu) {
             IngCore.Logs.log(menu, 'error');
@@ -175,7 +173,7 @@ const _DevelopmentMode: any = false;
     };
 
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
-        const event: IEventHandler.File<any> = require(`./events/${_file}`).default;
+        const event: IEventHandler.File<any> = JSON.parse(fs.readFileSync(path.join(`${__dirname}/events/${_file}`)).toString()).default;
 
         if (!event) {
             continue;

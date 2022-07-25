@@ -12,7 +12,7 @@ const __event: IEventHandler.File<'ready'> = {
     async execute({ }, client) {
         IngCore.Logs.log(`Ready! Logged in as ${client.user.tag}`, 'system');
     },
-}
+};
 
 //export
 

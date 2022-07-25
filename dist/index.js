@@ -54,7 +54,7 @@ const _DevelopmentMode = false;
     IngCore.Logs.log('Started refreshing application (/) commands', 'info');
     for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
         for (const _file of fs.readdirSync(path.join(`${__dirname}/components/commands/${_folder}`))) {
-            const command = require(`./components/commands/${_folder}/${_file}`).default;
+            const command = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/commands/${_folder}/${_file}`)).toString()).default;
             if (!command) {
                 IngCore.Logs.log(command, 'error');
                 continue;
@@ -66,9 +66,9 @@ const _DevelopmentMode = false;
                         _CommandList.push(Object.assign(Object.assign({}, command.command.toJSON()), { name: cmd }));
                     }
                     else {
-                        let ofNewCommand = command.command.toJSON();
+                        const ofNewCommand = command.command.toJSON();
                         if (ofNewCommand.options) {
-                            let OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.oldName);
+                            const OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.oldName);
                             if (OptionCommand && OptionCommand.type === v10_1.ApplicationCommandOptionType.Subcommand) {
                                 if (!OptionCommand.options)
                                     OptionCommand.options = [];
@@ -90,17 +90,17 @@ const _DevelopmentMode = false;
         }
     }
     const rest = new rest_1.REST({ version: '10' }).setToken(String(process.env['TOKEN']));
-    try {
-        function RestCommands(GlobalCommands, GuildCommands) {
-            return tslib_1.__awaiter(this, void 0, void 0, function* () {
-                yield rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), {
-                    body: GlobalCommands,
-                });
-                yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), {
-                    body: GuildCommands,
-                });
+    function RestCommands(GlobalCommands, GuildCommands) {
+        return tslib_1.__awaiter(this, void 0, void 0, function* () {
+            yield rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), {
+                body: GlobalCommands,
             });
-        }
+            yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), {
+                body: GuildCommands,
+            });
+        });
+    }
+    try {
         if (_DevelopmentMode === true) {
             yield RestCommands([], _CommandList);
         }
@@ -113,8 +113,8 @@ const _DevelopmentMode = false;
         IngCore.Logs.log(error, 'error');
     }
     const _MenuCollection = new discord_js_1.Collection();
-    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menu`))) {
-        const menu = require(`./components/menu/${_file}`).default;
+    for (const _file of fs.readdirSync(path.join(``))) {
+        const menu = JSON.parse(fs.readFileSync(path.join(`${__dirname}/components/menu/${_file}`)).toString()).default;
         if (!menu) {
             IngCore.Logs.log(menu, 'error');
             continue;
@@ -132,7 +132,7 @@ const _DevelopmentMode = false;
         _DevelopmentMode,
     };
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
-        const event = require(`./events/${_file}`).default;
+        const event = JSON.parse(fs.readFileSync(path.join(`${__dirname}/events/${_file}`)).toString()).default;
         if (!event) {
             continue;
         }

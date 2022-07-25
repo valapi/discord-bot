@@ -20,7 +20,7 @@ const __command: ICommandHandler.File = {
             content: language.data.command['ping'].default,
         };
     },
-}
+};
 
 //export
 

@@ -31,10 +31,9 @@ const __command = {
             const AllGuns = GetLoadout.data.Guns;
             const AllSprays = GetLoadout.data.Sprays;
             const TheIdentity = GetLoadout.data.Identity;
-            const ThisIncognito = GetLoadout.data.Incognito;
-            let createEmbed = new discord_js_1.EmbedBuilder();
+            const createEmbed = new discord_js_1.EmbedBuilder();
             let sendGunMessage = '';
-            for (let ofGun of AllGuns) {
+            for (const ofGun of AllGuns) {
                 const GunId = ofGun.SkinID;
                 const GetGunData = yield ValorantApiCom.Weapons.getSkinByUuid(GunId);
                 if (GetGunData.isError || !GetGunData.data.data) {
@@ -45,7 +44,7 @@ const __command = {
             }
             let sendSprayMessage = '';
             let _DISPLAY = '';
-            for (let ofTheSpray in AllSprays) {
+            for (const ofTheSpray in AllSprays) {
                 const ofSpray = AllSprays[ofTheSpray];
                 const SprayID = ofSpray.SprayID;
                 const GetSprayData = yield ValorantApiCom.Sprays.getByUuid(SprayID);

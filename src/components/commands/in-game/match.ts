@@ -75,10 +75,10 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        let sendMessageArray: Array<EmbedBuilder> = [];
+        const sendMessageArray: Array<EmbedBuilder> = [];
 
         //script
-        let Match_ID = _MatchHistory.MatchID;
+        const Match_ID = _MatchHistory.MatchID;
 
         const AllMatchData = await WebClient.Match.FetchMatchDetails(Match_ID);
 
@@ -90,14 +90,14 @@ const __command: ICommandHandler.File = {
 
         // MATCH //
 
-        let Match_Type = AllMatchData.data.matchInfo.queueID as keyof typeof QueueId.from;
-        let Match_Name = String(QueueId.fromString(Match_Type)).replace('_', ' ');
-        let Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
+        const Match_Type = AllMatchData.data.matchInfo.queueID as keyof typeof QueueId.from;
+        const Match_Name = String(QueueId.fromString(Match_Type)).replace('_', ' ');
+        const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
 
         //time
-        let Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);
+        const Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);
 
-        let Match_LongInMillisecondFormat = IngCore.ToMilliseconds(AllMatchData.data.matchInfo.gameLengthMillis);
+        const Match_LongInMillisecondFormat = IngCore.ToMilliseconds(AllMatchData.data.matchInfo.gameLengthMillis);
         const _time = `**${Match_LongInMillisecondFormat.data.hour}** hour(s)\n**${Match_LongInMillisecondFormat.data.minute}** minute(s)\n**${Match_LongInMillisecondFormat.data.second}** second(s)`;
 
         //map
@@ -106,13 +106,13 @@ const __command: ICommandHandler.File = {
 
         const ThisMap = GetMap.data.data.find(map => map.mapUrl === AllMatchData.data.matchInfo.mapId);
 
-        let Match_Display: string = ThisMap?.listViewIcon as string;
+        const Match_Display: string = ThisMap?.listViewIcon as string;
 
         //season
         const GetSeason = await ValorantApiCom.Seasons.getByUuid(AllMatchData.data.matchInfo.seasonId);
         if (GetSeason.isError || !GetSeason.data.data) throw new Error(GetSeason.data.error);
 
-        let Match_Season = GetSeason.data.data.displayName as string;
+        const Match_Season = GetSeason.data.data.displayName as string;
 
         sendMessageArray.push(
             new EmbedBuilder()
@@ -126,7 +126,7 @@ const __command: ICommandHandler.File = {
                     { name: 'Start At', value: time(Match_StartTimeStamp), inline: true },
                 )
                 .setImage(Match_Display)
-        )
+        );
 
         // PLAYERS //
 
@@ -148,20 +148,20 @@ const __command: ICommandHandler.File = {
         }> = AllMatchData.data.players;
         const ThisPlayer = AllPlayers.find(player => player.subject === puuid);
 
-        let Player_Kills: number = ThisPlayer?.stats.kills as number;
-        let Player_Deaths: number = ThisPlayer?.stats.deaths as number;
-        let Player_Assists: number = ThisPlayer?.stats.assists as number;
-        let Player_Level: number = ThisPlayer?.accountLevel as number;
-        let Player_Team: string = ThisPlayer?.teamId as string;
+        const Player_Kills: number = ThisPlayer?.stats.kills as number;
+        const Player_Deaths: number = ThisPlayer?.stats.deaths as number;
+        const Player_Assists: number = ThisPlayer?.stats.assists as number;
+        const Player_Level: number = ThisPlayer?.accountLevel as number;
+        const Player_Team: string = ThisPlayer?.teamId as string;
 
         //rank
-        let Player_Rank: string = ``;
+        let Player_Rank = ``;
 
         const AllRanks = await ValorantApiCom.CompetitiveTiers.get();
         if (AllRanks.isError || !AllRanks.data.data) throw new Error(AllRanks.data.error);
 
-        for (let _rank of AllRanks.data.data) {
-            for (let _tier of _rank.tiers) {
+        for (const _rank of AllRanks.data.data) {
+            for (const _tier of _rank.tiers) {
                 if (_tier.tier == ThisPlayer?.competitiveTier) {
                     Player_Rank = _tier.tierName as string;
                     break;
@@ -177,9 +177,9 @@ const __command: ICommandHandler.File = {
         const GetAgent = await ValorantApiCom.Agents.getByUuid(ThisPlayer?.characterId as string);
         if (GetAgent.isError || !GetAgent.data.data) throw new Error(GetAgent.data.error);
 
-        let Player_Agent_Name: string = GetAgent.data.data.displayName as string;
-        let Player_Agent_Display: string = GetAgent.data.data.displayIcon;
-        let Player_Agent_Color: string = String(GetAgent.data.data.backgroundGradientColors[2]).substring(0, GetAgent.data.data.backgroundGradientColors[2].length - 2);
+        const Player_Agent_Name: string = GetAgent.data.data.displayName as string;
+        const Player_Agent_Display: string = GetAgent.data.data.displayIcon;
+        const Player_Agent_Color: string = String(GetAgent.data.data.backgroundGradientColors[2]).substring(0, GetAgent.data.data.backgroundGradientColors[2].length - 2);
 
         sendMessageArray.push(
             new EmbedBuilder()
@@ -193,7 +193,7 @@ const __command: ICommandHandler.File = {
                     { name: 'Level', value: `${Player_Level}`, inline: true },
                 )
                 .setThumbnail(Player_Agent_Display)
-        )
+        );
 
         if (Match_Type === 'competitive') {
             sendMessageArray.at(1)?.addFields({ name: 'Rank', value: `${Player_Rank}`, inline: true });
@@ -224,10 +224,10 @@ const __command: ICommandHandler.File = {
                     .setTitle('Teams')
             );
 
-            for (let _team of AllTeams) {
-                let Teams_Name: string = _team.teamId as string;
-                let Teams_Score: number = _team.numPoints as number;
-                let Teams_Won: number = _team.roundsWon as number;
+            for (const _team of AllTeams) {
+                const Teams_Name: string = _team.teamId as string;
+                const Teams_Score: number = _team.numPoints as number;
+                const Teams_Won: number = _team.roundsWon as number;
 
                 sendMessageArray.at(2)?.addFields(
                     {
@@ -239,7 +239,7 @@ const __command: ICommandHandler.File = {
             }
 
 
-            let Team_isWin: boolean | undefined = (AllTeams.find(team => team.teamId === Player_Team))?.won;
+            const Team_isWin: boolean | undefined = (AllTeams.find(team => team.teamId === Player_Team))?.won;
 
             if (Team_isWin === true) {
                 sendMessageArray.forEach(embed => embed.setColor('#00ff00'));
@@ -254,7 +254,7 @@ const __command: ICommandHandler.File = {
             embeds: sendMessageArray,
         };
     },
-}
+};
 
 //export
 

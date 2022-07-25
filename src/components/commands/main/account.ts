@@ -1,7 +1,7 @@
 //import
 
 import * as IngCore from '@ing3kth/core';
-import { SlashCommandBuilder, EmbedBuilder, Formatters } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
 import { encrypt, decrypt } from '../../../utils/crypto';
@@ -310,7 +310,7 @@ const __command: ICommandHandler.File = {
             return await ValorSuccess(NewWebClient, false);
         }
     },
-}
+};
 
 //export
 

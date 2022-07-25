@@ -22,7 +22,7 @@ const __command: ICommandHandler.File = {
         ],
     },
     onlyGuild: true,
-    async execute({ interaction, language, apiKey, createdTime }) {
+    async execute({ interaction, language, apiKey }) {
         //load
 
         const userId = interaction.user.id;
@@ -50,7 +50,7 @@ const __command: ICommandHandler.File = {
         const GetCurrency = await ValorantApiCom.Currencies.get();
 
         // currency
-        let BalanceArray: Array<{
+        const BalanceArray: Array<{
             id: string,
             name: string,
             icon: string,
@@ -61,7 +61,7 @@ const __command: ICommandHandler.File = {
             return;
         }
 
-        for (let ofCurrency of GetCurrency.data.data) {
+        for (const ofCurrency of GetCurrency.data.data) {
             if (!isNaN(AllWallet[ofCurrency.uuid])) {
                 BalanceArray.push({
                     id: ofCurrency.uuid,
@@ -86,7 +86,7 @@ const __command: ICommandHandler.File = {
             embeds: [createEmbed],
         };
     },
-}
+};
 
 //export
 

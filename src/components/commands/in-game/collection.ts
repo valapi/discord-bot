@@ -63,14 +63,14 @@ const __command: ICommandHandler.File = {
             PreferredLevelBorderID: string;
             HideAccountLevel: boolean;
         } = GetLoadout.data.Identity;
-        const ThisIncognito: boolean = GetLoadout.data.Incognito;
+        //const ThisIncognito: boolean = GetLoadout.data.Incognito;
 
-        let createEmbed: EmbedBuilder = new EmbedBuilder();
+        const createEmbed: EmbedBuilder = new EmbedBuilder();
 
         // Guns //
-        let sendGunMessage: string = '';
+        let sendGunMessage = '';
 
-        for (let ofGun of AllGuns) {
+        for (const ofGun of AllGuns) {
             const GunId = ofGun.SkinID;
             const GetGunData = await ValorantApiCom.Weapons.getSkinByUuid(GunId);
 
@@ -83,10 +83,10 @@ const __command: ICommandHandler.File = {
         }
 
         // Sprays //
-        let sendSprayMessage: string = '';
-        let _DISPLAY: string = '';
+        let sendSprayMessage = '';
+        let _DISPLAY = '';
 
-        for (let ofTheSpray in AllSprays) {
+        for (const ofTheSpray in AllSprays) {
             const ofSpray = AllSprays[ofTheSpray];
 
             const SprayID = ofSpray.SprayID;
@@ -151,7 +151,7 @@ const __command: ICommandHandler.File = {
             embeds: [createEmbed],
         };
     },
-}
+};
 
 //export
 

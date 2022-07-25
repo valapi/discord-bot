@@ -18,7 +18,7 @@ async function ValorAccount(config: {
     apiKey: string,
     region?: keyof typeof Region.from,
     language?: ILanguage.Name,
-}): Promise<{ isValorAccountFind: Boolean, ValorantApiCom: ValorantApiCom, WebClient: WebClient }> {
+}): Promise<{ isValorAccountFind: boolean, ValorantApiCom: ValorantApiCom, WebClient: WebClient }> {
     //load
 
     const MyValorantApiCom = new ValorantApiCom({

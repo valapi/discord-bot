@@ -72,7 +72,7 @@ const __command: ICommandHandler.File = {
             };
         }
     },
-}
+};
 
 //export
 

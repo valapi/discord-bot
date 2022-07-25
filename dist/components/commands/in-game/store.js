@@ -100,7 +100,7 @@ const __command = {
                     const GetContentTier = yield ValorantApiCom.ContentTiers.getByUuid(String(Store_ContentTier_ID));
                     Store_ContentTier_Name = String((_a = GetContentTier.data.data) === null || _a === void 0 ? void 0 : _a.devName);
                     Store_ContentTier_Display = String((_b = GetContentTier.data.data) === null || _b === void 0 ? void 0 : _b.displayIcon);
-                    let ContentTiersColor = String((_c = GetContentTier.data.data) === null || _c === void 0 ? void 0 : _c.highlightColor);
+                    const ContentTiersColor = String((_c = GetContentTier.data.data) === null || _c === void 0 ? void 0 : _c.highlightColor);
                     const _Color = ContentTiersColor.substring(0, ContentTiersColor.length - 2);
                     let Store_Display_Name = '';
                     let Store_Display_Icon = '';
@@ -139,7 +139,7 @@ const __command = {
             if (thisSubCommand === 'offers') {
                 const TimeLeft = Number(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds);
                 const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers;
-                let sendMessageArray = [];
+                const sendMessageArray = [];
                 for (const ofItemID in AllOffers) {
                     const ItemID = AllOffers[ofItemID];
                     const _Offer = yield getOffersOf(ItemID);
@@ -160,7 +160,7 @@ const __command = {
                 };
             }
             if (thisSubCommand === 'collection') {
-                let sendMessageArray = [];
+                const sendMessageArray = [];
                 for (const ofTheBundle in ValorantStore.data.FeaturedBundle.Bundles) {
                     const TheBundle = ValorantStore.data.FeaturedBundle.Bundles[ofTheBundle];
                     const ThisBundleId = TheBundle.DataAssetID;
@@ -174,7 +174,7 @@ const __command = {
                     let Price_Base = 0;
                     let Price_Discounted = 0;
                     const AllItems = TheBundle.Items;
-                    for (let ofItem of AllItems) {
+                    for (const ofItem of AllItems) {
                         Price_Base += ofItem.BasePrice;
                         Price_Discounted += ofItem.DiscountedPrice;
                     }
@@ -182,8 +182,8 @@ const __command = {
                     if (GetCurrency.isError || !GetCurrency.data.data) {
                         throw new Error(GetCurrency.data.error);
                     }
-                    let ThePrice = GetCurrency.data.data.displayName;
-                    let Price_DiscountCosts = (Price_Base - Price_Discounted) / Price_Base * 100;
+                    const ThePrice = GetCurrency.data.data.displayName;
+                    const Price_DiscountCosts = (Price_Base - Price_Discounted) / Price_Base * 100;
                     const createEmbed = new discord_js_1.EmbedBuilder()
                         .setImage((_a = ThisBundleData.data.data) === null || _a === void 0 ? void 0 : _a.displayIcon)
                         .addFields({ name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true });
@@ -209,16 +209,16 @@ const __command = {
                 const ForceToShow = interaction.options.getBoolean('show_hidden') || false;
                 const TimeLeft = Number(ValorantStore.data.BonusStore.BonusStoreRemainingDurationInSeconds);
                 const _BonusStore = ValorantStore.data.BonusStore.BonusStoreOffers;
-                let sendMessageArray = [];
-                for (let ofItem in _BonusStore) {
+                const sendMessageArray = [];
+                for (const ofItem in _BonusStore) {
                     const ThisBonusStore = _BonusStore[ofItem];
                     const ItemId = ThisBonusStore.Offer.Rewards[0].ItemID;
-                    let DiscountPercent = ThisBonusStore.DiscountPercent;
-                    let IsSeen = Boolean(ThisBonusStore.IsSeen);
+                    const DiscountPercent = ThisBonusStore.DiscountPercent;
+                    const IsSeen = Boolean(ThisBonusStore.IsSeen);
                     if (!IsSeen && !ForceToShow)
                         continue;
                     const _Offer = yield getOffersOf(ItemId);
-                    let DiscountCosts = ThisBonusStore.DiscountCosts[_Offer.Curency.Id];
+                    const DiscountCosts = ThisBonusStore.DiscountCosts[_Offer.Curency.Id];
                     let sendMessage = ``;
                     sendMessage += `Price: ~~${_Offer.Cost}~~ *-->* **${DiscountCosts} ${_Offer.Curency.Name} (-${DiscountPercent}%)**\n`;
                     sendMessage += `Slot: **${Number(ofItem) + 1}**\n`;
@@ -231,7 +231,7 @@ const __command = {
                 }
                 let _message = `Time Left: **${(0, discord_js_1.time)(new Date(createdTime.getTime() + (TimeLeft * 1000)), discord_js_1.TimestampStyles.RelativeTime)}**`;
                 if (sendMessageArray.length === 0) {
-                    _message += `\n\n` + language.data.command['store']['no_nightmarket'];
+                    _message += `\n\n${language.data.command['store']['no_nightmarket']}`;
                 }
                 return {
                     content: _message,

@@ -7,8 +7,6 @@ import type { ICommandHandler } from "../../../modules";
 import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
 
-import { Region as _Region } from '@valapi/lib';
-
 //script
 
 const __command: ICommandHandler.File = {
@@ -76,12 +74,12 @@ const __command: ICommandHandler.File = {
         const GetWeaponSkin = await ValorantApiCom.Weapons.getSkins();
 
         async function getOffersOf(ItemsId: string) {
-            let Store_ItemID: string = '';
-            let Store_Quantity: string = '';
-            let Store_ID: string = '';
-            let Store_Cost: string = '';
-            let Store_Curency_Name: string = 'VP';
-            let Store_Curency_ID: string = '';
+            let Store_ItemID = '';
+            let Store_Quantity = '';
+            let Store_ID = '';
+            let Store_Cost = '';
+            let Store_Curency_Name = 'VP';
+            let Store_Curency_ID = '';
 
             // Main // 
             for (const TheOffer of getOffers.data.Offers) {
@@ -114,7 +112,7 @@ const __command: ICommandHandler.File = {
             }
 
             // Content Tier Id //
-            let Store_ContentTier_ID: string = '';
+            let Store_ContentTier_ID = '';
 
             if (!GetWeaponSkin.isError && GetWeaponSkin.data.data) {
                 for (const _Skins of GetWeaponSkin.data.data) {
@@ -132,21 +130,21 @@ const __command: ICommandHandler.File = {
             }
 
             // Content Tier //
-            let Store_ContentTier_Name: string = '';
-            let Store_ContentTier_Display: string = '';
+            let Store_ContentTier_Name = '';
+            let Store_ContentTier_Display = '';
 
             const GetContentTier = await ValorantApiCom.ContentTiers.getByUuid(String(Store_ContentTier_ID));
             Store_ContentTier_Name = String(GetContentTier.data.data?.devName);
             Store_ContentTier_Display = String(GetContentTier.data.data?.displayIcon);
 
             //color
-            let ContentTiersColor = String(GetContentTier.data.data?.highlightColor);
+            const ContentTiersColor = String(GetContentTier.data.data?.highlightColor);
             const _Color = ContentTiersColor.substring(0, ContentTiersColor.length - 2);
 
             //display
 
-            let Store_Display_Name: string = '';
-            let Store_Display_Icon: string = '';
+            let Store_Display_Name = '';
+            let Store_Display_Icon = '';
             const GetWeaponSkinLevel = await ValorantApiCom.Weapons.getSkinLevels();
             if (!GetWeaponSkinLevel.isError && GetWeaponSkinLevel.data.data) {
                 for (const _SkinLevel of GetWeaponSkinLevel.data.data) {
@@ -187,7 +185,7 @@ const __command: ICommandHandler.File = {
             const TimeLeft = Number(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds);
             const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers;
 
-            let sendMessageArray: Array<EmbedBuilder> = [];
+            const sendMessageArray: Array<EmbedBuilder> = [];
 
             //script
 
@@ -204,7 +202,7 @@ const __command: ICommandHandler.File = {
                     .setTitle(_Offer.Display.Name)
                     .setDescription(sendMessage)
                     .setThumbnail(_Offer.Display.Icon)
-                    .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display })
+                    .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display });
 
                 sendMessageArray.push(createEmbed);
             }
@@ -220,7 +218,7 @@ const __command: ICommandHandler.File = {
         if (thisSubCommand === 'collection') {
             //load
 
-            let sendMessageArray = [];
+            const sendMessageArray = [];
 
             //script
 
@@ -240,8 +238,8 @@ const __command: ICommandHandler.File = {
                 const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
 
                 // price
-                let Price_Base: number = 0;
-                let Price_Discounted: number = 0;
+                let Price_Base = 0;
+                let Price_Discounted = 0;
                 const AllItems = TheBundle.Items as Array<{
                     Item: {
                         ItemTypeID: string;
@@ -252,10 +250,10 @@ const __command: ICommandHandler.File = {
                     CurrencyID: string;
                     DiscountPercent: number;
                     DiscountedPrice: number;
-                    IsPromoItem: Boolean;
+                    IsPromoItem: boolean;
                 }>;
 
-                for (let ofItem of AllItems) {
+                for (const ofItem of AllItems) {
                     Price_Base += ofItem.BasePrice;
                     Price_Discounted += ofItem.DiscountedPrice;
                 }
@@ -266,9 +264,9 @@ const __command: ICommandHandler.File = {
                     throw new Error(GetCurrency.data.error);
                 }
 
-                let ThePrice = GetCurrency.data.data.displayName;
+                const ThePrice = GetCurrency.data.data.displayName;
 
-                let Price_DiscountCosts: number = (Price_Base - Price_Discounted) / Price_Base * 100;
+                const Price_DiscountCosts: number = (Price_Base - Price_Discounted) / Price_Base * 100;
 
                 // embed
                 const createEmbed = new EmbedBuilder()
@@ -312,22 +310,22 @@ const __command: ICommandHandler.File = {
 
             const _BonusStore = ValorantStore.data.BonusStore.BonusStoreOffers;
 
-            let sendMessageArray: Array<EmbedBuilder> = [];
+            const sendMessageArray: Array<EmbedBuilder> = [];
 
             //script
 
-            for (let ofItem in _BonusStore) {
+            for (const ofItem in _BonusStore) {
                 const ThisBonusStore = _BonusStore[ofItem];
                 const ItemId = ThisBonusStore.Offer.Rewards[0].ItemID;
 
                 //script
-                let DiscountPercent = ThisBonusStore.DiscountPercent;
-                let IsSeen = Boolean(ThisBonusStore.IsSeen);
+                const DiscountPercent = ThisBonusStore.DiscountPercent;
+                const IsSeen = Boolean(ThisBonusStore.IsSeen);
 
                 if (!IsSeen && !ForceToShow) continue;
 
                 const _Offer = await getOffersOf(ItemId);
-                let DiscountCosts = ThisBonusStore.DiscountCosts[_Offer.Curency.Id];
+                const DiscountCosts = ThisBonusStore.DiscountCosts[_Offer.Curency.Id];
 
                 let sendMessage = ``;
                 sendMessage += `Price: ~~${_Offer.Cost}~~ *-->* **${DiscountCosts} ${_Offer.Curency.Name} (-${DiscountPercent}%)**\n`;
@@ -340,12 +338,12 @@ const __command: ICommandHandler.File = {
                         .setDescription(sendMessage)
                         .setThumbnail(_Offer.Display.Icon)
                         .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display })
-                )
+                );
             }
 
-            let _message: string = `Time Left: **${time(new Date(createdTime.getTime() + (TimeLeft * 1000)), TimestampStyles.RelativeTime)}**`
+            let _message = `Time Left: **${time(new Date(createdTime.getTime() + (TimeLeft * 1000)), TimestampStyles.RelativeTime)}**`;
             if (sendMessageArray.length === 0) {
-                _message += `\n\n` + language.data.command['store']['no_nightmarket'];
+                _message += `\n\n${language.data.command['store']['no_nightmarket']}`;
             }
 
             //return
@@ -356,7 +354,7 @@ const __command: ICommandHandler.File = {
             };
         }
     }
-}
+};
 
 //export
 

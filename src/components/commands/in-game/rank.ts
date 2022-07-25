@@ -41,17 +41,17 @@ const __command: ICommandHandler.File = {
 
         const ThisRank = (((await WebClient.MMR.FetchCompetitiveUpdates(puuid)).data.Matches as Array<any>).filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
 
-        let Rank_Rating_Now: string = ThisRank.RankedRatingAfterUpdate;
+        const Rank_Rating_Now: string = ThisRank.RankedRatingAfterUpdate;
 
         const AllRanks = await ValorantApiCom.CompetitiveTiers.get();
         if (AllRanks.isError || !AllRanks.data.data) throw new Error(AllRanks.data.error);
 
-        let Rank_Name: string = '';
-        let Rank_Icon: string = '';
-        let Rank_Color: string = '';
+        let Rank_Name = '';
+        let Rank_Icon = '';
+        let Rank_Color = '';
 
-        for (let _rank of AllRanks.data.data) {
-            for (let _tier of _rank.tiers) {
+        for (const _rank of AllRanks.data.data) {
+            for (const _tier of _rank.tiers) {
                 if (_tier.tier == ThisRank.TierAfterUpdate) {
                     Rank_Name = _tier.tierName as string;
                     Rank_Icon = _tier.largeIcon;
@@ -87,7 +87,7 @@ const __command: ICommandHandler.File = {
             ],
         };
     },
-}
+};
 
 //export
 

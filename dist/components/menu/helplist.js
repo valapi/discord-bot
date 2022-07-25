@@ -12,7 +12,7 @@ const __menu = {
                 .setTitle(`Help - ${_CommandType}`)
                 .setColor('#0099ff');
             let sendMessage = ``;
-            for (let cmd of _SlashCommand.List) {
+            for (const cmd of _SlashCommand.List) {
                 const _cmd = _SlashCommand.Collection.get(cmd.name);
                 if (_cmd.inDevlopment === true) {
                     continue;
@@ -23,7 +23,7 @@ const __menu = {
                 if (_cmd.echo && _cmd.echo.from) {
                     continue;
                 }
-                sendMessage += `${discord_js_1.Formatters.inlineCode('/' + _cmd.command.name)} - ${_cmd.command.description}\n`;
+                sendMessage += `${discord_js_1.Formatters.inlineCode(`/${_cmd.command.name}`)} - ${_cmd.command.description}\n`;
             }
             if (!sendMessage) {
                 sendMessage += CommandLanguage['not_category'];

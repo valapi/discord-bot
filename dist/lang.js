@@ -11,7 +11,7 @@ var ILanguage;
 exports.ILanguage = ILanguage;
 function getLanguage(language = ILanguage.DefaultLanguage) {
     for (const _file of fs.readdirSync(path.join(`${__dirname}/language`))) {
-        const _language = require(`./language/${_file}`).default;
+        const _language = JSON.parse(fs.readFileSync(path.join(`${__dirname}/language/${_file}`)).toString()).default;
         if (!_language) {
             continue;
         }

@@ -16,7 +16,7 @@ const __command = {
         ],
     },
     onlyGuild: true,
-    execute({ interaction, language, apiKey, createdTime }) {
+    execute({ interaction, language, apiKey }) {
         var _a;
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             const userId = interaction.user.id;
@@ -35,11 +35,11 @@ const __command = {
             const GetWallet = yield WebClient.Store.GetWallet(puuid);
             const AllWallet = GetWallet.data.Balances;
             const GetCurrency = yield ValorantApiCom.Currencies.get();
-            let BalanceArray = [];
+            const BalanceArray = [];
             if (GetCurrency.isError || !GetCurrency.data.data) {
                 return;
             }
-            for (let ofCurrency of GetCurrency.data.data) {
+            for (const ofCurrency of GetCurrency.data.data) {
                 if (!isNaN(AllWallet[ofCurrency.uuid])) {
                     BalanceArray.push({
                         id: ofCurrency.uuid,

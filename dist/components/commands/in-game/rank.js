@@ -26,15 +26,15 @@ const __command = {
             }
             const puuid = WebClient.getSubject();
             const ThisRank = ((yield WebClient.MMR.FetchCompetitiveUpdates(puuid)).data.Matches.filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
-            let Rank_Rating_Now = ThisRank.RankedRatingAfterUpdate;
+            const Rank_Rating_Now = ThisRank.RankedRatingAfterUpdate;
             const AllRanks = yield ValorantApiCom.CompetitiveTiers.get();
             if (AllRanks.isError || !AllRanks.data.data)
                 throw new Error(AllRanks.data.error);
             let Rank_Name = '';
             let Rank_Icon = '';
             let Rank_Color = '';
-            for (let _rank of AllRanks.data.data) {
-                for (let _tier of _rank.tiers) {
+            for (const _rank of AllRanks.data.data) {
+                for (const _tier of _rank.tiers) {
                     if (_tier.tier == ThisRank.TierAfterUpdate) {
                         Rank_Name = _tier.tierName;
                         Rank_Icon = _tier.largeIcon;

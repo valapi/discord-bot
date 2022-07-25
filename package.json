@@ -11,6 +11,7 @@
     "scripts": {
         "typescript": "npx tsc --project tsconfig.json",
         "dev": "ts-node src/index.ts --typeCheck --logError",
+        "lint": "npx eslint src/**",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "repository": {
@@ -38,7 +39,7 @@
     },
     "homepage": "https://github.com/KTNG-3/valorant-discord-bot#readme",
     "dependencies": {
-        "@ing3kth/core": "^2.0.1",
+        "@ing3kth/core": "^2.0.2",
         "@valapi/web-client": "^1.0.2",
         "crypto-js": "^4.1.1",
         "discord-api-types": "^0.36.3",
@@ -52,6 +53,9 @@
         "@types/crypto-js": "^4.1.1",
         "@types/node": "^18.0.6",
         "@types/nodemon": "^1.19.2",
+        "@typescript-eslint/eslint-plugin": "^5.30.7",
+        "@typescript-eslint/parser": "^5.30.7",
+        "eslint": "^8.20.0",
         "ts-node": "^10.9.1",
         "tslib": "^2.4.0",
         "typescript": "^4.7.4"

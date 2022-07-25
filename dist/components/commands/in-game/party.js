@@ -28,17 +28,17 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            let Party_ID = (yield WebClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
+            const Party_ID = (yield WebClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
             const TheParty = yield WebClient.Party.FetchParty(Party_ID);
-            let sendMessageArray = [];
+            const sendMessageArray = [];
             if (TheParty.data.message === 'Party does not exist' || TheParty.data.errorCode === 'PARTY_DNE') {
                 return {
                     content: language.data.command['party']['not_party'],
                 };
             }
-            let Party_QueueID = lib_1.QueueId.fromString(TheParty.data.MatchmakingData.QueueID);
-            let Party_RemoveRR = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
-            let Party_Accessibility = TheParty.data.Accessibility;
+            const Party_QueueID = lib_1.QueueId.fromString(TheParty.data.MatchmakingData.QueueID);
+            const Party_RemoveRR = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
+            const Party_Accessibility = TheParty.data.Accessibility;
             sendMessageArray.push(new discord_js_1.EmbedBuilder()
                 .setColor(`#0099ff`)
                 .setTitle(`Party`)
@@ -54,7 +54,7 @@ const __command = {
             sendMessageArray.push(new discord_js_1.EmbedBuilder()
                 .setColor(`#0099ff`)
                 .setTitle(`Members`));
-            for (let member of AllMembers) {
+            for (const member of AllMembers) {
                 const ThatPlayer = yield WebClient.Player.GetUsername(member.PlayerIdentity.Subject);
                 const ThatPlayerArg = ThatPlayer.data.find(player => player.Subject = member.Subject);
                 let sendMessage = `Level: **${member.PlayerIdentity.AccountLevel}**`;

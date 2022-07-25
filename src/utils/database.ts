@@ -50,7 +50,7 @@ async function ValorDatabase<CollectionInterface>(config: {
     schema: mongoose.Schema,
     filter?: mongoose.FilterQuery<CollectionInterface>,
     token?: string,
-}): Promise<{ isFind: Boolean, data: Array<CollectionInterface>, model: mongoose.Model<CollectionInterface, any, any, any> }> {
+}): Promise<{ isFind: boolean, data: Array<CollectionInterface>, model: mongoose.Model<CollectionInterface, any, any, any> }> {
     //login
 
     if (!config.token) {

@@ -28,7 +28,7 @@ const __event = {
             else if (guild.splashURL()) {
                 createEmbed.setImage(String(guild.splashURL()));
             }
-            var SendGuildChannel;
+            let SendGuildChannel;
             if (guild.publicUpdatesChannelId != null) {
                 SendGuildChannel = guild.publicUpdatesChannel;
             }

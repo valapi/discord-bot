@@ -60,7 +60,7 @@ const _language: ILanguage.File = {
             },
         },
     },
-}
+};
 
 //export
 

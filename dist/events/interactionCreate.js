@@ -25,7 +25,7 @@ const __event = {
                     isPrivateMessage: false,
                     onlyGuild: false,
                     inDevlopment: false,
-                    execute: (({}) => tslib_1.__awaiter(this, void 0, void 0, function* () { return { content: 'This is Default message.', }; })),
+                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () { return { content: 'This is Default message.', }; })),
                 }, _SlashCommand.Collection.get(interaction.commandName));
                 yield interaction.deferReply({
                     ephemeral: command.isPrivateMessage,
@@ -102,7 +102,7 @@ const __event = {
                 const menu = Object.assign({
                     customId: 'default',
                     replyMode: 'edit',
-                    execute: (({}) => tslib_1.__awaiter(this, void 0, void 0, function* () { return { content: 'This is Default message.', }; })),
+                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () { return { content: 'This is Default message.', }; })),
                 }, _Menu.get(interaction.customId));
                 if (menu.replyMode === 'edit') {
                     yield interaction.deferUpdate({

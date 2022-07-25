@@ -7,7 +7,7 @@ import type { ICommandHandler } from "../../../modules";
 import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
 
-import { Region as _Region, QueueId } from '@valapi/lib';
+import { QueueId } from '@valapi/lib';
 
 //script
 
@@ -42,10 +42,10 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        let Party_ID: string = (await WebClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
+        const Party_ID: string = (await WebClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
         const TheParty = await WebClient.Party.FetchParty(Party_ID);
 
-        let sendMessageArray: Array<EmbedBuilder> = [];
+        const sendMessageArray: Array<EmbedBuilder> = [];
 
         // PARTY //
 
@@ -55,9 +55,9 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        let Party_QueueID: string = QueueId.fromString(TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId.from);
-        let Party_RemoveRR: number = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
-        let Party_Accessibility: string = TheParty.data.Accessibility;
+        const Party_QueueID: string = QueueId.fromString(TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId.from);
+        const Party_RemoveRR: number = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
+        const Party_Accessibility: string = TheParty.data.Accessibility;
 
         sendMessageArray.push(
             new EmbedBuilder()
@@ -90,15 +90,15 @@ const __command: ICommandHandler.File = {
                 .setTitle(`Members`)
         );
 
-        for (let member of AllMembers) {
+        for (const member of AllMembers) {
             const ThatPlayer = await WebClient.Player.GetUsername(member.PlayerIdentity.Subject);
             const ThatPlayerArg = (ThatPlayer.data as Array<{ Subject: string, GameName: string, TagLine: string, }>).find(player => player.Subject = member.Subject);
 
-            let sendMessage = `Level: **${member.PlayerIdentity.AccountLevel}**`
+            let sendMessage = `Level: **${member.PlayerIdentity.AccountLevel}**`;
             if (member.IsOwner === true) {
-                sendMessage = `*Owner*\n${sendMessage}`
+                sendMessage = `*Owner*\n${sendMessage}`;
             } else if (member.IsModerator === true) {
-                sendMessage = `*Moderator*\n${sendMessage}`
+                sendMessage = `*Moderator*\n${sendMessage}`;
             }
 
             sendMessageArray.at(1)?.addFields(
@@ -120,7 +120,7 @@ const __command: ICommandHandler.File = {
             embeds: sendMessageArray,
         };
     }
-}
+};
 
 //export
 

@@ -36,10 +36,10 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                     isPrivateMessage: false,
                     onlyGuild: false,
                     inDevlopment: false,
-                    execute: (async ({ }) => { return { content: 'This is Default message.', }; }),
+                    execute: (async () => { return { content: 'This is Default message.', }; }),
                 },
                 ..._SlashCommand.Collection.get(interaction.commandName)
-            }
+            };
 
             //load
 
@@ -136,10 +136,10 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 ...{
                     customId: 'default',
                     replyMode: 'edit',
-                    execute: (async ({ }) => { return { content: 'This is Default message.', }; }),
+                    execute: (async () => { return { content: 'This is Default message.', }; }),
                 },
                 ..._Menu.get(interaction.customId)
-            }
+            };
 
             //load
 
@@ -187,7 +187,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
             }
         }
     },
-}
+};
 
 //export
 

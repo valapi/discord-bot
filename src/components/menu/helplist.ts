@@ -1,7 +1,7 @@
 //import
 
 import * as IngCore from '@ing3kth/core';
-import { Permissions, SlashCommandBuilder, AttachmentBuilder, EmbedBuilder, Formatters, ComponentType, ButtonBuilder, ButtonStyle, SelectMenuBuilder, ModalBuilder } from 'discord.js';
+import { EmbedBuilder, Formatters, ComponentType, SelectMenuBuilder } from 'discord.js';
 import type { IMenuHandler, ICommandHandler } from "../../modules";
 
 //script
@@ -21,9 +21,9 @@ const __menu: IMenuHandler.File = {
 
         //script
 
-        let sendMessage: string = ``;
+        let sendMessage = ``;
 
-        for (let cmd of _SlashCommand.List) {
+        for (const cmd of _SlashCommand.List) {
             const _cmd = _SlashCommand.Collection.get(cmd.name) as ICommandHandler.File;
 
             if (_cmd.inDevlopment === true) {
@@ -38,7 +38,7 @@ const __menu: IMenuHandler.File = {
                 continue;
             }
 
-            sendMessage += `${Formatters.inlineCode('/' + _cmd.command.name)} - ${_cmd.command.description}\n`;
+            sendMessage += `${Formatters.inlineCode(`/${_cmd.command.name}`)} - ${_cmd.command.description}\n`;
         }
 
         if (!sendMessage) {
@@ -87,7 +87,7 @@ const __menu: IMenuHandler.File = {
             ],
         };
     },
-}
+};
 
 //export
 
