@@ -116,9 +116,7 @@ const __command: ICommandHandler.File = {
             language: language.name,
         });
 
-        const WebClient = new ValWebClient({
-            region: Region.Asia_Pacific,
-        });
+        const WebClient = new ValWebClient();
 
         async function ValorSave(WebClient: ValWebClient) {
             if (ValAccount.isFind === true) {
@@ -231,10 +229,10 @@ const __command: ICommandHandler.File = {
 
             //script
 
-            const NewWebClient = await ValWebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
-            await NewWebClient.refresh(true);
+            await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
+            await WebClient.refresh(false);
 
-            await ValorSave(NewWebClient);
+            await ValorSave(WebClient);
 
             //return
 
@@ -278,6 +276,8 @@ const __command: ICommandHandler.File = {
 
             //script
 
+            await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
+
             const _choice = interaction.options.getString('region') as keyof typeof _Region.from;
 
             WebClient.setRegion(_choice);
@@ -287,7 +287,7 @@ const __command: ICommandHandler.File = {
             //return
 
             return {
-                content: `changed region to **${String(_Region.fromString(_choice)).replace('_', ' ')}**`,
+                content: `__*beta*__\n\nchanged region to **${String(_Region.fromString(WebClient.toJSON().region.live as keyof typeof _Region.from)).replace('_', ' ')}**\n\n`,
             };
         }
 
@@ -302,12 +302,12 @@ const __command: ICommandHandler.File = {
 
             //script
 
-            const NewWebClient = await ValWebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
-            await NewWebClient.refresh(false);
+            await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
+            await WebClient.refresh(false);
 
             //return
 
-            return await ValorSuccess(NewWebClient, false);
+            return await ValorSuccess(WebClient, false);
         }
     },
 };

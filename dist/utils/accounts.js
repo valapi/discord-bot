@@ -30,7 +30,7 @@ function ValorAccount(config) {
                         createdAt: ValDatabase.data[0].createdAt,
                     })).save();
                 }
-                const MyWebClient = yield web_client_1.Client.fromCookie((0, crypto_1.decrypt)(ValDatabase.data[0].account, config.apiKey), { region: config.region || "ap" });
+                const MyWebClient = yield web_client_1.Client.fromCookie((0, crypto_1.decrypt)(ValDatabase.data[0].account, config.apiKey));
                 _cache.input((0, crypto_1.encrypt)(JSON.stringify(MyWebClient.toJSON()), config.apiKey), config.userId);
                 return {
                     isValorAccountFind: true,
@@ -42,12 +42,12 @@ function ValorAccount(config) {
                 return {
                     isValorAccountFind: false,
                     ValorantApiCom: MyValorantApiCom,
-                    WebClient: new web_client_1.Client({ region: config.region || "ap" }),
+                    WebClient: new web_client_1.Client(),
                 };
             }
         }
         else {
-            const MyWebClient = web_client_1.Client.fromJSON(JSON.parse((0, crypto_1.decrypt)(_save, config.apiKey)), { region: config.region || "ap" });
+            const MyWebClient = web_client_1.Client.fromJSON(JSON.parse((0, crypto_1.decrypt)(_save, config.apiKey)));
             yield MyWebClient.refresh(false);
             return {
                 isValorAccountFind: true,

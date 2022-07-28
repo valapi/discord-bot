@@ -28,7 +28,6 @@ const __command: ICommandHandler.File = {
             userId,
             apiKey,
             language: language.name,
-            region: Region.Asia_Pacific,
         });
 
         if (isValorAccountFind === false) {

@@ -5,7 +5,6 @@ const IngCore = tslib_1.__importStar(require("@ing3kth/core"));
 const discord_js_1 = require("discord.js");
 const crypto_1 = require("../../../utils/crypto");
 const database_1 = require("../../../utils/database");
-const valorant_ts_1 = require("valorant.ts");
 const lib_1 = require("@valapi/lib");
 const web_client_1 = require("@valapi/web-client");
 const valorant_api_com_1 = require("@valapi/valorant-api.com");
@@ -73,9 +72,7 @@ const __command = {
             const ValorantApiCom = new valorant_api_com_1.Client({
                 language: language.name,
             });
-            const WebClient = new web_client_1.Client({
-                region: valorant_ts_1.Region.Asia_Pacific,
-            });
+            const WebClient = new web_client_1.Client();
             function ValorSave(WebClient) {
                 var _a;
                 return tslib_1.__awaiter(this, void 0, void 0, function* () {
@@ -149,9 +146,9 @@ const __command = {
                         content: CommandLanguage['not_account'],
                     };
                 }
-                const NewWebClient = yield web_client_1.Client.fromCookie((0, crypto_1.decrypt)((ValAccount.data[0]).account, apiKey));
-                yield NewWebClient.refresh(true);
-                yield ValorSave(NewWebClient);
+                yield WebClient.fromCookie((0, crypto_1.decrypt)((ValAccount.data[0]).account, apiKey));
+                yield WebClient.refresh(false);
+                yield ValorSave(WebClient);
                 return {
                     content: CommandLanguage['reconnect'],
                 };
@@ -175,11 +172,12 @@ const __command = {
                         content: CommandLanguage['not_account'],
                     };
                 }
+                yield WebClient.fromCookie((0, crypto_1.decrypt)((ValAccount.data[0]).account, apiKey));
                 const _choice = interaction.options.getString('region');
                 WebClient.setRegion(_choice);
                 yield ValorSave(WebClient);
                 return {
-                    content: `changed region to **${String(lib_1.Region.fromString(_choice)).replace('_', ' ')}**`,
+                    content: `__*beta*__\n\nchanged region to **${String(lib_1.Region.fromString(WebClient.toJSON().region.live)).replace('_', ' ')}**\n\n`,
                 };
             }
             if (thisSubCommand === 'get') {
@@ -188,9 +186,9 @@ const __command = {
                         content: CommandLanguage['not_account'],
                     };
                 }
-                const NewWebClient = yield web_client_1.Client.fromCookie((0, crypto_1.decrypt)((ValAccount.data[0]).account, apiKey));
-                yield NewWebClient.refresh(false);
-                return yield ValorSuccess(NewWebClient, false);
+                yield WebClient.fromCookie((0, crypto_1.decrypt)((ValAccount.data[0]).account, apiKey));
+                yield WebClient.refresh(false);
+                return yield ValorSuccess(WebClient, false);
             }
         });
     },

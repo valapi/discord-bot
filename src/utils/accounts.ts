@@ -9,14 +9,12 @@ import { ValorDatabase, ValorInterface } from './database';
 
 import { Client as WebClient } from '@valapi/web-client';
 import { Client as ValorantApiCom } from '@valapi/valorant-api.com';
-import { Region } from '@valapi/lib';
 
 //function
 
 async function ValorAccount(config: {
     userId: string,
     apiKey: string,
-    region?: keyof typeof Region.from,
     language?: ILanguage.Name,
 }): Promise<{ isValorAccountFind: boolean, ValorantApiCom: ValorantApiCom, WebClient: WebClient }> {
     //load
@@ -53,7 +51,7 @@ async function ValorAccount(config: {
                 ).save();
             }
 
-            const MyWebClient = await WebClient.fromCookie(decrypt(ValDatabase.data[0].account, config.apiKey), { region: config.region || "ap" });
+            const MyWebClient = await WebClient.fromCookie(decrypt(ValDatabase.data[0].account, config.apiKey));
 
             _cache.input(encrypt(JSON.stringify(MyWebClient.toJSON()), config.apiKey), config.userId);
 
@@ -66,11 +64,11 @@ async function ValorAccount(config: {
             return {
                 isValorAccountFind: false,
                 ValorantApiCom: MyValorantApiCom,
-                WebClient: new WebClient({ region: config.region || "ap" }),
+                WebClient: new WebClient(),
             };
         }
     } else {
-        const MyWebClient = WebClient.fromJSON(JSON.parse(decrypt(_save, config.apiKey)), { region: config.region || "ap" });
+        const MyWebClient = WebClient.fromJSON(JSON.parse(decrypt(_save, config.apiKey)));
         await MyWebClient.refresh(false);
 
         return {

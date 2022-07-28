@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
 const discord_js_1 = require("discord.js");
-const valorant_ts_1 = require("valorant.ts");
 const accounts_1 = require("../../../utils/accounts");
 const __command = {
     command: (new discord_js_1.SlashCommandBuilder()
@@ -37,7 +36,6 @@ const __command = {
                 userId,
                 apiKey,
                 language: language.name,
-                region: valorant_ts_1.Region.Asia_Pacific,
             });
             if (isValorAccountFind === false) {
                 return {
