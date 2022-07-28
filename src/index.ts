@@ -11,7 +11,7 @@ import { Client, GatewayIntentBits, Partials, ActivityType, Collection, RESTPost
 import { REST } from '@discordjs/rest';
 import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v10';
 
-import type { ICommandHandler, IEventHandler, IMenuHandler } from './modules';
+import type { ICommandHandler, IEventHandler, IMenuHandler, IModalHandler } from './modules';
 
 //script
 
@@ -148,8 +148,8 @@ const _DevelopmentMode: any = false;
     //menu
     const _MenuCollection = new Collection();
 
-    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menu`))) {
-        const menu: IMenuHandler.File = require(`./components/menu/${_file}`).default;
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menus`))) {
+        const menu: IMenuHandler.File = require(`./components/menus/${_file}`).default;
 
         if (!menu) {
             IngCore.Logs.log(menu, 'error');
@@ -157,6 +157,20 @@ const _DevelopmentMode: any = false;
         }
 
         _MenuCollection.set(menu.customId, menu);
+    }
+
+    //modal
+    const _ModalCollection = new Collection();
+
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/modals`))) {
+        const modal: IModalHandler.File = require(`./components/modals/${_file}`).default;
+
+        if (!modal) {
+            IngCore.Logs.log(modal, 'error');
+            continue;
+        }
+
+        _ModalCollection.set(modal.customId, modal);
     }
 
     //events
@@ -169,6 +183,7 @@ const _DevelopmentMode: any = false;
             List: _CommandList,
         },
         _Menu: _MenuCollection,
+        _Modal: _ModalCollection,
         _DevelopmentMode,
     };
 

@@ -1,6 +1,6 @@
 //import
 
-import type { Client, ClientEvents, Collection, SlashCommandBuilder, SelectMenuInteraction, SlashCommandSubcommandsOnlyBuilder, ChatInputCommandInteraction, WebhookEditMessageOptions, SlashCommandOptionsOnlyBuilder, PermissionResolvable } from 'discord.js';
+import type { Client, ClientEvents, Collection, SlashCommandBuilder, SelectMenuInteraction, SlashCommandSubcommandsOnlyBuilder, ChatInputCommandInteraction, WebhookEditMessageOptions, SlashCommandOptionsOnlyBuilder, PermissionResolvable, ModalSubmitInteraction, InteractionReplyOptions } from 'discord.js';
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
 
 import type { ILanguage } from './lang';
@@ -15,6 +15,7 @@ namespace IEventHandler {
             List: Array<RESTPostAPIApplicationCommandsJSONBody>,
         };
         _Menu: Collection<any, any>,
+        _Modal: Collection<any, any>,
         _DevelopmentMode: boolean;
     }
 
@@ -43,6 +44,7 @@ namespace ICommandHandler {
         isPrivateMessage?: boolean;
         onlyGuild?: boolean;
         inDevlopment?: boolean;
+        showDeferReply?: boolean;
         echo?: {
             from?: string,
             data: Array<string | { oldName: string, newName: string }>,
@@ -73,10 +75,24 @@ namespace IMenuHandler {
     }
 }
 
+namespace IModalHandler {
+    export interface Input {
+        interaction: ModalSubmitInteraction;
+        DiscordBot: Client;
+        language: ILanguage.File;
+    }
+
+    export interface File {
+        customId: string;
+        execute: (input: IModalHandler.Input) => Promise<InteractionReplyOptions>;
+    }
+}
+
 //export
 
 export type {
     IEventHandler,
     ICommandHandler,
-    IMenuHandler
+    IMenuHandler,
+    IModalHandler
 };

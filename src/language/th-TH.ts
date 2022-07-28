@@ -38,7 +38,7 @@ const _language: ILanguage.File = {
                 "topic_title": `หัวข้อ`,
                 "topic_placeholder": `หัวข้อของคุณ (ต้องการ)`,
                 "message_title": `ข้อความ`,
-                "message_placeholder": `ข้อความที่คุณต้องการรายงาน (ต้องการ)\nบางครั้งคุณอาจต้องการรายงานอีกครั้งเพื่อส่งข้อความของคุณ`,
+                "message_placeholder": `ข้อความที่คุณต้องการรายงาน (ต้องการ)`,
             },
             collection: {
                 "default": `นี่คือรายการของสะสมของคุณ`,

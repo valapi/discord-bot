@@ -113,13 +113,22 @@ const _DevelopmentMode = false;
         IngCore.Logs.log(error, 'error');
     }
     const _MenuCollection = new discord_js_1.Collection();
-    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menu`))) {
-        const menu = require(`./components/menu/${_file}`).default;
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menus`))) {
+        const menu = require(`./components/menus/${_file}`).default;
         if (!menu) {
             IngCore.Logs.log(menu, 'error');
             continue;
         }
         _MenuCollection.set(menu.customId, menu);
+    }
+    const _ModalCollection = new discord_js_1.Collection();
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/modals`))) {
+        const modal = require(`./components/modals/${_file}`).default;
+        if (!modal) {
+            IngCore.Logs.log(modal, 'error');
+            continue;
+        }
+        _ModalCollection.set(modal.customId, modal);
     }
     DiscordBot.setMaxListeners(50);
     const _EventInput = {
@@ -129,6 +138,7 @@ const _DevelopmentMode = false;
             List: _CommandList,
         },
         _Menu: _MenuCollection,
+        _Modal: _ModalCollection,
         _DevelopmentMode,
     };
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
