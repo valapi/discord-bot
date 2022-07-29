@@ -1,1 +1,1 @@
-worker: nodemon --ignore '/*'
+worker: nodemon --ignore '/*' ./dist/index.js

@@ -1,221 +1,266 @@
-import { Interaction, Permissions } from "discord.js";
-import { SlashCommandBuilder } from "@discordjs/builders";
+//import
 
-import * as fs from 'fs';
-import * as process from "process";
+import type { IEventHandler, ICommandHandler, IMenuHandler, IModalHandler } from "../modules";
+
+import * as process from 'process';
 import * as IngCore from '@ing3kth/core';
-import { getLanguageAndUndefined } from "../language/controller";
+
+import { getLanguageAndUndefined } from "../lang";
+import { type CommandInteraction, type SelectMenuInteraction, type ModalSubmitInteraction, InteractionType, SlashCommandBuilder, WebhookEditMessageOptions } from "discord.js";
+
 import { genarateApiKey } from "../utils/crypto";
-import msANDms from "../utils/msANDms";
 
-import type { EventExtraData } from "../interface/EventData";
-import type { SlashCommandExtendData, CustomSlashCommands } from "../interface/SlashCommand";
-import type { CustomButton, CustomButtonExtendData } from "../interface/Button";
-import type { CustomMenu, CustomMenuExtendData } from "../interface/SelectMeus";
+//script
 
-export default {
-	name: 'interactionCreate',
-	once: false,
-	async execute(interaction: Interaction, _extraData: EventExtraData) {
-		const createdTime = new Date();
+const __event: IEventHandler.File<'interactionCreate'> = {
+    name: 'interactionCreate',
+    once: false,
+    async execute({ _SlashCommand, _Menu, _Modal, _DevelopmentMode, DiscordBot }, interaction) {
+        if (_DevelopmentMode === true && interaction.guild?.id !== String(process.env['GUILD_ID'])) {
+            return;
+        }
 
-		//language
-		const _language = getLanguageAndUndefined(await IngCore.Cache.output({ name: 'language', interactionId: String(interaction.guildId) }));
+        const createdTime = new Date();
 
-		//script
-		if (interaction.isCommand()) {
-			/**
-			 * SLASH COMMAND
-			 */
+        const language = getLanguageAndUndefined(IngCore.Cache.output({ name: 'languages', interactionId: String(interaction.guildId) }));
 
-			const GetSlashCommand = _extraData.commands.get(interaction.commandName) as CustomSlashCommands;
+        let _isInteractionReplied = false;
+        async function interactionReply(interaction: CommandInteraction | SelectMenuInteraction | ModalSubmitInteraction, data: WebhookEditMessageOptions) {
+            if (_isInteractionReplied === false) {
+                await interaction.reply({ ...data, ...{ tts: false, fetchReply: true } });
 
-			if (!GetSlashCommand) {
-				return;
-			};
+                _isInteractionReplied = true;
+            } else {
+                await interaction.editReply(data);
+            }
+        }
 
-			const _defaultCommandAddto: CustomSlashCommands = {
-				data: (new SlashCommandBuilder().setName('default')).setDescription('Default command'),
-				type: 'miscellaneous',
-				execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.') }),
-				permissions: [],
-				privateMessage: false,
-				showDeferReply: true,
-				onlyGuild: false,
-				inDevlopment: false,
-				timeOut: 60000, //future update
-				echo: {
-					from: 'default',
-					command: [],
-					subCommand: {
-						baseCommand: 'default',
-						isSubCommand: false,
-					}
-				},
-			}
+        if (interaction.isChatInputCommand()) {
+            /**
+             * Slash Command
+             */
+            const command: ICommandHandler.File = {
+                ...{
+                    command: ((new SlashCommandBuilder().setName('default')).setDescription('Default command')),
+                    category: 'miscellaneous',
+                    permissions: [],
+                    isPrivateMessage: false,
+                    onlyGuild: false,
+                    inDevlopment: false,
+                    showDeferReply: true,
+                    execute: (async () => { return { content: 'This is Default message.', }; }),
+                },
+                ..._SlashCommand.Collection.get(interaction.commandName)
+            };
 
-			const command = new Object({ ..._defaultCommandAddto, ...GetSlashCommand }) as CustomSlashCommands;
+            //load
 
-			//script
-			try {
+            if (command.showDeferReply === true) {
+                await interaction.deferReply({
+                    ephemeral: command.isPrivateMessage,
+                    fetchReply: true,
+                });
 
-				// Loading Command //
+                _isInteractionReplied = true;
+            }
 
-				if (command.showDeferReply === true) {
-					await interaction.deferReply({
-						ephemeral: Boolean(command.privateMessage),
-					});
-				}
+            try {
 
-				if (command.inDevlopment === true && interaction.user.id !== '549231132382855189') {
-					await interaction.reply({
-						content: _language.data.dev_cmd || 'This command is in development.',
-					})
-					return;
-				}
+                if (command.inDevlopment === true && interaction.user.id !== '549231132382855189') {
+                    await interactionReply(interaction, {
+                        content: language.data['dev_cmd'] || 'This command is in development.',
+                    });
 
-				if (!interaction.guild && command.onlyGuild === true) {
-					await interaction.editReply({
-						content: _language.data.not_guild || 'Slash Command are only available in server.',
-					})
-					return;
-				}
+                    return;
+                }
 
-				// Sub Command //
+                if (!interaction.guild && command.onlyGuild === true) {
+                    await interactionReply(interaction, {
+                        content: language.data['not_guild'] || 'Slash Command are only available in server.',
+                    });
 
-				//echo
-				if (command.echo?.subCommand && command.echo?.subCommand.isSubCommand === true) {
-					interaction.options.getSubcommand = ((required?: boolean) => {
-						return String(command.echo?.subCommand?.baseCommand);
-					});
-				}
+                    return;
+                }
 
-				// Permissions //
-				if (command.permissions && Array(command.permissions).length > 0 && interaction.guild) {
-					if (!interaction.memberPermissions?.has(command.permissions)) {
-						await interaction.editReply({
-							content: _language.data.not_permission || `You don't have permission to use this command.`,
-						});
-						return;
-					}
-				}
+                if (command.echo) {
+                    if (command.echo.from) {
+                        interaction.commandName = command.echo.from;
 
-				// Interaction //
+                        if (interaction.command) {
+                            interaction.command.name = command.echo.from;
+                        }
+                    }
 
-				//logs
-				await IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`, 'info');
+                    if (command.echo.subCommand && command.echo.subCommand.isSubCommand === true) {
+                        interaction.options.getSubcommand = (() => {
+                            return String(command.echo?.subCommand?.baseCommand);
+                        });
+                    }
+                }
 
-				//run commands
-				const _SlashCommandExtendData: SlashCommandExtendData = {
-					interaction: interaction,
-					DiscordClient: _extraData.client,
-					createdTime: createdTime,
-					language: _language,
-					apiKey: genarateApiKey((interaction.user.id + interaction.user.createdTimestamp + interaction.user.username + interaction.user.tag), (String(interaction.guild?.id) + String(interaction.guild?.ownerId) + String(interaction.guild?.createdTimestamp)), process.env['PUBLIC_KEY']),
-				};
+                if (command.permissions && !interaction.memberPermissions?.has(command.permissions)) {
+                    await interactionReply(interaction, {
+                        content: language.data['not_permission'] || `You don't have permission to use this command.`,
+                    });
 
-				const CommandExecute = await command.execute(_SlashCommandExtendData);
+                    return;
+                }
 
-				if (typeof CommandExecute === 'string') {
-					await interaction.editReply({ content: CommandExecute });
-				}
+                //execute
 
-				//end
-				await IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
-			} catch (error) {
-				await IngCore.Logs.log(error, 'error');
-				await interaction.editReply({
-					content: _language.data.error || `Something Went Wrong, Please Try Again Later`,
-					embeds: [],
-					components: [],
-				});
-			}
-		} else if (interaction.isButton()) {
-			/**
-			 * B U T T O N
-			 */
+                IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`, 'info');
 
-			await IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId}\x1b[0m`, 'info');
+                const TheCommand = await command.execute({
+                    interaction,
+                    DiscordBot,
+                    createdTime,
+                    language,
+                    apiKey: genarateApiKey(String(`${interaction.user.id}${interaction.user.createdTimestamp}${interaction.user.username}${interaction.user.tag}`), String(`${interaction.guild?.id}${interaction.guild?.ownerId}`) + String(`${interaction.guild?.createdTimestamp}`), String(process.env['PUBLIC_KEY'])),
+                });
 
-			const ButtonFolder = await fs.readdirSync(`${process.cwd()}/dist/commands/button`).filter(file => file.endsWith('.js'));
+                if (TheCommand) {
+                    await interactionReply(interaction, TheCommand);
+                } else {
+                    await IngCore.Wait(10 * 1000);
+                }
 
-			ButtonFolder.forEach(async (file) => {
-				const _getButtonFile = require(`${process.cwd()}/dist/commands/button/${file.replace('.js', '')}`).default as CustomButton;
+                IngCore.Logs.log(`<${interaction.user.id}> <command> ${interaction.commandName} [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
+            } catch (error) {
+                //error
 
-				if (_getButtonFile.customId === interaction.customId) {
-					const _defaultButtonFile: CustomButton = {
-						customId: 'default',
-						privateMessage: false,
-						showDeferReply: true,
-						execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.') }),
-					}
-					const _file = new Object({ ..._defaultButtonFile, ..._getButtonFile }) as CustomButton;
+                if (_DevelopmentMode === true) {
+                    console.error(error);
+                } else {
+                    IngCore.Logs.log(error, 'error');
+                }
 
-					// SCRIPT //
-					if (_file.showDeferReply) {
-						await interaction.deferReply({
-							ephemeral: Boolean(_file.privateMessage),
-						});
-					}
+                await interactionReply(interaction, {
+                    content: language.data['error'] || `Something Went Wrong, Please Try Again Later`,
+                    embeds: [],
+                    components: [],
+                    files: [],
+                    attachments: [],
+                });
+            }
+        } else if (interaction.isSelectMenu()) {
+            /**
+             * Select Menu
+             */
+            const menu: IMenuHandler.File = {
+                ...{
+                    customId: 'default',
+                    replyMode: 'edit',
+                    execute: (async () => { return { content: 'This is Default message.', }; }),
+                },
+                ..._Menu.get(interaction.customId)
+            };
 
-					const _ButtonExtendData: CustomButtonExtendData = {
-						interaction: interaction,
-						DiscordClient: _extraData.client,
-						createdTime: createdTime,
-						language: _language,
-					}
+            //load
 
-					await _file.execute(_ButtonExtendData);
-					return;
-				}
-			});
+            if (menu.replyMode === 'edit') {
+                await interaction.deferUpdate({
+                    fetchReply: true,
+                });
 
-			//end
-			await IngCore.Logs.log(`<${interaction.user.id}> <button> ${interaction.customId} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
-		} else if (interaction.isSelectMenu()) {
-			/**
-			 * M E N U
-			 */
+                _isInteractionReplied = true;
+            } else if (menu.replyMode === 'new') {
+                await interaction.deferReply({
+                    fetchReply: true,
+                });
+            }
 
-			await IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`, 'info');
+            try {
+                //execute
 
-			const MenusFolder = await fs.readdirSync(`${process.cwd()}/dist/commands/menu`).filter(file => file.endsWith('.js'));
+                IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`, 'info');
 
-			MenusFolder.forEach(async (file) => {
-				const _getMenuFile = require(`${process.cwd()}/dist/commands/menu/${file.replace('.js', '')}`).default as CustomMenu;
+                const TheMenu = await menu.execute({
+                    interaction,
+                    DiscordBot,
+                    language,
+                    _SlashCommand,
+                });
 
-				if (_getMenuFile.customId === interaction.customId) {
-					const _defaultMenuFile: CustomMenu = {
-						customId: 'default',
-						privateMessage: false,
-						showDeferReply: true,
-						execute: (async ({ interaction }) => { await interaction.editReply('This is Default message.') }),
-					}
-					const _file = new Object({ ..._defaultMenuFile, ..._getMenuFile }) as CustomMenu;
+                await interactionReply(interaction, TheMenu);
 
-					// SCRIPT //
-					if (_file.showDeferReply) {
-						await interaction.deferUpdate();
-					}
+                IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId} [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
+            } catch (error) {
+                //error
 
-					const _MenuExtendData: CustomMenuExtendData = {
-						interaction: interaction,
-						DiscordClient: _extraData.client,
-						createdTime: createdTime,
-						language: _language,
-						command: {
-							collection: _extraData.commands,
-							array: _extraData.commandArray,
-						}
-					}
+                if (_DevelopmentMode === true) {
+                    console.error(error);
+                } else {
+                    IngCore.Logs.log(error, 'error');
+                }
 
-					await _file.execute(_MenuExtendData);
-					return;
-				}
-			});
+                await interactionReply(interaction, {
+                    content: language.data['error'] || `Something Went Wrong, Please Try Again Later`,
+                    embeds: [],
+                    components: [],
+                    files: [],
+                    attachments: [],
+                });
+            }
+        }
 
-			//end
-			await IngCore.Logs.log(`<${interaction.user.id}> <menu> ${interaction.customId} [${msANDms(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
-		}
-	},
+        if (interaction.type === InteractionType.ModalSubmit) {
+            /**
+             * Modal
+             */
+            const modal: IModalHandler.File = {
+                ...{
+                    customId: 'default',
+                    execute: (async () => { return { content: 'This is Default message.', }; }),
+                },
+                ..._Modal.get(interaction.customId)
+            };
+
+            //load
+
+            try {
+                //execute
+
+                IngCore.Logs.log(`<${interaction.user.id}> <modal> ${interaction.customId}\x1b[0m`, 'info');
+
+                if (_isInteractionReplied === true) {
+                    interaction.editReply({
+                        content: language.data['error'] || `Something Went Wrong, Please Try Again Later`,
+                    });
+
+                    return;
+                }
+
+                const TheModal = await modal.execute({
+                    interaction,
+                    DiscordBot,
+                    language,
+                });
+
+                await interaction.reply({ ...TheModal, ...{ tts: false, fetchReply: true } });
+                _isInteractionReplied = true;
+
+                IngCore.Logs.log(`<${interaction.user.id}> <modal> ${interaction.customId} [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`, 'info');
+            } catch (error) {
+                //error
+
+                if (_DevelopmentMode === true) {
+                    console.error(error);
+                } else {
+                    IngCore.Logs.log(error, 'error');
+                }
+
+                await interactionReply(interaction, {
+                    content: language.data['error'] || `Something Went Wrong, Please Try Again Later`,
+                    embeds: [],
+                    components: [],
+                    files: [],
+                    attachments: [],
+                });
+            }
+        }
+    },
 };
+
+//export
+
+export default __event;

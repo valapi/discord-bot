@@ -1,147 +1,182 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const tslib_1 = require("tslib");
-const dotenv = tslib_1.__importStar(require("dotenv"));
+const mongoose_1 = tslib_1.__importDefault(require("mongoose"));
 const process = tslib_1.__importStar(require("process"));
+const path = tslib_1.__importStar(require("path"));
 const fs = tslib_1.__importStar(require("fs"));
-const discord_modals_1 = tslib_1.__importDefault(require("discord-modals"));
+const dotenv = tslib_1.__importStar(require("dotenv"));
+const IngCore = tslib_1.__importStar(require("@ing3kth/core"));
+const discord_js_1 = require("discord.js");
 const rest_1 = require("@discordjs/rest");
 const v10_1 = require("discord-api-types/v10");
-const discord_js_1 = require("discord.js");
-const events_1 = tslib_1.__importDefault(require("events"));
-const core_1 = require("@ing3kth/core");
-const database_1 = require("./utils/database");
-const DEVELOPMENT_MODE = false;
-function START_ENGINE() {
-    var _a;
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        dotenv.config({
-            path: process.cwd() + '/.env'
-        });
-        yield database_1.ValData.create(process.env['MONGO_TOKEN']);
-        const DiscordClient = new discord_js_1.Client({
-            intents: [
-                discord_js_1.Intents.FLAGS.GUILDS,
-                discord_js_1.Intents.FLAGS.GUILD_MEMBERS,
-                discord_js_1.Intents.FLAGS.GUILD_MESSAGES,
-                discord_js_1.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-                discord_js_1.Intents.FLAGS.DIRECT_MESSAGES,
-                discord_js_1.Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-                discord_js_1.Intents.FLAGS.GUILD_INTEGRATIONS,
-            ],
-        });
-        events_1.default.defaultMaxListeners = 35;
-        DiscordClient.setMaxListeners(50);
-        (0, discord_modals_1.default)(DiscordClient);
-        const commandFolders = fs.readdirSync(`${process.cwd()}/dist/commands/slash`);
-        const rest = new rest_1.REST({ version: '10' }).setToken(String(process.env['TOKEN']));
-        const _commands = new discord_js_1.Collection();
-        const _commandArray = [];
-        for (const folder of commandFolders) {
-            const commandFiles = fs.readdirSync(`${process.cwd()}/dist/commands/slash/${folder}`).filter(file => file.endsWith('.js'));
-            for (const file of commandFiles) {
-                const command = require(`${process.cwd()}/dist/commands/slash/${folder}/${file.replace('.js', '')}`).default;
-                if (!command) {
-                    continue;
-                }
-                if (command.echo && command.echo.command.length > 0) {
-                    command.echo.command.forEach((cmd) => {
-                        if (typeof cmd === 'string') {
-                            _commands.set(cmd, new Object(Object.assign(Object.assign({}, command), { data: { name: cmd }, echo: { from: command.data.name, command: [] }, privateMessage: !!command.privateMessage })));
-                            _commandArray.push(new Object(Object.assign(Object.assign({}, command.data.toJSON()), { name: cmd })));
-                        }
-                        else {
-                            let ofNewCommand = command.data.toJSON();
-                            if (ofNewCommand.options) {
-                                let OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.subCommandName);
-                                if (OptionCommand && OptionCommand.type === 1) {
-                                    if (!OptionCommand.options)
-                                        OptionCommand.options = [];
-                                    let NewSlashCommand = new Object(Object.assign(Object.assign({}, ofNewCommand), {
-                                        type: OptionCommand.type,
-                                        name: cmd.newCommandName,
-                                        description: OptionCommand.description,
-                                        options: OptionCommand.options,
-                                    }));
-                                    _commands.set(NewSlashCommand.name, new Object(Object.assign(Object.assign({}, command), { data: NewSlashCommand, echo: { from: command.data.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } }, privateMessage: !!command.privateMessage })));
-                                    _commandArray.push(NewSlashCommand);
-                                }
-                                else {
-                                    core_1.Logs.log(`<${file}> option command [${cmd.subCommandName}] not found`, 'error');
-                                }
-                            }
-                        }
-                    });
-                }
-                _commands.set(command.data.name, command);
-                _commandArray.push(command.data.toJSON());
-            }
-        }
-        try {
-            yield core_1.Logs.log('Started refreshing application (/) commands.', 'info');
-            if (DEVELOPMENT_MODE === true) {
-                yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), { body: _commandArray });
-            }
-            else {
-                yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), { body: [] });
-                yield rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), { body: _commandArray });
-            }
-            yield core_1.Logs.log('Successfully reloaded application (/) commands.', 'info');
-        }
-        catch (error) {
-            yield core_1.Logs.log(error, 'error');
-        }
-        const eventFiles = fs.readdirSync(process.cwd() + '/dist/events').filter(file => file.endsWith('.js'));
-        for (const file of eventFiles) {
-            const event = require(`./events/${file.replace('.js', '')}`).default;
-            if (!event) {
+const _DevelopmentMode = false;
+(async () => {
+    dotenv.config({
+        path: path.join(`${process.cwd()}/.env`),
+    });
+    mongoose_1.default.connection.on("error", (async (error) => {
+        IngCore.Logs.log(error, 'error');
+    }));
+    mongoose_1.default.connection.on("connected", (async () => {
+        IngCore.Logs.log('Successfully connected to database', 'system');
+    }));
+    mongoose_1.default.connection.on("disconnected", (async () => {
+        IngCore.Logs.log('Disconnected from database', 'warning');
+    }));
+    await mongoose_1.default.connect(String(process.env['MONGO_TOKEN']));
+    const DiscordBot = new discord_js_1.Client({
+        intents: [
+            discord_js_1.GatewayIntentBits.Guilds,
+            discord_js_1.GatewayIntentBits.GuildMembers,
+            discord_js_1.GatewayIntentBits.GuildMessages,
+            discord_js_1.GatewayIntentBits.GuildMessageReactions,
+            discord_js_1.GatewayIntentBits.DirectMessages,
+            discord_js_1.GatewayIntentBits.DirectMessageReactions,
+            discord_js_1.GatewayIntentBits.GuildIntegrations,
+        ],
+        partials: [
+            discord_js_1.Partials.Channel,
+            discord_js_1.Partials.GuildMember,
+            discord_js_1.Partials.Message,
+            discord_js_1.Partials.Reaction,
+            discord_js_1.Partials.User,
+        ],
+        allowedMentions: {
+            parse: ['users', 'roles'],
+            repliedUser: true,
+        },
+        failIfNotExists: _DevelopmentMode,
+    });
+    const _CommandCollection = new discord_js_1.Collection();
+    const _CommandList = [];
+    IngCore.Logs.log('Started refreshing application (/) commands', 'info');
+    for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
+        for (const _file of fs.readdirSync(path.join(`${__dirname}/components/commands/${_folder}`))) {
+            const command = require(`./components/commands/${_folder}/${_file}`).default;
+            if (!command) {
+                IngCore.Logs.log(command, 'error');
                 continue;
             }
-            const _extraData = {
-                client: DiscordClient,
-                commands: _commands,
-                commandArray: _commandArray,
-            };
-            if (event.once) {
-                DiscordClient.once(event.name, ((...args) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                    try {
-                        yield event.execute(...args, _extraData);
+            if (command.echo && command.echo.data.length > 0) {
+                command.echo.data.forEach((cmd) => {
+                    if (typeof cmd === 'string') {
+                        _CommandCollection.set(cmd, { ...command, ...{ data: { name: cmd }, echo: { from: command.command.name, data: [] } } });
+                        _CommandList.push({ ...command.command.toJSON(), ...{ name: cmd } });
                     }
-                    catch (error) {
-                        yield core_1.Logs.log(error, 'error');
+                    else {
+                        const ofNewCommand = command.command.toJSON();
+                        if (ofNewCommand.options) {
+                            const OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.oldName);
+                            if (OptionCommand && OptionCommand.type === v10_1.ApplicationCommandOptionType.Subcommand) {
+                                if (!OptionCommand.options)
+                                    OptionCommand.options = [];
+                                const NewSlashCommand = {
+                                    ...ofNewCommand,
+                                    ...(new discord_js_1.SlashCommandBuilder().setName(cmd.newName).setDescription(OptionCommand.description).toJSON()),
+                                    ...{
+                                        options: OptionCommand.options,
+                                    }
+                                };
+                                _CommandCollection.set(NewSlashCommand.name, { ...command, ...{ data: NewSlashCommand, echo: { from: command.command.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } } } });
+                                _CommandList.push(NewSlashCommand);
+                            }
+                            else {
+                                IngCore.Logs.log(`<${_file}> option command [${cmd.oldName}] not found`, 'error');
+                            }
+                        }
                     }
-                })));
+                });
             }
-            else {
-                DiscordClient.on(event.name, ((...args) => tslib_1.__awaiter(this, void 0, void 0, function* () {
-                    try {
-                        yield event.execute(...args, _extraData);
-                    }
-                    catch (error) {
-                        yield core_1.Logs.log(error, 'error');
-                    }
-                })));
-            }
+            _CommandCollection.set(command.command.name, command);
+            _CommandList.push(command.command.toJSON());
         }
-        yield DiscordClient.login(process.env['TOKEN']);
-        (_a = DiscordClient.user) === null || _a === void 0 ? void 0 : _a.setActivity("ING PROJECT", {
-            type: "PLAYING"
+    }
+    const rest = new rest_1.REST({ version: '10' }).setToken(String(process.env['TOKEN']));
+    async function RestCommands(GlobalCommands, GuildCommands) {
+        await rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), {
+            body: GlobalCommands,
         });
-        DiscordClient.setMaxListeners(100);
-    });
-}
-;
-function LOAD_ENGINE() {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        try {
-            yield START_ENGINE();
+        await rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), {
+            body: GuildCommands,
+        });
+    }
+    try {
+        if (_DevelopmentMode === true) {
+            await RestCommands([], _CommandList);
         }
-        catch (error) {
-            yield core_1.Logs.log(error, 'error');
-            setTimeout((() => tslib_1.__awaiter(this, void 0, void 0, function* () { yield LOAD_ENGINE(); })), 1000);
+        else {
+            await RestCommands(_CommandList, []);
         }
-    });
-}
-(() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
-    yield LOAD_ENGINE();
-}))();
+        IngCore.Logs.log('Successfully reloaded application (/) commands', 'info');
+    }
+    catch (error) {
+        IngCore.Logs.log(error, 'error');
+    }
+    const _MenuCollection = new discord_js_1.Collection();
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menus`))) {
+        const menu = require(`./components/menus/${_file}`).default;
+        if (!menu) {
+            IngCore.Logs.log(menu, 'error');
+            continue;
+        }
+        _MenuCollection.set(menu.customId, menu);
+    }
+    const _ModalCollection = new discord_js_1.Collection();
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/components/modals`))) {
+        const modal = require(`./components/modals/${_file}`).default;
+        if (!modal) {
+            IngCore.Logs.log(modal, 'error');
+            continue;
+        }
+        _ModalCollection.set(modal.customId, modal);
+    }
+    DiscordBot.setMaxListeners(50);
+    const _EventInput = {
+        DiscordBot,
+        _SlashCommand: {
+            Collection: _CommandCollection,
+            List: _CommandList,
+        },
+        _Menu: _MenuCollection,
+        _Modal: _ModalCollection,
+        _DevelopmentMode,
+    };
+    for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
+        const event = require(`./events/${_file}`).default;
+        if (!event) {
+            continue;
+        }
+        if (event.once) {
+            DiscordBot.once(event.name, (async (...args) => {
+                try {
+                    await event.execute(_EventInput, ...args);
+                }
+                catch (error) {
+                    IngCore.Logs.log(error, 'error');
+                }
+            }));
+        }
+        else {
+            DiscordBot.on(event.name, (async (...args) => {
+                try {
+                    await event.execute(_EventInput, ...args);
+                }
+                catch (error) {
+                    IngCore.Logs.log(error, 'error');
+                }
+            }));
+        }
+    }
+    await DiscordBot.login(process.env['TOKEN']);
+    if (_DevelopmentMode === true) {
+        DiscordBot.user?.setStatus('invisible');
+    }
+    else {
+        DiscordBot.user?.setStatus('online');
+        DiscordBot.user?.setActivity({
+            name: "ING PROJECT",
+            type: discord_js_1.ActivityType.Playing,
+        });
+    }
+})();

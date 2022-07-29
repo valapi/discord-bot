@@ -1,10 +1,19 @@
-import type { Client } from "discord.js";
-import { Logs } from '@ing3kth/core';
+//import
 
-export default {
-	name: 'ready',
-	once: true,
-	async execute(client:Client) {
-		await Logs.log(`Ready! Logged in as ${client.user?.tag}`, 'system');
-	},
+import type { IEventHandler } from "../modules";
+
+import * as IngCore from '@ing3kth/core';
+
+//script
+
+const __event: IEventHandler.File<'ready'> = {
+    name: 'ready',
+    once: true,
+    async execute({ }, client) {
+        IngCore.Logs.log(`Ready! Logged in as ${client.user.tag}`, 'system');
+    },
 };
+
+//export
+
+export default __event;

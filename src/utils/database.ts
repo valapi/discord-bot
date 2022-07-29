@@ -1,143 +1,98 @@
+//import
+
 import mongoose from "mongoose";
 import * as process from 'process';
 
-import { Logs } from "@ing3kth/core";
+import { Region } from "@valapi/lib";
 
-import * as dotenv from 'dotenv';
+namespace ValorInterface {
+    export type CollectionName = 'account' | 'daily';
 
-type ICollectionName = 'account' | 'daily'
+    export namespace Account {
+        export interface Format {
+            account: string;
+            region: keyof typeof Region.from;
+            discordId: number;
+            createdAt: Date;
+        }
 
-interface IValorantAccount {
-    account: string;
-    discordId: number;
-    createdAt: Date;
-}
-
-const _valorantSchema = new mongoose.Schema<IValorantAccount>({
-    account: { type: String, required: true },
-    discordId: { type: Number, required: true },
-    createdAt: {
-        type: Date,
-        immutable: true,
-        required: false,
-        default: () => Date.now(),
-        expires: 1296000000,
-    },
-});
-
-interface IValorantSave {
-    user: string;
-    userId: string;
-    guild: string;
-    channelId: string;
-}
-
-const _saveSchema = new mongoose.Schema<IValorantSave>({
-    user: { type: String, required: true },
-    userId: { type: String, required: true },
-    guild: { type: String, required: true },
-    channelId: { type: String, required: true },
-});
-
-class ValData {
-    constructor() {
-        //event
-        mongoose.connection.on("error", (async (error) => {
-            await Logs.log(error, 'error');
-        }));
-
-        mongoose.connection.on("connected", (async () => {
-            await Logs.log('Successfully connected to database', 'system');
-        }));
-
-        mongoose.connection.on("disconnected", (async () => {
-            await Logs.log('Disconnected from database', 'warning');
-        }));
-
-        //dot ENV
-        dotenv.config({
-            path: process.cwd() + '/.env'
+        export const Schema = new mongoose.Schema<ValorInterface.Account.Format>({
+            account: { type: String, required: true },
+            region: { type: String, required: true },
+            discordId: { type: Number, required: true },
+            createdAt: {
+                type: Date,
+                immutable: true,
+                required: false,
+                default: () => Date.now(),
+                expires: 1296000000,
+            },
         });
     }
 
-    /**
-     * login to mongodb database
-     * @param {string} token token of access to database
-     * @returns {Promise<void>}
-     */
-    public async login(token: string = String(process.env['MONGO_TOKEN'])): Promise<void> {
-        if (!token) {
-            await Logs.log('token is not defined', 'error');
+    export namespace Daily {
+        export interface Format {
+            user: string;
+            userId: string;
+            guild: string;
+            channelId: string;
         }
 
-        await mongoose.connect(token);
-    }
-
-    /**
-     * Get {@link mongoose.Model} of the collection
-     * @param {string} name name of the collection
-     * @returns {mongoose.Model}
-     */
-    public getCollection<YourCollectionInterface>(name: ICollectionName, schema: mongoose.Schema): mongoose.Model<YourCollectionInterface, any, any, any> {
-        try {
-            return mongoose.model<YourCollectionInterface>(name, schema);
-        } catch (error) {
-            return mongoose.model<YourCollectionInterface>(name);
-        }
-    }
-
-    //static
-
-    /**
-     * login to mongodb database
-     * @param {string} token token of access to database
-     * @returns {Promise<ValData>}
-     */
-    public static async create(token?: string): Promise<ValData> {
-        const _database = new ValData();
-        await _database.login(token);
-
-        return _database;
-    }
-
-    /**
-     * Check if collection is exist or not
-     * @param config checking config
-     * @returns {Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }>}
-     */
-    public static async checkCollection<YourCollectionInterface>(config: {
-        name: ICollectionName,
-        schema: mongoose.Schema,
-        filter?: mongoose.FilterQuery<YourCollectionInterface>,
-        token?: string,
-    }): Promise<{ isFind: Boolean, total: Number, data: Array<YourCollectionInterface>, model: mongoose.Model<YourCollectionInterface, any, any, any> }> {
-
-        const _MyCollection = (await ValData.create(config.token)).getCollection<YourCollectionInterface>(config.name, config.schema);
-        const _FindInDatabase: Array<YourCollectionInterface> = await _MyCollection.find(config.filter || {});
-
-        return {
-            ...{
-                isFind: (Number(_FindInDatabase.length) > 0),
-                total: Number(_FindInDatabase.length),
-                data: _FindInDatabase,
-                once: _FindInDatabase[0],
-            },
-            ...{
-                model: _MyCollection
-            }
-        };
+        export const Schema = new mongoose.Schema<ValorInterface.Daily.Format>({
+            user: { type: String, required: true },
+            userId: { type: String, required: true },
+            guild: { type: String, required: true },
+            channelId: { type: String, required: true },
+        });
     }
 }
 
+//function
+
+async function ValorDatabase<CollectionInterface>(config: {
+    name: ValorInterface.CollectionName,
+    schema: mongoose.Schema,
+    filter?: mongoose.FilterQuery<CollectionInterface>,
+    token?: string,
+}): Promise<{ isFind: boolean, data: Array<CollectionInterface>, model: mongoose.Model<CollectionInterface, any, any, any> }> {
+    //login
+
+    if (!config.token) {
+        if (process.env['MONGO_TOKEN']) {
+            config.token = process.env['MONGO_TOKEN'];
+        } else {
+            throw new Error(
+                'token is undefined'
+            );
+        }
+    }
+
+    await mongoose.connect(config.token);
+
+    //model
+
+    let MyModel: mongoose.Model<CollectionInterface, any, any, any>;
+
+    try {
+        MyModel = mongoose.model<CollectionInterface>(config.name, config.schema);
+    } catch (error) {
+        MyModel = mongoose.model<CollectionInterface>(config.name);
+    }
+
+    //find
+
+    const MyData: Array<CollectionInterface> = await MyModel.find(config.filter || {});
+
+    return {
+        isFind: MyData.length > 0,
+        data: MyData,
+        model: MyModel,
+    };
+}
+
+//export
+
 export {
-    //controller
-    ValData,
-
-    //valorant account
-    type IValorantAccount,
-    _valorantSchema as ValorantSchema,
-
-    //valorant save
-    type IValorantSave,
-    _saveSchema as SaveSchema,
+    ValorDatabase,
+    ValorInterface
 };
