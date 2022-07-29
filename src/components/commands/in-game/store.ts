@@ -4,7 +4,6 @@ import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
-import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
 
 //script
@@ -213,7 +212,7 @@ const __command: ICommandHandler.File = {
                 embeds: sendMessageArray,
             };
         }
-        
+
         if (thisSubCommand === 'collection') {
             //load
 
@@ -229,7 +228,9 @@ const __command: ICommandHandler.File = {
 
                 const ThisBundleData = await ValorantApiCom.Bundles.getByUuid(ThisBundleId);
                 if (!ThisBundleData.data.data) {
-                    throw new Error(ThisBundleData.data.error);
+                    throw new Error(
+                        ThisBundleData.data.error
+                    );
                 }
 
                 const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
@@ -260,7 +261,9 @@ const __command: ICommandHandler.File = {
                 // currency
                 const GetCurrency = await ValorantApiCom.Currencies.getByUuid(ThisBundleCurrency);
                 if (GetCurrency.isError || !GetCurrency.data.data) {
-                    throw new Error(GetCurrency.data.error);
+                    throw new Error(
+                        GetCurrency.data.error
+                    );
                 }
 
                 const ThePrice = GetCurrency.data.data.displayName;
@@ -294,7 +297,7 @@ const __command: ICommandHandler.File = {
                 embeds: sendMessageArray,
             };
         }
-        
+
         if (thisSubCommand === 'bonus_store') {
             //load
 

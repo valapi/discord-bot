@@ -4,10 +4,8 @@ import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder, time } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
-import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
-
-import { Region as _Region } from '@valapi/lib';
+import { Region } from '@valapi/lib';
 
 //script
 
@@ -65,7 +63,7 @@ const __command: ICommandHandler.File = {
                         { name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true },
                         { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true },
                         { name: '\u200B', value: '\u200B' },
-                        { name: `Region`, value: `${_Region.fromString(JsonWebClient.region.live as "ap").replace('_', ' ')}`, inline: true },
+                        { name: `Region`, value: `${Region.fromString(JsonWebClient.region.live as Region.String).replace('_', ' ')}`, inline: true },
                         { name: `Create`, value: time(new Date(ValorantUserInfo.data.acct.created_at)), inline: true },
                         { name: '\u200B', value: '\u200B' },
                         { name: `Card`, value: `${PlayerCard_Name}`, inline: true },

@@ -7,8 +7,7 @@ import type { ICommandHandler } from "../../../modules";
 import { encrypt, decrypt } from '../../../utils/crypto';
 import { ValorDatabase, ValorInterface } from '../../../utils/database';
 
-import { Region } from 'valorant.ts';
-import { Region as _Region } from '@valapi/lib';
+import { Region } from '@valapi/lib';
 import { Client as ValWebClient } from '@valapi/web-client';
 import { Client as ValApiCom } from '@valapi/valorant-api.com';
 
@@ -66,13 +65,13 @@ const __command: ICommandHandler.File = {
                             .setName('region')
                             .setDescription('Change Your Account Region')
                             .addChoices(
-                                { name: _Region.from.ap, value: _Region.to.Asia_Pacific },
-                                { name: _Region.from.br, value: _Region.to.Brazil },
-                                { name: _Region.from.eu, value: _Region.to.Europe },
-                                { name: _Region.from.kr, value: _Region.to.Korea },
-                                { name: _Region.from.latam, value: _Region.to.Latin_America },
-                                { name: _Region.from.na, value: _Region.to.North_America },
-                                { name: _Region.from.pbe, value: _Region.to.Public_Beta_Environment },
+                                { name: Region.from.ap, value: Region.to.Asia_Pacific },
+                                { name: Region.from.br, value: Region.to.Brazil },
+                                { name: Region.from.eu, value: Region.to.Europe },
+                                { name: Region.from.kr, value: Region.to.Korea },
+                                { name: Region.from.latam, value: Region.to.Latin_America },
+                                { name: Region.from.na, value: Region.to.North_America },
+                                { name: Region.from.pbe, value: Region.to.Public_Beta_Environment },
                             )
                             .setRequired(true)
                     )
@@ -285,7 +284,7 @@ const __command: ICommandHandler.File = {
 
             await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
 
-            const _choice = interaction.options.getString('region') as keyof typeof _Region.from;
+            const _choice = interaction.options.getString('region') as Region.String;
 
             WebClient.setRegion(_choice);
 
@@ -294,7 +293,7 @@ const __command: ICommandHandler.File = {
             //return
 
             return {
-                content: `__*beta*__\n\nchanged region to **${String(_Region.fromString(WebClient.toJSON().region.live as keyof typeof _Region.from)).replace('_', ' ')}**\n\n`,
+                content: `__*beta*__\n\nchanged region to **${String(Region.fromString(WebClient.toJSON().region.live as Region.String)).replace('_', ' ')}**\n\n`,
             };
         }
 

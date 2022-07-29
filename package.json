@@ -40,14 +40,13 @@
     "homepage": "https://github.com/valapi/discord-bot#readme",
     "dependencies": {
         "@ing3kth/core": "^2.0.2",
-        "@valapi/web-client": "^1.0.2",
         "crypto-js": "^4.1.1",
         "discord-api-types": "^0.36.3",
         "discord.js": "^14.0.3",
         "dotenv": "^16.0.1",
         "mongoose": "^6.4.6",
         "nodemon": "^2.0.19",
-        "valorant.ts": "^1.4.0"
+        "valorant.ts": "^1.4.2"
     },
     "devDependencies": {
         "@types/crypto-js": "^4.1.1",

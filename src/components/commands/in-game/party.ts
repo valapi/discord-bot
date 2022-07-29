@@ -4,9 +4,7 @@ import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
-import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
-
 import { QueueId } from '@valapi/lib';
 
 //script
@@ -54,7 +52,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        const Party_QueueID: string = QueueId.fromString(TheParty.data.MatchmakingData.QueueID as keyof typeof QueueId.from);
+        const Party_QueueID: string = QueueId.fromString(TheParty.data.MatchmakingData.QueueID as QueueId.String);
         const Party_RemoveRR: number = TheParty.data.MatchmakingData.SkillDisparityRRPenalty;
         const Party_Accessibility: string = TheParty.data.Accessibility;
 

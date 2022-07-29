@@ -4,9 +4,7 @@ import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder, time } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
-import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
-
 import { QueueId } from '@valapi/lib';
 
 //script
@@ -26,14 +24,13 @@ const __command: ICommandHandler.File = {
                     .setName('queue')
                     .setDescription('Queue Mode')
                     .addChoices(
-                        { name: QueueId.from.competitive, value: QueueId.to.Competitive },
-                        { name: QueueId.from.deathmatch, value: QueueId.to.Deathmatch },
-                        { name: QueueId.from.ggteam, value: QueueId.to.Escalation },
-                        { name: QueueId.from.onefa, value: QueueId.to.Replication },
-                        //{ name: QueueId.from.snowball, value: QueueId.to.Snowball_Fight },
-                        { name: QueueId.from.spikerush, value: QueueId.to.Spikerush },
-                        //{ name: QueueId.from.tournamentmode, value: QueueId.to.Custom_Tournament },
-                        { name: QueueId.from.unrated, value: QueueId.to.Unrated },
+                        { name: QueueId.fromString('competitive'), value: QueueId.toString('Competitive') },
+                        { name: QueueId.from['deathmatch'], value: QueueId.to.Deathmatch },
+                        { name: QueueId.from['ggteam'], value: QueueId.to.Escalation },
+                        { name: QueueId.from['onefa'], value: QueueId.to.Replication },
+                        { name: QueueId.from['snowball'], value: QueueId.to.Snowball_Fight },
+                        { name: QueueId.from['spikerush'], value: QueueId.to.Spikerush },
+                        { name: QueueId.from['unrated'], value: QueueId.to.Unrated },
                     )
             )
     ),
@@ -65,7 +62,7 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const PlayerMatchHistory = await WebClient.Match.FetchMatchHistory(puuid, (interaction.options.getString('queue') as keyof typeof QueueId.from));
+        const PlayerMatchHistory = await WebClient.Match.FetchMatchHistory(puuid, (interaction.options.getString('queue') as QueueId.String));
         const _MatchHistory = PlayerMatchHistory.data.History[(interaction.options.getNumber('index') || 1) - 1];
 
         if (!_MatchHistory) {
@@ -89,7 +86,7 @@ const __command: ICommandHandler.File = {
 
         // MATCH //
 
-        const Match_Type = AllMatchData.data.matchInfo.queueID as keyof typeof QueueId.from;
+        const Match_Type = AllMatchData.data.matchInfo.queueID as QueueId.String;
         const Match_Name = String(QueueId.fromString(Match_Type)).replace('_', ' ');
         const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
 
@@ -101,7 +98,11 @@ const __command: ICommandHandler.File = {
 
         //map
         const GetMap = await ValorantApiCom.Maps.get();
-        if (GetMap.isError || !GetMap.data.data) throw new Error(GetMap.data.error);
+        if (GetMap.isError || !GetMap.data.data) {
+            throw new Error(
+                GetMap.data.error
+            );
+        }
 
         const ThisMap = GetMap.data.data.find(map => map.mapUrl === AllMatchData.data.matchInfo.mapId);
 
@@ -109,7 +110,11 @@ const __command: ICommandHandler.File = {
 
         //season
         const GetSeason = await ValorantApiCom.Seasons.getByUuid(AllMatchData.data.matchInfo.seasonId);
-        if (GetSeason.isError || !GetSeason.data.data) throw new Error(GetSeason.data.error);
+        if (GetSeason.isError || !GetSeason.data.data) {
+            throw new Error(
+                GetSeason.data.error
+            );
+        }
 
         const Match_Season = GetSeason.data.data.displayName as string;
 
@@ -157,7 +162,11 @@ const __command: ICommandHandler.File = {
         let Player_Rank = ``;
 
         const AllRanks = await ValorantApiCom.CompetitiveTiers.get();
-        if (AllRanks.isError || !AllRanks.data.data) throw new Error(AllRanks.data.error);
+        if (AllRanks.isError || !AllRanks.data.data) {
+            throw new Error(
+                AllRanks.data.error
+            );
+        }
 
         for (const _rank of AllRanks.data.data) {
             for (const _tier of _rank.tiers) {
@@ -174,7 +183,11 @@ const __command: ICommandHandler.File = {
 
         //agent
         const GetAgent = await ValorantApiCom.Agents.getByUuid(ThisPlayer?.characterId as string);
-        if (GetAgent.isError || !GetAgent.data.data) throw new Error(GetAgent.data.error);
+        if (GetAgent.isError || !GetAgent.data.data) {
+            throw new Error(
+                GetAgent.data.error
+            );
+        }
 
         const Player_Agent_Name: string = GetAgent.data.data.displayName as string;
         const Player_Agent_Display: string = GetAgent.data.data.displayIcon;

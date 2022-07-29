@@ -4,7 +4,6 @@ import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
-import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
 
 //script

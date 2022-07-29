@@ -11,7 +11,7 @@ namespace ValorInterface {
     export namespace Account {
         export interface Format {
             account: string;
-            region: keyof typeof Region.from;
+            region: Region.String;
             discordId: number;
             createdAt: Date;
         }

@@ -4,7 +4,6 @@ import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
-import { Region } from 'valorant.ts';
 import { ValorAccount } from '../../../utils/accounts';
 
 //script
@@ -43,7 +42,11 @@ const __command: ICommandHandler.File = {
         const Rank_Rating_Now: string = ThisRank.RankedRatingAfterUpdate;
 
         const AllRanks = await ValorantApiCom.CompetitiveTiers.get();
-        if (AllRanks.isError || !AllRanks.data.data) throw new Error(AllRanks.data.error);
+        if (AllRanks.isError || !AllRanks.data.data) {
+            throw new Error(
+                AllRanks.data.error
+            );
+        }
 
         let Rank_Name = '';
         let Rank_Icon = '';

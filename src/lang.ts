@@ -3,12 +3,12 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { Locale } from '@valapi/lib';
+import type { Client as ValorantApiCom } from '@valapi/valorant-api.com';
 
 //interface
 
 namespace ILanguage {
-    export type Name = keyof typeof Locale.from;
+    export type Name = ValorantApiCom.Language;
 
     export interface File {
         name: ILanguage.Name;
