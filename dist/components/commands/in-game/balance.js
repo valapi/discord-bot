@@ -15,47 +15,44 @@ const __command = {
         ],
     },
     onlyGuild: true,
-    execute({ interaction, language, apiKey }) {
-        var _a;
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const userId = interaction.user.id;
-            const { WebClient, ValorantApiCom, isValorAccountFind } = yield (0, accounts_1.ValorAccount)({
-                userId,
-                apiKey,
-                language: language.name,
-            });
-            if (isValorAccountFind === false) {
-                return {
-                    content: language.data.command['account']['not_account'],
-                };
-            }
-            const puuid = WebClient.getSubject();
-            const GetWallet = yield WebClient.Store.GetWallet(puuid);
-            const AllWallet = GetWallet.data.Balances;
-            const GetCurrency = yield ValorantApiCom.Currencies.get();
-            const BalanceArray = [];
-            if (GetCurrency.isError || !GetCurrency.data.data) {
-                return;
-            }
-            for (const ofCurrency of GetCurrency.data.data) {
-                if (!isNaN(AllWallet[ofCurrency.uuid])) {
-                    BalanceArray.push({
-                        id: ofCurrency.uuid,
-                        name: ofCurrency.displayName,
-                        icon: ofCurrency.displayIcon,
-                        value: Number(AllWallet[ofCurrency.uuid]),
-                    });
-                }
-            }
-            const createEmbed = new discord_js_1.EmbedBuilder()
-                .setThumbnail((_a = (BalanceArray.at(IngCore.Random(0, BalanceArray.length - 1)))) === null || _a === void 0 ? void 0 : _a.icon);
-            BalanceArray.forEach((item) => {
-                createEmbed.addFields({ name: item.name, value: `${item.value}` });
-            });
-            return {
-                embeds: [createEmbed],
-            };
+    async execute({ interaction, language, apiKey }) {
+        const userId = interaction.user.id;
+        const { WebClient, ValorantApiCom, isValorAccountFind } = await (0, accounts_1.ValorAccount)({
+            userId,
+            apiKey,
+            language: language.name,
         });
+        if (isValorAccountFind === false) {
+            return {
+                content: language.data.command['account']['not_account'],
+            };
+        }
+        const puuid = WebClient.getSubject();
+        const GetWallet = await WebClient.Store.GetWallet(puuid);
+        const AllWallet = GetWallet.data.Balances;
+        const GetCurrency = await ValorantApiCom.Currencies.get();
+        const BalanceArray = [];
+        if (GetCurrency.isError || !GetCurrency.data.data) {
+            return;
+        }
+        for (const ofCurrency of GetCurrency.data.data) {
+            if (!isNaN(AllWallet[ofCurrency.uuid])) {
+                BalanceArray.push({
+                    id: ofCurrency.uuid,
+                    name: ofCurrency.displayName,
+                    icon: ofCurrency.displayIcon,
+                    value: Number(AllWallet[ofCurrency.uuid]),
+                });
+            }
+        }
+        const createEmbed = new discord_js_1.EmbedBuilder()
+            .setThumbnail((BalanceArray.at(IngCore.Random(0, BalanceArray.length - 1)))?.icon);
+        BalanceArray.forEach((item) => {
+            createEmbed.addFields({ name: item.name, value: `${item.value}` });
+        });
+        return {
+            embeds: [createEmbed],
+        };
     },
 };
 exports.default = __command;

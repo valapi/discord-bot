@@ -37,21 +37,22 @@ async function ValorAccount(config: {
         });
 
         if (ValDatabase.isFind === true) {
-            if (ValDatabase.data[1]) {
-                const _OnlyOne = ValDatabase.data[0];
+            const _OnlyOne = ValDatabase.data[0];
 
+            if (ValDatabase.data[1]) {
                 await ValDatabase.model.deleteMany({ discordId: config.userId });
 
                 await (
                     new ValDatabase.model({
-                        account: _OnlyOne,
+                        account: _OnlyOne.account,
+                        region: _OnlyOne.region,
                         discordId: config.userId,
-                        createdAt: ValDatabase.data[0].createdAt,
+                        createdAt: _OnlyOne.createdAt,
                     })
                 ).save();
             }
 
-            const MyWebClient = await WebClient.fromCookie(decrypt(ValDatabase.data[0].account, config.apiKey));
+            const MyWebClient = await WebClient.fromCookie(decrypt(_OnlyOne.account, config.apiKey), { region: _OnlyOne.region });
 
             _cache.input(encrypt(JSON.stringify(MyWebClient.toJSON()), config.apiKey), config.userId);
 

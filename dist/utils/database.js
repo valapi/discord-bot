@@ -10,6 +10,7 @@ var ValorInterface;
     (function (Account) {
         Account.Schema = new mongoose_1.default.Schema({
             account: { type: String, required: true },
+            region: { type: String, required: true },
             discordId: { type: Number, required: true },
             createdAt: {
                 type: Date,
@@ -31,30 +32,28 @@ var ValorInterface;
     })(Daily = ValorInterface.Daily || (ValorInterface.Daily = {}));
 })(ValorInterface || (ValorInterface = {}));
 exports.ValorInterface = ValorInterface;
-function ValorDatabase(config) {
-    return tslib_1.__awaiter(this, void 0, void 0, function* () {
-        if (!config.token) {
-            if (process.env['MONGO_TOKEN']) {
-                config.token = process.env['MONGO_TOKEN'];
-            }
-            else {
-                throw new Error('token is undefined');
-            }
+async function ValorDatabase(config) {
+    if (!config.token) {
+        if (process.env['MONGO_TOKEN']) {
+            config.token = process.env['MONGO_TOKEN'];
         }
-        yield mongoose_1.default.connect(config.token);
-        let MyModel;
-        try {
-            MyModel = mongoose_1.default.model(config.name, config.schema);
+        else {
+            throw new Error('token is undefined');
         }
-        catch (error) {
-            MyModel = mongoose_1.default.model(config.name);
-        }
-        const MyData = yield MyModel.find(config.filter || {});
-        return {
-            isFind: MyData.length > 0,
-            data: MyData,
-            model: MyModel,
-        };
-    });
+    }
+    await mongoose_1.default.connect(config.token);
+    let MyModel;
+    try {
+        MyModel = mongoose_1.default.model(config.name, config.schema);
+    }
+    catch (error) {
+        MyModel = mongoose_1.default.model(config.name);
+    }
+    const MyData = await MyModel.find(config.filter || {});
+    return {
+        isFind: MyData.length > 0,
+        data: MyData,
+        model: MyModel,
+    };
 }
 exports.ValorDatabase = ValorDatabase;

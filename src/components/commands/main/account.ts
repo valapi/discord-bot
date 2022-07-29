@@ -119,13 +119,18 @@ const __command: ICommandHandler.File = {
         const WebClient = new ValWebClient();
 
         async function ValorSave(WebClient: ValWebClient) {
+            (new IngCore.Cache('accounts')).clear(userId);
+
             if (ValAccount.isFind === true) {
                 await ValAccount.model.deleteMany({ discordId: userId });
             }
 
+            const _ClientData = WebClient.toJSON();
+
             await (
                 new ValAccount.model({
-                    account: encrypt(WebClient.toJSON().cookie.ssid, apiKey),
+                    account: encrypt(_ClientData.cookie.ssid, apiKey),
+                    region: _ClientData.region.live,
                     discordId: userId,
                     createdAt: (ValAccount.data.at(0))?.createdAt || new Date(),
                 })
@@ -135,7 +140,7 @@ const __command: ICommandHandler.File = {
         async function ValorSuccess(WebClient: ValWebClient, isSave: boolean) {
             if (isSave === true) {
                 _cache.clear(userId);
-
+                
                 await ValorSave(WebClient);
             }
 
@@ -230,7 +235,9 @@ const __command: ICommandHandler.File = {
             //script
 
             await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
-            await WebClient.refresh(false);
+            WebClient.setRegion((ValAccount.data[0]).region);
+
+            await WebClient.refresh(true);
 
             await ValorSave(WebClient);
 
@@ -303,6 +310,8 @@ const __command: ICommandHandler.File = {
             //script
 
             await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
+            WebClient.setRegion((ValAccount.data[0]).region);
+
             await WebClient.refresh(false);
 
             //return

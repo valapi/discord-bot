@@ -3,18 +3,22 @@
 import mongoose from "mongoose";
 import * as process from 'process';
 
+import { Region } from "@valapi/lib";
+
 namespace ValorInterface {
     export type CollectionName = 'account' | 'daily';
 
     export namespace Account {
         export interface Format {
             account: string;
+            region: keyof typeof Region.from;
             discordId: number;
             createdAt: Date;
         }
 
         export const Schema = new mongoose.Schema<ValorInterface.Account.Format>({
             account: { type: String, required: true },
+            region: { type: String, required: true },
             discordId: { type: Number, required: true },
             createdAt: {
                 type: Date,

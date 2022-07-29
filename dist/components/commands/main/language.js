@@ -24,38 +24,35 @@ const __command = {
         ],
     },
     onlyGuild: true,
-    execute({ interaction }) {
-        var _a;
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const _choice = interaction.options.getString('language');
-            const guildId = String((_a = interaction.guild) === null || _a === void 0 ? void 0 : _a.id);
-            const _cache = new IngCore.Cache('languages');
-            const _old_language = (0, lang_1.getLanguage)(yield _cache.output(guildId));
-            const _language = (0, lang_1.getLanguage)(_choice);
-            if (!_language) {
-                if (!_old_language) {
-                    return {
-                        content: `Language **${_choice}** is not found!`,
-                    };
-                }
-                else {
-                    return {
-                        content: _old_language.data.command['language']['fail'],
-                    };
-                }
-            }
-            else {
-                if (_language.name !== lang_1.ILanguage.DefaultLanguage) {
-                    _cache.input(String(_language.name), guildId);
-                }
-                else {
-                    _cache.clear(guildId);
-                }
+    async execute({ interaction }) {
+        const _choice = interaction.options.getString('language');
+        const guildId = String(interaction.guild?.id);
+        const _cache = new IngCore.Cache('languages');
+        const _old_language = (0, lang_1.getLanguage)(await _cache.output(guildId));
+        const _language = (0, lang_1.getLanguage)(_choice);
+        if (!_language) {
+            if (!_old_language) {
                 return {
-                    content: _language.data.command['language']['succes'],
+                    content: `Language **${_choice}** is not found!`,
                 };
             }
-        });
+            else {
+                return {
+                    content: _old_language.data.command['language']['fail'],
+                };
+            }
+        }
+        else {
+            if (_language.name !== lang_1.ILanguage.DefaultLanguage) {
+                _cache.input(String(_language.name), guildId);
+            }
+            else {
+                _cache.clear(guildId);
+            }
+            return {
+                content: _language.data.command['language']['succes'],
+            };
+        }
     },
 };
 exports.default = __command;

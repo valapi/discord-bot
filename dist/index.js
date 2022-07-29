@@ -11,21 +11,20 @@ const discord_js_1 = require("discord.js");
 const rest_1 = require("@discordjs/rest");
 const v10_1 = require("discord-api-types/v10");
 const _DevelopmentMode = false;
-(() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c;
+(async () => {
     dotenv.config({
         path: path.join(`${process.cwd()}/.env`),
     });
-    mongoose_1.default.connection.on("error", ((error) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    mongoose_1.default.connection.on("error", (async (error) => {
         IngCore.Logs.log(error, 'error');
-    })));
-    mongoose_1.default.connection.on("connected", (() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    }));
+    mongoose_1.default.connection.on("connected", (async () => {
         IngCore.Logs.log('Successfully connected to database', 'system');
-    })));
-    mongoose_1.default.connection.on("disconnected", (() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+    }));
+    mongoose_1.default.connection.on("disconnected", (async () => {
         IngCore.Logs.log('Disconnected from database', 'warning');
-    })));
-    yield mongoose_1.default.connect(String(process.env['MONGO_TOKEN']));
+    }));
+    await mongoose_1.default.connect(String(process.env['MONGO_TOKEN']));
     const DiscordBot = new discord_js_1.Client({
         intents: [
             discord_js_1.GatewayIntentBits.Guilds,
@@ -62,8 +61,8 @@ const _DevelopmentMode = false;
             if (command.echo && command.echo.data.length > 0) {
                 command.echo.data.forEach((cmd) => {
                     if (typeof cmd === 'string') {
-                        _CommandCollection.set(cmd, Object.assign(Object.assign({}, command), { data: { name: cmd }, echo: { from: command.command.name, data: [] } }));
-                        _CommandList.push(Object.assign(Object.assign({}, command.command.toJSON()), { name: cmd }));
+                        _CommandCollection.set(cmd, { ...command, ...{ data: { name: cmd }, echo: { from: command.command.name, data: [] } } });
+                        _CommandList.push({ ...command.command.toJSON(), ...{ name: cmd } });
                     }
                     else {
                         const ofNewCommand = command.command.toJSON();
@@ -72,10 +71,14 @@ const _DevelopmentMode = false;
                             if (OptionCommand && OptionCommand.type === v10_1.ApplicationCommandOptionType.Subcommand) {
                                 if (!OptionCommand.options)
                                     OptionCommand.options = [];
-                                const NewSlashCommand = Object.assign(Object.assign(Object.assign({}, ofNewCommand), (new discord_js_1.SlashCommandBuilder().setName(cmd.newName).setDescription(OptionCommand.description).toJSON())), {
-                                    options: OptionCommand.options,
-                                });
-                                _CommandCollection.set(NewSlashCommand.name, Object.assign(Object.assign({}, command), { data: NewSlashCommand, echo: { from: command.command.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } } }));
+                                const NewSlashCommand = {
+                                    ...ofNewCommand,
+                                    ...(new discord_js_1.SlashCommandBuilder().setName(cmd.newName).setDescription(OptionCommand.description).toJSON()),
+                                    ...{
+                                        options: OptionCommand.options,
+                                    }
+                                };
+                                _CommandCollection.set(NewSlashCommand.name, { ...command, ...{ data: NewSlashCommand, echo: { from: command.command.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } } } });
                                 _CommandList.push(NewSlashCommand);
                             }
                             else {
@@ -90,22 +93,20 @@ const _DevelopmentMode = false;
         }
     }
     const rest = new rest_1.REST({ version: '10' }).setToken(String(process.env['TOKEN']));
-    function RestCommands(GlobalCommands, GuildCommands) {
-        return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            yield rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), {
-                body: GlobalCommands,
-            });
-            yield rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), {
-                body: GuildCommands,
-            });
+    async function RestCommands(GlobalCommands, GuildCommands) {
+        await rest.put(v10_1.Routes.applicationCommands(String(process.env['CLIENT_ID'])), {
+            body: GlobalCommands,
+        });
+        await rest.put(v10_1.Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])), {
+            body: GuildCommands,
         });
     }
     try {
         if (_DevelopmentMode === true) {
-            yield RestCommands([], _CommandList);
+            await RestCommands([], _CommandList);
         }
         else {
-            yield RestCommands(_CommandList, []);
+            await RestCommands(_CommandList, []);
         }
         IngCore.Logs.log('Successfully reloaded application (/) commands', 'info');
     }
@@ -147,35 +148,35 @@ const _DevelopmentMode = false;
             continue;
         }
         if (event.once) {
-            DiscordBot.once(event.name, ((...args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+            DiscordBot.once(event.name, (async (...args) => {
                 try {
-                    yield event.execute(_EventInput, ...args);
+                    await event.execute(_EventInput, ...args);
                 }
                 catch (error) {
                     IngCore.Logs.log(error, 'error');
                 }
-            })));
+            }));
         }
         else {
-            DiscordBot.on(event.name, ((...args) => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
+            DiscordBot.on(event.name, (async (...args) => {
                 try {
-                    yield event.execute(_EventInput, ...args);
+                    await event.execute(_EventInput, ...args);
                 }
                 catch (error) {
                     IngCore.Logs.log(error, 'error');
                 }
-            })));
+            }));
         }
     }
-    yield DiscordBot.login(process.env['TOKEN']);
+    await DiscordBot.login(process.env['TOKEN']);
     if (_DevelopmentMode === true) {
-        (_a = DiscordBot.user) === null || _a === void 0 ? void 0 : _a.setStatus('invisible');
+        DiscordBot.user?.setStatus('invisible');
     }
     else {
-        (_b = DiscordBot.user) === null || _b === void 0 ? void 0 : _b.setStatus('online');
-        (_c = DiscordBot.user) === null || _c === void 0 ? void 0 : _c.setActivity({
+        DiscordBot.user?.setStatus('online');
+        DiscordBot.user?.setActivity({
             name: "ING PROJECT",
             type: discord_js_1.ActivityType.Playing,
         });
     }
-}))();
+})();
