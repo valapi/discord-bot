@@ -76,7 +76,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
 
                 if (!interaction.guild && command.onlyGuild === true) {
                     await interactionReply(interaction, {
-                        content: language.data['not_guild'] || 'Slash Command are only available in server.',
+                        content: language.data['not_guild'] || 'This slash command are only available in server.',
                     });
 
                     return;
@@ -115,7 +115,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                     DiscordBot,
                     createdTime,
                     language,
-                    apiKey: genarateApiKey(String(`${interaction.user.id}${interaction.user.createdTimestamp}${interaction.user.username}${interaction.user.tag}`), String(`${interaction.guild?.id}${interaction.guild?.ownerId}`) + String(`${interaction.guild?.createdTimestamp}`), String(process.env['PUBLIC_KEY'])),
+                    apiKey: genarateApiKey(`${interaction.user.id}${interaction.user.createdTimestamp}`, `${interaction.guild?.id}${interaction.guild?.ownerId}${interaction.guild?.createdTimestamp}`, String(process.env['PUBLIC_KEY'])),
                 });
 
                 if (TheCommand) {

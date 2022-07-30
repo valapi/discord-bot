@@ -21,25 +21,28 @@ const __command: ICommandHandler.File = {
 
         const _uptime = IngCore.ToMilliseconds(process.uptime() * 1000);
 
-        let sendMessage = ``;
-        sendMessage += `Uptime: **${_uptime.data.day} Days : ${_uptime.data.hour} Hours : ${_uptime.data.minute} Minutes : ${_uptime.data.second} Seconds**\n`;
-        sendMessage += `Status: **${DiscordBot.user?.presence.status}**\n`;
-        sendMessage += `Ping: **${Math.round((DiscordPing + ClientPing) / 2)} ms**`;
+        let _isInline = false;
+
+        if (IngCore.Random(0, 10) >= 5) {
+            _isInline = true;
+        }
 
         //return
 
         return {
             content: `Invite Link: **https://valapi.github.io/url/bot**\nDiscord: **https://valapi.github.io/url/discord**\n`,
-            embed: [
+            embeds: [
                 new EmbedBuilder()
                     .setColor(`#0099ff`)
-                    .setTitle(`/${interaction.commandName}`)
-                    .setURL(`https://valapi.github.io/url/discord`)
                     .setAuthor({ name: `${DiscordBot.user?.tag}`, iconURL: DiscordBot.user?.displayAvatarURL() })
-                    .setDescription(sendMessage)
+                    .addFields(
+                        { name: 'Uptime', value: `${_uptime.data.day} Days : ${_uptime.data.hour} Hours : ${_uptime.data.minute} Minutes : ${_uptime.data.second} Seconds`, inline: _isInline },
+                        { name: 'Status', value: `${DiscordBot.user?.presence.status}`, inline: _isInline },
+                        { name: 'Ping', value: `${Math.round((DiscordPing + ClientPing) / 2)} ms`, inline: _isInline }
+                    )
                     .setTimestamp(createdTime)
                     .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` }),
-            ],
+            ]
         };
     }
 };
