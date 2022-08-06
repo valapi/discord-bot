@@ -15,7 +15,7 @@ import type { ICommandHandler, IEventHandler, IMenuHandler, IModalHandler } from
 
 //script
 
-const _DevelopmentMode: any = true;
+const _DevelopmentMode: any = false;
 
 (async () => {
     //.env

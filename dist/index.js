@@ -10,7 +10,7 @@ const IngCore = tslib_1.__importStar(require("@ing3kth/core"));
 const discord_js_1 = require("discord.js");
 const rest_1 = require("@discordjs/rest");
 const v10_1 = require("discord-api-types/v10");
-const _DevelopmentMode = true;
+const _DevelopmentMode = false;
 (() => tslib_1.__awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c;
     dotenv.config({
