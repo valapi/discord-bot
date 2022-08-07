@@ -21,10 +21,10 @@ const __command: ICommandHandler.File = {
             )
     ),
     category: 'valorant',
-    async execute({ interaction, DiscordBot }) {
+    async execute({ interaction }) {
         //load
 
-        const MyCrosshair = new Crosshair(interaction.options.getString('code', true));
+        const MyCrosshair = Crosshair.fromStringToJson(interaction.options.getString('code', true));
 
         //script
 

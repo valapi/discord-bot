@@ -12,9 +12,9 @@ const __command = {
         .setDescription('Crosshair Code')
         .setRequired(true))),
     category: 'valorant',
-    execute({ interaction, DiscordBot }) {
+    execute({ interaction }) {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
-            const MyCrosshair = new valorant_ts_1.Crosshair(interaction.options.getString('code', true));
+            const MyCrosshair = valorant_ts_1.Crosshair.fromStringToJson(interaction.options.getString('code', true));
             const sendMessageArray = [];
             if (MyCrosshair.Primary !== valorant_ts_1.Crosshair.Default.Primary) {
                 sendMessageArray.push(new discord_js_1.EmbedBuilder()
