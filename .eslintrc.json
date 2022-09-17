@@ -1,5 +1,7 @@
 {
+    "root": true,
     "env": {
+        "es6": true,
         "es2021": true,
         "node": true
     },
@@ -12,14 +14,17 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
+    "ignorePatterns": [
+        "/dist/**/*" // Ignore built files.
+    ],
     "plugins": [
         "@typescript-eslint"
     ],
     "rules": {
-        "no-extra-semi": "error",
+        "no-extra-semi": "warn",
         "semi": "warn",
         "no-empty-pattern": "off",
-        "no-console": "off", // <--- change to "warn" for checking
+        "no-console": "warn",
 
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-namespace": "off",

@@ -43,9 +43,9 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            const ValorantStore = yield WebClient.Store.GetStorefront(puuid);
+            const ValorantStore = yield WebClient.Store.getStorefront(puuid);
             const getCurency = yield ValorantApiCom.Currencies.get();
-            const getOffers = yield WebClient.Store.GetOffers();
+            const getOffers = yield WebClient.Store.getOffers();
             const GetWeaponSkin = yield ValorantApiCom.Weapons.getSkins();
             function getOffersOf(ItemsId) {
                 var _a, _b, _c;
@@ -168,7 +168,6 @@ const __command = {
                         throw new Error(ThisBundleData.data.error);
                     }
                     const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
-                    const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
                     let Price_Base = 0;
                     let Price_Discounted = 0;
                     const AllItems = TheBundle.Items;
@@ -236,6 +235,9 @@ const __command = {
                     embeds: sendMessageArray,
                 };
             }
+            return {
+                content: language.data.error
+            };
         });
     }
 };

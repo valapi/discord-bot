@@ -30,12 +30,14 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            const GetWallet = yield WebClient.Store.GetWallet(puuid);
+            const GetWallet = yield WebClient.Store.getWallet(puuid);
             const AllWallet = GetWallet.data.Balances;
             const GetCurrency = yield ValorantApiCom.Currencies.get();
             const BalanceArray = [];
             if (GetCurrency.isError || !GetCurrency.data.data) {
-                return;
+                return {
+                    content: language.data.error
+                };
             }
             for (const ofCurrency of GetCurrency.data.data) {
                 if (!isNaN(AllWallet[ofCurrency.uuid])) {

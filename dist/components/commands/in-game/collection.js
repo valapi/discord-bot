@@ -25,7 +25,7 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            const GetLoadout = yield WebClient.Player.Loadout(puuid);
+            const GetLoadout = yield WebClient.Player.loadout(puuid);
             const AllGuns = GetLoadout.data.Guns;
             const AllSprays = GetLoadout.data.Sprays;
             const TheIdentity = GetLoadout.data.Identity;

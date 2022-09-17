@@ -1,11 +1,11 @@
-//import
+// import
 
 import type { Client, ClientEvents, Collection, SlashCommandBuilder, SelectMenuInteraction, SlashCommandSubcommandsOnlyBuilder, ChatInputCommandInteraction, WebhookEditMessageOptions, SlashCommandOptionsOnlyBuilder, PermissionResolvable, ModalSubmitInteraction, InteractionReplyOptions } from 'discord.js';
 import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
 
 import type { ILanguage } from './lang';
 
-//interface
+// interface
 
 namespace IEventHandler {
     export interface Input {
@@ -53,7 +53,7 @@ namespace ICommandHandler {
                 isSubCommand: boolean,
             },
         },
-        execute: (input: ICommandHandler.Input) => Promise<WebhookEditMessageOptions | undefined>;
+        execute: (input: ICommandHandler.Input) => Promise<WebhookEditMessageOptions>;
     }
 }
 
@@ -88,7 +88,7 @@ namespace IModalHandler {
     }
 }
 
-//export
+// export
 
 export type {
     IEventHandler,

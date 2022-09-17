@@ -42,11 +42,13 @@ const __event: IEventHandler.File<'guildCreate'> = {
         //send
         let SendGuildChannel: TextChannel | null;
 
-        if (guild.publicUpdatesChannelId != null) { SendGuildChannel = guild.publicUpdatesChannel; }
-        else if (guild.systemChannel != null) { SendGuildChannel = guild.systemChannel; }
-        else if (guild.widgetChannelId != null) { SendGuildChannel = guild.widgetChannel; }
-        else if (guild.rulesChannelId != null) { SendGuildChannel = guild.rulesChannel; }
-        else {
+        if (guild.publicUpdatesChannelId != null) {
+            SendGuildChannel = guild.publicUpdatesChannel;
+        } else if (guild.systemChannel != null) {
+            SendGuildChannel = guild.systemChannel;
+        } else if (guild.rulesChannelId != null) {
+            SendGuildChannel = guild.rulesChannel;
+        } else {
             const CHANNEL = DiscordBot.users.cache.get(guild.ownerId);
 
             await CHANNEL?.send({

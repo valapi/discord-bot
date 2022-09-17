@@ -26,8 +26,8 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            const Party_ID = (yield WebClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
-            const TheParty = yield WebClient.Party.FetchParty(Party_ID);
+            const Party_ID = (yield WebClient.Party.fetchPlayer(puuid)).data.CurrentPartyID;
+            const TheParty = yield WebClient.Party.fetchParty(Party_ID);
             const sendMessageArray = [];
             if (TheParty.data.message === 'Party does not exist' || TheParty.data.errorCode === 'PARTY_DNE') {
                 return {
@@ -53,7 +53,7 @@ const __command = {
                 .setColor(`#0099ff`)
                 .setTitle(`Members`));
             for (const member of AllMembers) {
-                const ThatPlayer = yield WebClient.Player.GetUsername(member.PlayerIdentity.Subject);
+                const ThatPlayer = yield WebClient.Player.getUsername(member.PlayerIdentity.Subject);
                 const ThatPlayerArg = ThatPlayer.data.find(player => player.Subject = member.Subject);
                 let sendMessage = `Level: **${member.PlayerIdentity.AccountLevel}**`;
                 if (member.IsOwner === true) {

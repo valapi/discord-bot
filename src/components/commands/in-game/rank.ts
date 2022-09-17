@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
@@ -37,7 +36,7 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const ThisRank = (((await WebClient.MMR.FetchCompetitiveUpdates(puuid)).data.Matches as Array<any>).filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
+        const ThisRank = (((await WebClient.MMR.fetchCompetitiveUpdates(puuid)).data.Matches as Array<any>).filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
 
         const Rank_Rating_Now: string = ThisRank.RankedRatingAfterUpdate;
 

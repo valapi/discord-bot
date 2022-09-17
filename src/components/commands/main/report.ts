@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { ComponentType, ModalBuilder, SlashCommandBuilder, TextInputStyle } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
@@ -68,7 +67,9 @@ const __command: ICommandHandler.File = {
 
         //return
 
-        return undefined;
+        return {
+            content: language.data.error
+        };
     },
 };
 

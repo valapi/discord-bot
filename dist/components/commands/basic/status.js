@@ -24,7 +24,7 @@ const __command = {
                     new discord_js_1.EmbedBuilder()
                         .setColor(`#0099ff`)
                         .setAuthor({ name: `${(_a = DiscordBot.user) === null || _a === void 0 ? void 0 : _a.tag}`, iconURL: (_b = DiscordBot.user) === null || _b === void 0 ? void 0 : _b.displayAvatarURL() })
-                        .addFields({ name: 'Uptime', value: `${_uptime.data.day} Days : ${_uptime.data.hour} Hours : ${_uptime.data.minute} Minutes : ${_uptime.data.second} Seconds`, inline: _isInline }, { name: 'Status', value: `${(_c = DiscordBot.user) === null || _c === void 0 ? void 0 : _c.presence.status}`, inline: _isInline }, { name: 'Ping', value: `${Math.round((DiscordPing + ClientPing) / 2)} ms`, inline: _isInline })
+                        .addFields({ name: 'Uptime', value: `${_uptime.data.day} Days\n${_uptime.data.hour} Hours\n${_uptime.data.minute} Minutes\n${_uptime.data.second} Seconds`, inline: _isInline }, { name: 'Status', value: `${(_c = DiscordBot.user) === null || _c === void 0 ? void 0 : _c.presence.status}`, inline: _isInline }, { name: 'Ping', value: `${Math.round((DiscordPing + ClientPing) / 2)} ms`, inline: _isInline })
                         .setTimestamp(createdTime)
                         .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` }),
                 ]

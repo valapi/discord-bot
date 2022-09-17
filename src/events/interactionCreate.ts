@@ -48,7 +48,9 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                     onlyGuild: false,
                     inDevlopment: false,
                     showDeferReply: true,
-                    execute: (async () => { return { content: 'This is Default message.', }; }),
+                    execute: (async () => {
+                        return { content: 'This is Default message.', };
+                    }),
                 },
                 ..._SlashCommand.Collection.get(interaction.commandName)
             };
@@ -129,7 +131,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 //error
 
                 if (_DevelopmentMode === true) {
-                    console.error(error);
+                    IngCore.Logs.log(error, "error");
                 } else {
                     IngCore.Logs.log(error, 'error');
                 }
@@ -150,7 +152,9 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 ...{
                     customId: 'default',
                     replyMode: 'edit',
-                    execute: (async () => { return { content: 'This is Default message.', }; }),
+                    execute: (async () => {
+                        return { content: 'This is Default message.', };
+                    }),
                 },
                 ..._Menu.get(interaction.customId)
             };
@@ -188,7 +192,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 //error
 
                 if (_DevelopmentMode === true) {
-                    console.error(error);
+                    IngCore.Logs.log(error, "error");
                 } else {
                     IngCore.Logs.log(error, 'error');
                 }
@@ -210,7 +214,9 @@ const __event: IEventHandler.File<'interactionCreate'> = {
             const modal: IModalHandler.File = {
                 ...{
                     customId: 'default',
-                    execute: (async () => { return { content: 'This is Default message.', }; }),
+                    execute: (async () => {
+                        return { content: 'This is Default message.', };
+                    }),
                 },
                 ..._Modal.get(interaction.customId)
             };
@@ -244,7 +250,7 @@ const __event: IEventHandler.File<'interactionCreate'> = {
                 //error
 
                 if (_DevelopmentMode === true) {
-                    console.error(error);
+                    IngCore.Logs.log(error, "error");
                 } else {
                     IngCore.Logs.log(error, 'error');
                 }

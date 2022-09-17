@@ -25,7 +25,7 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            const AllContracts = (yield WebClient.Contract.Fetch(puuid)).data.Contracts;
+            const AllContracts = (yield WebClient.Contract.fetch(puuid)).data.Contracts;
             const BattlePassContract = AllContracts.find((item) => item.ContractDefinitionID === _CurrentBattlePassContractId);
             const BP_Id = BattlePassContract === null || BattlePassContract === void 0 ? void 0 : BattlePassContract.ContractDefinitionID;
             const BP_CurrentLevel = Number(BattlePassContract === null || BattlePassContract === void 0 ? void 0 : BattlePassContract.ProgressionLevelReached);

@@ -51,7 +51,9 @@ const __command = {
                 ],
             });
             yield interaction.showModal(MyModal);
-            return undefined;
+            return {
+                content: language.data.error
+            };
         });
     },
 };

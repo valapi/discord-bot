@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder, time } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
@@ -36,10 +35,10 @@ const __command: ICommandHandler.File = {
 
         //script
 
-        const ValorantUserInfo = await WebClient.Player.GetUserInfo();
+        const ValorantUserInfo = await WebClient.Player.getUserInfo();
         const puuid = ValorantUserInfo.data.sub;
 
-        const ValorantInventory = await WebClient.Player.Loadout(puuid);
+        const ValorantInventory = await WebClient.Player.loadout(puuid);
 
         const PlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
         const PlayerCard = await ValorantApiCom.PlayerCards.getByUuid(PlayerCard_ID);

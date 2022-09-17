@@ -38,7 +38,7 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            const PlayerMatchHistory = yield WebClient.Match.FetchMatchHistory(puuid, interaction.options.getString('queue'));
+            const PlayerMatchHistory = yield WebClient.Match.fetchMatchHistory(puuid, interaction.options.getString('queue'));
             const _MatchHistory = PlayerMatchHistory.data.History[(interaction.options.getNumber('index') || 1) - 1];
             if (!_MatchHistory) {
                 return {
@@ -47,7 +47,7 @@ const __command = {
             }
             const sendMessageArray = [];
             const Match_ID = _MatchHistory.MatchID;
-            const AllMatchData = yield WebClient.Match.FetchMatchDetails(Match_ID);
+            const AllMatchData = yield WebClient.Match.fetchMatchDetails(Match_ID);
             if (AllMatchData.data.matchInfo.isCompleted === false) {
                 return {
                     content: 'Match not completed',
@@ -55,7 +55,6 @@ const __command = {
             }
             const Match_Type = AllMatchData.data.matchInfo.queueID;
             const Match_Name = String(lib_1.QueueId.fromString(Match_Type)).replace('_', ' ');
-            const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
             const Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);
             const Match_LongInMillisecondFormat = IngCore.ToMilliseconds(AllMatchData.data.matchInfo.gameLengthMillis);
             const _time = `**${Match_LongInMillisecondFormat.data.hour}** hour(s)\n**${Match_LongInMillisecondFormat.data.minute}** minute(s)\n**${Match_LongInMillisecondFormat.data.second}** second(s)`;

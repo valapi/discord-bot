@@ -96,9 +96,9 @@ const __command = {
                         _cache.clear(userId);
                         yield ValorSave(WebClient);
                     }
-                    const ValorantUserInfo = yield WebClient.Player.GetUserInfo();
+                    const ValorantUserInfo = yield WebClient.Player.getUserInfo();
                     const puuid = ValorantUserInfo.data.sub;
-                    const ValorantInventory = yield WebClient.Player.Loadout(puuid);
+                    const ValorantInventory = yield WebClient.Player.loadout(puuid);
                     const ValorantPlayerCard = yield ValorantApiCom.PlayerCards.getByUuid(ValorantInventory.data.Identity.PlayerCardID);
                     return {
                         content: CommandLanguage['succes'],
@@ -195,6 +195,9 @@ const __command = {
                 yield WebClient.refresh(false);
                 return yield ValorSuccess(WebClient, false);
             }
+            return {
+                content: language.data.error
+            };
         });
     },
 };

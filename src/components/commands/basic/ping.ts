@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 

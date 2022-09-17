@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
@@ -64,11 +63,11 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const ValorantStore = await WebClient.Store.GetStorefront(puuid);
+        const ValorantStore = await WebClient.Store.getStorefront(puuid);
 
         // function
         const getCurency = await ValorantApiCom.Currencies.get();
-        const getOffers = await WebClient.Store.GetOffers();
+        const getOffers = await WebClient.Store.getOffers();
         const GetWeaponSkin = await ValorantApiCom.Weapons.getSkins();
 
         async function getOffersOf(ItemsId: string) {
@@ -235,7 +234,7 @@ const __command: ICommandHandler.File = {
 
                 const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
 
-                const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
+                //const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
 
                 // price
                 let Price_Base = 0;
@@ -355,6 +354,10 @@ const __command: ICommandHandler.File = {
                 embeds: sendMessageArray,
             };
         }
+
+        return {
+            content: language.data.error
+        };
     }
 };
 

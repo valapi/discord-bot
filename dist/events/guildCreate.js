@@ -35,9 +35,6 @@ const __event = {
             else if (guild.systemChannel != null) {
                 SendGuildChannel = guild.systemChannel;
             }
-            else if (guild.widgetChannelId != null) {
-                SendGuildChannel = guild.widgetChannel;
-            }
             else if (guild.rulesChannelId != null) {
                 SendGuildChannel = guild.rulesChannel;
             }

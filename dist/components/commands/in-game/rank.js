@@ -23,7 +23,7 @@ const __command = {
                 };
             }
             const puuid = WebClient.getSubject();
-            const ThisRank = ((yield WebClient.MMR.FetchCompetitiveUpdates(puuid)).data.Matches.filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
+            const ThisRank = ((yield WebClient.MMR.fetchCompetitiveUpdates(puuid)).data.Matches.filter(match => Number(match.RankedRatingEarned) !== 0)).at(0);
             const Rank_Rating_Now = ThisRank.RankedRatingAfterUpdate;
             const AllRanks = yield ValorantApiCom.CompetitiveTiers.get();
             if (AllRanks.isError || !AllRanks.data.data) {

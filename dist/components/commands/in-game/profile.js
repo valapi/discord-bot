@@ -24,9 +24,9 @@ const __command = {
                     content: language.data.command['account']['not_account'],
                 };
             }
-            const ValorantUserInfo = yield WebClient.Player.GetUserInfo();
+            const ValorantUserInfo = yield WebClient.Player.getUserInfo();
             const puuid = ValorantUserInfo.data.sub;
-            const ValorantInventory = yield WebClient.Player.Loadout(puuid);
+            const ValorantInventory = yield WebClient.Player.loadout(puuid);
             const PlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
             const PlayerCard = yield ValorantApiCom.PlayerCards.getByUuid(PlayerCard_ID);
             const PlayerCard_Name = String((_a = PlayerCard.data.data) === null || _a === void 0 ? void 0 : _a.displayName);

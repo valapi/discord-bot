@@ -62,7 +62,7 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const PlayerMatchHistory = await WebClient.Match.FetchMatchHistory(puuid, (interaction.options.getString('queue') as QueueId.String));
+        const PlayerMatchHistory = await WebClient.Match.fetchMatchHistory(puuid, (interaction.options.getString('queue') as QueueId.String));
         const _MatchHistory = PlayerMatchHistory.data.History[(interaction.options.getNumber('index') || 1) - 1];
 
         if (!_MatchHistory) {
@@ -76,7 +76,7 @@ const __command: ICommandHandler.File = {
         //script
         const Match_ID = _MatchHistory.MatchID;
 
-        const AllMatchData = await WebClient.Match.FetchMatchDetails(Match_ID);
+        const AllMatchData = await WebClient.Match.fetchMatchDetails(Match_ID);
 
         if (AllMatchData.data.matchInfo.isCompleted === false) {
             return {
@@ -88,7 +88,7 @@ const __command: ICommandHandler.File = {
 
         const Match_Type = AllMatchData.data.matchInfo.queueID as QueueId.String;
         const Match_Name = String(QueueId.fromString(Match_Type)).replace('_', ' ');
-        const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
+        //const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
 
         //time
         const Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);

@@ -143,10 +143,10 @@ const __command: ICommandHandler.File = {
                 await ValorSave(WebClient);
             }
 
-            const ValorantUserInfo = await WebClient.Player.GetUserInfo();
+            const ValorantUserInfo = await WebClient.Player.getUserInfo();
             const puuid = ValorantUserInfo.data.sub;
 
-            const ValorantInventory = await WebClient.Player.Loadout(puuid);
+            const ValorantInventory = await WebClient.Player.loadout(puuid);
             const ValorantPlayerCard = await ValorantApiCom.PlayerCards.getByUuid(ValorantInventory.data.Identity.PlayerCardID);
 
             //return
@@ -317,6 +317,10 @@ const __command: ICommandHandler.File = {
 
             return await ValorSuccess(WebClient, false);
         }
+
+        return {
+            content: language.data.error
+        };
     },
 };
 

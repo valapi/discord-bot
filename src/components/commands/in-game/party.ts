@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
@@ -39,8 +38,8 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const Party_ID: string = (await WebClient.Party.FetchPlayer(puuid)).data.CurrentPartyID;
-        const TheParty = await WebClient.Party.FetchParty(Party_ID);
+        const Party_ID: string = (await WebClient.Party.fetchPlayer(puuid)).data.CurrentPartyID;
+        const TheParty = await WebClient.Party.fetchParty(Party_ID);
 
         const sendMessageArray: Array<EmbedBuilder> = [];
 
@@ -88,7 +87,7 @@ const __command: ICommandHandler.File = {
         );
 
         for (const member of AllMembers) {
-            const ThatPlayer = await WebClient.Player.GetUsername(member.PlayerIdentity.Subject);
+            const ThatPlayer = await WebClient.Player.getUsername(member.PlayerIdentity.Subject);
             const ThatPlayerArg = (ThatPlayer.data as Array<{ Subject: string, GameName: string, TagLine: string, }>).find(player => player.Subject = member.Subject);
 
             let sendMessage = `Level: **${member.PlayerIdentity.AccountLevel}**`;

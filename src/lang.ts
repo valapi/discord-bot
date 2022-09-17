@@ -1,11 +1,11 @@
-//import
+// import
 
 import * as fs from 'fs';
 import * as path from 'path';
 
 import type { Client as ValorantApiCom } from '@valapi/valorant-api.com';
 
-//interface
+// interface
 
 namespace ILanguage {
     export type Name = ValorantApiCom.Language;
@@ -71,7 +71,7 @@ namespace ILanguage {
     export const DefaultLanguage = `en-US`;
 }
 
-//function
+// function
 
 function getLanguage(language: ILanguage.Name = ILanguage.DefaultLanguage): ILanguage.File | void {
     for (const _file of fs.readdirSync(path.join(`${__dirname}/language`))) {
@@ -105,7 +105,7 @@ function getLanguageAndUndefined(language: ILanguage.Name = ILanguage.DefaultLan
     );
 }
 
-//export
+// export
 
 export {
     ILanguage,

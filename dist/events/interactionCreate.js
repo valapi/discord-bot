@@ -38,7 +38,9 @@ const __event = {
                     onlyGuild: false,
                     inDevlopment: false,
                     showDeferReply: true,
-                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () { return { content: 'This is Default message.', }; })),
+                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                        return { content: 'This is Default message.', };
+                    })),
                 }, _SlashCommand.Collection.get(interaction.commandName));
                 if (command.showDeferReply === true) {
                     yield interaction.deferReply({
@@ -98,7 +100,7 @@ const __event = {
                 }
                 catch (error) {
                     if (_DevelopmentMode === true) {
-                        console.error(error);
+                        IngCore.Logs.log(error, "error");
                     }
                     else {
                         IngCore.Logs.log(error, 'error');
@@ -116,7 +118,9 @@ const __event = {
                 const menu = Object.assign({
                     customId: 'default',
                     replyMode: 'edit',
-                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () { return { content: 'This is Default message.', }; })),
+                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                        return { content: 'This is Default message.', };
+                    })),
                 }, _Menu.get(interaction.customId));
                 if (menu.replyMode === 'edit') {
                     yield interaction.deferUpdate({
@@ -142,7 +146,7 @@ const __event = {
                 }
                 catch (error) {
                     if (_DevelopmentMode === true) {
-                        console.error(error);
+                        IngCore.Logs.log(error, "error");
                     }
                     else {
                         IngCore.Logs.log(error, 'error');
@@ -159,7 +163,9 @@ const __event = {
             if (interaction.type === discord_js_1.InteractionType.ModalSubmit) {
                 const modal = Object.assign({
                     customId: 'default',
-                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () { return { content: 'This is Default message.', }; })),
+                    execute: (() => tslib_1.__awaiter(this, void 0, void 0, function* () {
+                        return { content: 'This is Default message.', };
+                    })),
                 }, _Modal.get(interaction.customId));
                 try {
                     IngCore.Logs.log(`<${interaction.user.id}> <modal> ${interaction.customId}\x1b[0m`, 'info');
@@ -180,7 +186,7 @@ const __event = {
                 }
                 catch (error) {
                     if (_DevelopmentMode === true) {
-                        console.error(error);
+                        IngCore.Logs.log(error, "error");
                     }
                     else {
                         IngCore.Logs.log(error, 'error');

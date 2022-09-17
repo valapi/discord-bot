@@ -37,7 +37,7 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const GetLoadout = await WebClient.Player.Loadout(puuid);
+        const GetLoadout = await WebClient.Player.loadout(puuid);
 
         const AllGuns: Array<{
             ID: string;

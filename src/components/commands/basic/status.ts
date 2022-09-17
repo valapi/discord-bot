@@ -36,7 +36,7 @@ const __command: ICommandHandler.File = {
                     .setColor(`#0099ff`)
                     .setAuthor({ name: `${DiscordBot.user?.tag}`, iconURL: DiscordBot.user?.displayAvatarURL() })
                     .addFields(
-                        { name: 'Uptime', value: `${_uptime.data.day} Days : ${_uptime.data.hour} Hours : ${_uptime.data.minute} Minutes : ${_uptime.data.second} Seconds`, inline: _isInline },
+                        { name: 'Uptime', value: `${_uptime.data.day} Days\n${_uptime.data.hour} Hours\n${_uptime.data.minute} Minutes\n${_uptime.data.second} Seconds`, inline: _isInline },
                         { name: 'Status', value: `${DiscordBot.user?.presence.status}`, inline: _isInline },
                         { name: 'Ping', value: `${Math.round((DiscordPing + ClientPing) / 2)} ms`, inline: _isInline }
                     )

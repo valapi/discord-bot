@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
 import type { ICommandHandler } from "../../../modules";
 
@@ -49,7 +48,7 @@ const __command: ICommandHandler.File = {
             };
             ProgressionLevelReached: number;
             ProgressionTowardsNextLevel: number;
-        }> = (await WebClient.Contract.Fetch(puuid)).data.Contracts;
+        }> = (await WebClient.Contract.fetch(puuid)).data.Contracts;
 
         const BattlePassContract = AllContracts.find((item) => item.ContractDefinitionID === _CurrentBattlePassContractId);
 
@@ -87,42 +86,54 @@ const __command: ICommandHandler.File = {
         switch (BP_LevelSlot?.reward.type) {
             case 'EquippableSkinLevel': { //weapon skin
                 const SlotData_0 = await ValorantApiCom.Weapons.getSkinLevelByUuid(BP_Slot_ID);
-                if (SlotData_0.isError || !SlotData_0.data.data) { throw 'EquippableSkinLevel Not Found!'; }
+                if (SlotData_0.isError || !SlotData_0.data.data) {
+                    throw 'EquippableSkinLevel Not Found!';
+                }
                 BP_Slot_Name = SlotData_0.data.data.displayName as string;
                 BP_Slot_Display = SlotData_0.data.data.displayIcon;
                 break;
             }
             case 'EquippableCharmLevel': { //buddy
                 const SlotData_1 = await ValorantApiCom.Buddies.getLevelByUuid(BP_Slot_ID);
-                if (SlotData_1.isError || !SlotData_1.data.data) { throw 'EquippableCharmLevel Not Found!'; }
+                if (SlotData_1.isError || !SlotData_1.data.data) {
+                    throw 'EquippableCharmLevel Not Found!';
+                }
                 BP_Slot_Name = SlotData_1.data.data.displayName as string;
                 BP_Slot_Display = SlotData_1.data.data.displayIcon;
                 break;
             }
             case 'Currency': {
                 const SlotData_2 = await ValorantApiCom.Currencies.getByUuid(BP_Slot_ID);
-                if (SlotData_2.isError || !SlotData_2.data.data) { throw 'Currency Not Found!'; }
+                if (SlotData_2.isError || !SlotData_2.data.data) {
+                    throw 'Currency Not Found!';
+                }
                 BP_Slot_Name = SlotData_2.data.data.displayName as string;
                 BP_Slot_Display = SlotData_2.data.data.displayIcon;
                 break;
             }
             case 'PlayerCard': {
                 const SlotData_3 = await ValorantApiCom.PlayerCards.getByUuid(BP_Slot_ID);
-                if (SlotData_3.isError || !SlotData_3.data.data) { throw 'PlayerCard Not Found!'; }
+                if (SlotData_3.isError || !SlotData_3.data.data) {
+                    throw 'PlayerCard Not Found!';
+                }
                 BP_Slot_Name = SlotData_3.data.data.displayName as string;
                 BP_Slot_Display = SlotData_3.data.data.displayIcon;
                 break;
             }
             case 'Spray': {
                 const SlotData_4 = await ValorantApiCom.Sprays.getByUuid(BP_Slot_ID);
-                if (SlotData_4.isError || !SlotData_4.data.data) { throw 'Spray Not Found!'; }
+                if (SlotData_4.isError || !SlotData_4.data.data) {
+                    throw 'Spray Not Found!';
+                }
                 BP_Slot_Name = SlotData_4.data.data.displayName as string;
                 BP_Slot_Display = SlotData_4.data.data.displayIcon;
                 break;
             }
             case 'Title': {
                 const SlotData_5 = await ValorantApiCom.PlayerTitles.getByUuid(BP_Slot_ID);
-                if (SlotData_5.isError || !SlotData_5.data.data) { throw 'Title Not Found!'; }
+                if (SlotData_5.isError || !SlotData_5.data.data) {
+                    throw 'Title Not Found!';
+                }
                 BP_Slot_Name = SlotData_5.data.data.displayName as string;
                 BP_Slot_Description = SlotData_5.data.data.titleText as string;
                 break;

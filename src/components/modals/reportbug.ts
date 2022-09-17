@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { Formatters } from 'discord.js';
 import type { IModalHandler } from "../../modules";
 

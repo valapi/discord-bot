@@ -42,7 +42,7 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const GetWallet = await WebClient.Store.GetWallet(puuid);
+        const GetWallet = await WebClient.Store.getWallet(puuid);
         const AllWallet = GetWallet.data.Balances;
 
         const GetCurrency = await ValorantApiCom.Currencies.get();
@@ -56,7 +56,9 @@ const __command: ICommandHandler.File = {
         }> = [];
 
         if (GetCurrency.isError || !GetCurrency.data.data) {
-            return;
+            return {
+                content: language.data.error
+            };
         }
 
         for (const ofCurrency of GetCurrency.data.data) {

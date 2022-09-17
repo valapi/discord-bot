@@ -1,6 +1,5 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
 import { EmbedBuilder, Formatters, ComponentType, SelectMenuBuilder } from 'discord.js';
 import type { IMenuHandler, ICommandHandler } from "../../modules";
 
