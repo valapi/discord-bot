@@ -10,17 +10,17 @@ import { StartDiscordBot } from "./app";
 const PORT = IngCore.Random(3000, 4000);
 const app = express();
 
-app.get("/", ((req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.get("/", (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.send(
         JSON.stringify({
-            uptime: IngCore.ToMilliseconds(process.uptime() * 1000),
+            uptime: IngCore.ToMilliseconds(process.uptime() * 1000)
         })
     );
-}));
+});
 
-app.listen(PORT, (() => {
+app.listen(PORT, () => {
     IngCore.Logs.log(`Server is running on PORT ${PORT}`);
-}));
+});
 
 (async () => {
     const _DevelopmentMode = false;

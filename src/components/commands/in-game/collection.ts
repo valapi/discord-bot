@@ -1,20 +1,16 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import * as IngCore from "@ing3kth/core";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-import { ValorAccount } from '../../../utils/accounts';
+import { ValorAccount } from "../../../utils/accounts";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('collection')
-            .setDescription('Items Collection')
-    ),
-    category: 'valorant',
+    command: new SlashCommandBuilder().setName("collection").setDescription("Items Collection"),
+    category: "valorant",
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
         //load
@@ -24,12 +20,12 @@ const __command: ICommandHandler.File = {
         const { WebClient, ValorantApiCom, isValorAccountFind } = await ValorAccount({
             userId,
             apiKey,
-            language: language.name,
+            language: language.name
         });
 
         if (isValorAccountFind === false) {
             return {
-                content: language.data.command['account']['not_account'],
+                content: language.data.command["account"]["not_account"]
             };
         }
 
@@ -37,7 +33,7 @@ const __command: ICommandHandler.File = {
 
         const puuid = WebClient.getSubject();
 
-        const GetLoadout = await WebClient.Player.loadout(puuid);
+        const GetLoadout = await WebClient.Personalization.getPlayerLoadout(puuid);
 
         const AllGuns: Array<{
             ID: string;
@@ -66,13 +62,13 @@ const __command: ICommandHandler.File = {
         const createEmbed: EmbedBuilder = new EmbedBuilder();
 
         // Guns //
-        let sendGunMessage = '';
+        let sendGunMessage = "";
 
         for (const ofGun of AllGuns) {
             const GunId = ofGun.SkinID;
             const GetGunData = await ValorantApiCom.Weapons.getSkinByUuid(GunId);
 
-            if (GetGunData.isError || !GetGunData.data.data) {
+            if (GetGunData.isRequestError || !GetGunData.data.data) {
                 continue;
             }
 
@@ -81,8 +77,8 @@ const __command: ICommandHandler.File = {
         }
 
         // Sprays //
-        let sendSprayMessage = '';
-        let _DISPLAY = '';
+        let sendSprayMessage = "";
+        let _DISPLAY = "";
 
         for (const ofTheSpray in AllSprays) {
             const ofSpray = AllSprays[ofTheSpray];
@@ -90,7 +86,7 @@ const __command: ICommandHandler.File = {
             const SprayID = ofSpray.SprayID;
             const GetSprayData = await ValorantApiCom.Sprays.getByUuid(SprayID);
 
-            if (GetSprayData.isError || !GetSprayData.data.data) {
+            if (GetSprayData.isRequestError || !GetSprayData.data.data) {
                 continue;
             }
 
@@ -98,7 +94,7 @@ const __command: ICommandHandler.File = {
             sendSprayMessage += ` ${SprayName}\n`;
 
             //extra
-            if (_DISPLAY && (IngCore.Random(0, 2) >= 1)) {
+            if (_DISPLAY && IngCore.Random(0, 2) >= 1) {
                 continue;
             }
 
@@ -112,7 +108,11 @@ const __command: ICommandHandler.File = {
         const PlayerCardId = TheIdentity.PlayerCardID;
         const GetCardData = await ValorantApiCom.PlayerCards.getByUuid(PlayerCardId);
 
-        createEmbed.addFields({ name: 'Player Card', value: `${GetCardData.data.data?.displayName}`, inline: true });
+        createEmbed.addFields({
+            name: "Player Card",
+            value: `${GetCardData.data.data?.displayName}`,
+            inline: true
+        });
         createEmbed.setImage(GetCardData.data.data?.wideArt as string);
 
         // title
@@ -120,35 +120,44 @@ const __command: ICommandHandler.File = {
         const GetTitleData = await ValorantApiCom.PlayerTitles.getByUuid(PlayerTitleId);
 
         if (!GetTitleData.data.data?.titleText) {
-            createEmbed.addFields({ name: 'Player Title', value: `${GetTitleData.data.data?.displayName} - ${GetTitleData.data.data?.titleText}`, inline: true });
+            createEmbed.addFields({
+                name: "Player Title",
+                value: `${GetTitleData.data.data?.displayName} - ${GetTitleData.data.data?.titleText}`,
+                inline: true
+            });
         }
 
         // send
 
         createEmbed
             .setTimestamp(createdTime)
-            .setDescription(language.data.command['collection']['default'])
+            .setDescription(language.data.command["collection"]["default"])
             .addFields(
-                { name: '\u200B', value: '\u200B' },
                 {
-                    name: 'Weapons',
+                    name: "\u200B",
+                    value: "\u200B"
+                },
+                {
+                    name: "Weapons",
                     value: `${sendGunMessage}`,
-                    inline: true,
+                    inline: true
                 },
                 {
-                    name: 'Sprays',
+                    name: "Sprays",
                     value: `${sendSprayMessage}`,
-                    inline: true,
-                },
+                    inline: true
+                }
             )
-            .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
+            .setFooter({
+                text: `${interaction.user.username}#${interaction.user.discriminator}`
+            });
 
         //return
 
         return {
-            embeds: [createEmbed],
+            embeds: [createEmbed]
         };
-    },
+    }
 };
 
 //export

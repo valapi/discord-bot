@@ -1,9 +1,9 @@
 // import
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from "fs";
+import * as path from "path";
 
-import type { Client as ValorantApiCom } from '@valapi/valorant-api.com';
+import type { Client as ValorantApiCom } from "@valapi/valorant-api.com";
 
 // interface
 
@@ -13,58 +13,58 @@ namespace ILanguage {
     export interface File {
         name: ILanguage.Name;
         data: {
-            'not_guild': string,
-            'not_permission': string,
-            'dev_cmd': string,
-            'error': string,
+            not_guild: string;
+            not_permission: string;
+            dev_cmd: string;
+            error: string;
             command: {
                 ping: {
-                    'default': string,
-                },
+                    default: string;
+                };
                 account: {
-                    'succes': string,
-                    'not_account': string,
-                    'verify': string,
-                    'remove': string,
-                    'reconnect': string,
-                },
+                    succes: string;
+                    not_account: string;
+                    verify: string;
+                    remove: string;
+                    reconnect: string;
+                };
                 language: {
-                    'succes': string,
-                    'fail': string,
-                },
+                    succes: string;
+                    fail: string;
+                };
                 profile: {
-                    'default': string,
-                },
+                    default: string;
+                };
                 store: {
-                    'not_nightmarket': string,
-                    'no_nightmarket': string,
-                },
+                    not_nightmarket: string;
+                    no_nightmarket: string;
+                };
                 report: {
-                    'thanks': string,
-                    'topic_title': string,
-                    'topic_placeholder': string,
-                    'message_title': string,
-                    'message_placeholder': string,
-                },
+                    thanks: string;
+                    topic_title: string;
+                    topic_placeholder: string;
+                    message_title: string;
+                    message_placeholder: string;
+                };
                 collection: {
-                    'default': string,
-                },
+                    default: string;
+                };
                 party: {
-                    'not_party': string,
-                },
+                    not_party: string;
+                };
                 help: {
-                    'select_category': string,
-                    'not_category': string,
-                    'placeholder': string,
-                    'type_settings': string,
-                    'type_infomation': string,
-                    'type_valorant': string,
-                    'type_miscellaneous': string,
-                },
+                    select_category: string;
+                    not_category: string;
+                    placeholder: string;
+                    type_settings: string;
+                    type_infomation: string;
+                    type_valorant: string;
+                    type_miscellaneous: string;
+                };
                 match: {
-                    'not_match': string;
-                }
-            },
+                    not_match: string;
+                };
+            };
         };
     }
 
@@ -87,7 +87,9 @@ function getLanguage(language: ILanguage.Name = ILanguage.DefaultLanguage): ILan
     }
 }
 
-function getLanguageAndUndefined(language: ILanguage.Name = ILanguage.DefaultLanguage): ILanguage.File {
+function getLanguageAndUndefined(
+    language: ILanguage.Name = ILanguage.DefaultLanguage
+): ILanguage.File {
     const _language = getLanguage(language);
 
     if (_language) {
@@ -100,14 +102,9 @@ function getLanguageAndUndefined(language: ILanguage.Name = ILanguage.DefaultLan
         return _default;
     }
 
-    throw new Error(
-        'Default language is not found.'
-    );
+    throw new Error("Default language is not found.");
 }
 
 // export
 
-export {
-    ILanguage,
-    getLanguage, getLanguageAndUndefined
-};
+export { ILanguage, getLanguage, getLanguageAndUndefined };

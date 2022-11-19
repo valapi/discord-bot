@@ -1,44 +1,40 @@
 //import
 
-import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-import { ValorAccount } from '../../../utils/accounts';
+import { ValorAccount } from "../../../utils/accounts";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('store')
-            .setDescription('Store')
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('offers')
-                    .setDescription('Daily Store')
-            )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('collection')
-                    .setDescription('Current Bundle')
-            )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('bonus_store')
-                    .setDescription('Night Market')
-                    .addBooleanOption(option =>
-                        option
-                            .setName('show_hidden')
-                            .setDescription('Show All Items')
-                    )
-            )
-    ),
-    category: 'valorant',
+    command: new SlashCommandBuilder()
+        .setName("store")
+        .setDescription("Store")
+        .addSubcommand((subcommand) => subcommand.setName("offers").setDescription("Daily Store"))
+        .addSubcommand((subcommand) =>
+            subcommand.setName("collection").setDescription("Current Bundle")
+        )
+        .addSubcommand((subcommand) =>
+            subcommand
+                .setName("bonus_store")
+                .setDescription("Night Market")
+                .addBooleanOption((option) =>
+                    option.setName("show_hidden").setDescription("Show All Items")
+                )
+        ),
+    category: "valorant",
     echo: {
         data: [
-            { oldName: 'offers', newName: 'todaystore' },
-            { oldName: 'bonus_store', newName: 'nightmarket' },
-        ],
+            {
+                oldName: "offers",
+                newName: "todaystore"
+            },
+            {
+                oldName: "bonus_store",
+                newName: "nightmarket"
+            }
+        ]
     },
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
@@ -50,12 +46,12 @@ const __command: ICommandHandler.File = {
         const { WebClient, ValorantApiCom, isValorAccountFind } = await ValorAccount({
             userId,
             apiKey,
-            language: language.name,
+            language: language.name
         });
 
         if (isValorAccountFind === false) {
             return {
-                content: language.data.command['account']['not_account'],
+                content: language.data.command["account"]["not_account"]
             };
         }
 
@@ -71,14 +67,14 @@ const __command: ICommandHandler.File = {
         const GetWeaponSkin = await ValorantApiCom.Weapons.getSkins();
 
         async function getOffersOf(ItemsId: string) {
-            let Store_ItemID = '';
-            let Store_Quantity = '';
-            let Store_ID = '';
-            let Store_Cost = '';
-            let Store_Curency_Name = 'VP';
-            let Store_Curency_ID = '';
+            let Store_ItemID = "";
+            let Store_Quantity = "";
+            let Store_ID = "";
+            let Store_Cost = "";
+            let Store_Curency_Name = "VP";
+            let Store_Curency_ID = "";
 
-            // Main // 
+            // Main //
             for (const TheOffer of getOffers.data.Offers) {
                 for (const _offer of TheOffer.Rewards) {
                     Store_ItemID = _offer.ItemID;
@@ -87,7 +83,7 @@ const __command: ICommandHandler.File = {
                     if (Store_ItemID === ItemsId) {
                         Store_ID = TheOffer.OfferID;
 
-                        if (!getCurency.isError && getCurency.data.data) {
+                        if (!getCurency.isRequestError && getCurency.data.data) {
                             for (const _currency of getCurency.data.data) {
                                 Store_Cost = TheOffer.Cost[_currency.uuid];
 
@@ -109,9 +105,9 @@ const __command: ICommandHandler.File = {
             }
 
             // Content Tier Id //
-            let Store_ContentTier_ID = '';
+            let Store_ContentTier_ID = "";
 
-            if (!GetWeaponSkin.isError && GetWeaponSkin.data.data) {
+            if (!GetWeaponSkin.isRequestError && GetWeaponSkin.data.data) {
                 for (const _Skins of GetWeaponSkin.data.data) {
                     for (const _Level of _Skins.levels) {
                         if (_Level.uuid === ItemsId) {
@@ -127,10 +123,12 @@ const __command: ICommandHandler.File = {
             }
 
             // Content Tier //
-            let Store_ContentTier_Name = '';
-            let Store_ContentTier_Display = '';
+            let Store_ContentTier_Name = "";
+            let Store_ContentTier_Display = "";
 
-            const GetContentTier = await ValorantApiCom.ContentTiers.getByUuid(String(Store_ContentTier_ID));
+            const GetContentTier = await ValorantApiCom.ContentTiers.getByUuid(
+                String(Store_ContentTier_ID)
+            );
             Store_ContentTier_Name = String(GetContentTier.data.data?.devName);
             Store_ContentTier_Display = String(GetContentTier.data.data?.displayIcon);
 
@@ -140,10 +138,10 @@ const __command: ICommandHandler.File = {
 
             //display
 
-            let Store_Display_Name = '';
-            let Store_Display_Icon = '';
+            let Store_Display_Name = "";
+            let Store_Display_Icon = "";
             const GetWeaponSkinLevel = await ValorantApiCom.Weapons.getSkinLevels();
-            if (!GetWeaponSkinLevel.isError && GetWeaponSkinLevel.data.data) {
+            if (!GetWeaponSkinLevel.isRequestError && GetWeaponSkinLevel.data.data) {
                 for (const _SkinLevel of GetWeaponSkinLevel.data.data) {
                     if (_SkinLevel.uuid === Store_ItemID) {
                         Store_Display_Name = _SkinLevel.displayName as string;
@@ -161,25 +159,27 @@ const __command: ICommandHandler.File = {
                 Cost: Store_Cost,
                 Curency: {
                     Name: Store_Curency_Name,
-                    Id: Store_Curency_ID,
+                    Id: Store_Curency_ID
                 },
                 ContentTier: {
                     Id: Store_ContentTier_ID,
                     Name: Store_ContentTier_Name,
                     Display: Store_ContentTier_Display,
-                    Color: _Color,
+                    Color: _Color
                 },
                 Display: {
                     Name: Store_Display_Name,
-                    Icon: Store_Display_Icon,
-                },
+                    Icon: Store_Display_Icon
+                }
             };
         }
 
-        if (thisSubCommand === 'offers') {
+        if (thisSubCommand === "offers") {
             //load
 
-            const TimeLeft = Number(ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds);
+            const TimeLeft = Number(
+                ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds
+            );
             const AllOffers = ValorantStore.data.SkinsPanelLayout.SingleItemOffers;
 
             const sendMessageArray: Array<EmbedBuilder> = [];
@@ -199,7 +199,10 @@ const __command: ICommandHandler.File = {
                     .setTitle(_Offer.Display.Name)
                     .setDescription(sendMessage)
                     .setThumbnail(_Offer.Display.Icon)
-                    .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display });
+                    .setAuthor({
+                        name: _Offer.ContentTier.Name,
+                        iconURL: _Offer.ContentTier.Display
+                    });
 
                 sendMessageArray.push(createEmbed);
             }
@@ -207,12 +210,15 @@ const __command: ICommandHandler.File = {
             //return
 
             return {
-                content: `Time Left: **${time(new Date(createdTime.getTime() + (TimeLeft * 1000)), TimestampStyles.RelativeTime)}**`,
-                embeds: sendMessageArray,
+                content: `Time Left: **${time(
+                    new Date(createdTime.getTime() + TimeLeft * 1000),
+                    TimestampStyles.RelativeTime
+                )}**`,
+                embeds: sendMessageArray
             };
         }
 
-        if (thisSubCommand === 'collection') {
+        if (thisSubCommand === "collection") {
             //load
 
             const sendMessageArray = [];
@@ -227,9 +233,7 @@ const __command: ICommandHandler.File = {
 
                 const ThisBundleData = await ValorantApiCom.Bundles.getByUuid(ThisBundleId);
                 if (!ThisBundleData.data.data) {
-                    throw new Error(
-                        ThisBundleData.data.error
-                    );
+                    throw new Error(ThisBundleData.data.error);
                 }
 
                 const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
@@ -259,33 +263,53 @@ const __command: ICommandHandler.File = {
 
                 // currency
                 const GetCurrency = await ValorantApiCom.Currencies.getByUuid(ThisBundleCurrency);
-                if (GetCurrency.isError || !GetCurrency.data.data) {
-                    throw new Error(
-                        GetCurrency.data.error
-                    );
+                if (GetCurrency.isRequestError || !GetCurrency.data.data) {
+                    throw new Error(GetCurrency.data.error);
                 }
 
                 const ThePrice = GetCurrency.data.data.displayName;
 
-                const Price_DiscountCosts: number = (Price_Base - Price_Discounted) / Price_Base * 100;
+                const Price_DiscountCosts: number =
+                    ((Price_Base - Price_Discounted) / Price_Base) * 100;
 
                 // embed
                 const createEmbed = new EmbedBuilder()
                     .setImage(ThisBundleData.data.data?.displayIcon as string)
-                    .addFields(
-                        { name: `Name`, value: `${ThisBundleData.data.data.displayName}`, inline: true },
-                    );
+                    .addFields({
+                        name: `Name`,
+                        value: `${ThisBundleData.data.data.displayName}`,
+                        inline: true
+                    });
 
                 if (Price_Base === Price_Discounted) {
-                    createEmbed.addFields({ name: `Price`, value: `${Price_Base}`, inline: true });
+                    createEmbed.addFields({
+                        name: `Price`,
+                        value: `${Price_Base}`,
+                        inline: true
+                    });
                 } else {
-                    createEmbed.addFields({ name: `Price`, value: `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(Price_DiscountCosts)}%)**`, inline: true });
+                    createEmbed.addFields({
+                        name: `Price`,
+                        value: `~~${Price_Base}~~ *-->* **${Price_Discounted} ${ThePrice} (-${Math.ceil(
+                            Price_DiscountCosts
+                        )}%)**`,
+                        inline: true
+                    });
                 }
                 createEmbed.addFields(
-                    { name: '\u200B', value: '\u200B' },
-                    { name: `Time Remaining`, value: `${time(new Date(createdTime.getTime() + (TimeLeft * 1000)), TimestampStyles.RelativeTime)}`, inline: true },
+                    {
+                        name: "\u200B",
+                        value: "\u200B"
+                    },
+                    {
+                        name: `Time Remaining`,
+                        value: `${time(
+                            new Date(createdTime.getTime() + TimeLeft * 1000),
+                            TimestampStyles.RelativeTime
+                        )}`,
+                        inline: true
+                    }
                 );
-
 
                 sendMessageArray.push(createEmbed);
             }
@@ -293,21 +317,23 @@ const __command: ICommandHandler.File = {
             //return
 
             return {
-                embeds: sendMessageArray,
+                embeds: sendMessageArray
             };
         }
 
-        if (thisSubCommand === 'bonus_store') {
+        if (thisSubCommand === "bonus_store") {
             //load
 
             if (!ValorantStore.data.BonusStore) {
                 return {
-                    content: `${language.data.command['store']['not_nightmarket']}`,
+                    content: `${language.data.command["store"]["not_nightmarket"]}`
                 };
             }
 
-            const ForceToShow = interaction.options.getBoolean('show_hidden') || false;
-            const TimeLeft = Number(ValorantStore.data.BonusStore.BonusStoreRemainingDurationInSeconds);
+            const ForceToShow = interaction.options.getBoolean("show_hidden") || false;
+            const TimeLeft = Number(
+                ValorantStore.data.BonusStore.BonusStoreRemainingDurationInSeconds
+            );
 
             const _BonusStore = ValorantStore.data.BonusStore.BonusStoreOffers;
 
@@ -338,20 +364,26 @@ const __command: ICommandHandler.File = {
                         .setTitle(_Offer.Display.Name)
                         .setDescription(sendMessage)
                         .setThumbnail(_Offer.Display.Icon)
-                        .setAuthor({ name: _Offer.ContentTier.Name, iconURL: _Offer.ContentTier.Display })
+                        .setAuthor({
+                            name: _Offer.ContentTier.Name,
+                            iconURL: _Offer.ContentTier.Display
+                        })
                 );
             }
 
-            let _message = `Time Left: **${time(new Date(createdTime.getTime() + (TimeLeft * 1000)), TimestampStyles.RelativeTime)}**`;
+            let _message = `Time Left: **${time(
+                new Date(createdTime.getTime() + TimeLeft * 1000),
+                TimestampStyles.RelativeTime
+            )}**`;
             if (sendMessageArray.length === 0) {
-                _message += `\n\n${language.data.command['store']['no_nightmarket']}`;
+                _message += `\n\n${language.data.command["store"]["no_nightmarket"]}`;
             }
 
             //return
 
             return {
                 content: _message,
-                embeds: sendMessageArray,
+                embeds: sendMessageArray
             };
         }
 

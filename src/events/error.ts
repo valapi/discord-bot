@@ -9,9 +9,9 @@ import * as IngCore from "@ing3kth/core";
 const __event: IEventHandler.File<"error"> = {
     name: "error",
     once: false,
-    async execute({ }, error) {
-      IngCore.Logs.log(error, "error");
-    },
+    async execute({}, error) {
+        IngCore.Logs.log(error, "error");
+    }
 };
 
 //export

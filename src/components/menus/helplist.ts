@@ -1,12 +1,12 @@
 //import
 
-import { EmbedBuilder, Formatters, ComponentType, SelectMenuBuilder } from 'discord.js';
+import { EmbedBuilder, Formatters, ComponentType, SelectMenuBuilder } from "discord.js";
 import type { IMenuHandler, ICommandHandler } from "../../modules";
 
 //script
 
 const __menu: IMenuHandler.File = {
-    customId: 'helplist',
+    customId: "helplist",
     async execute({ interaction, _SlashCommand, language }) {
         //load
 
@@ -16,7 +16,7 @@ const __menu: IMenuHandler.File = {
 
         const createEmbed = new EmbedBuilder()
             .setTitle(`Help - ${_CommandType}`)
-            .setColor('#0099ff');
+            .setColor("#0099ff");
 
         //script
 
@@ -37,11 +37,13 @@ const __menu: IMenuHandler.File = {
                 continue;
             }
 
-            sendMessage += `${Formatters.inlineCode(`/${_cmd.command.name}`)} - ${_cmd.command.description}\n`;
+            sendMessage += `${Formatters.inlineCode(`/${_cmd.command.name}`)} - ${
+                _cmd.command.description
+            }\n`;
         }
 
         if (!sendMessage) {
-            sendMessage += CommandLanguage['not_category'];
+            sendMessage += CommandLanguage["not_category"];
         }
 
         createEmbed.setDescription(sendMessage);
@@ -55,37 +57,37 @@ const __menu: IMenuHandler.File = {
                     type: ComponentType.ActionRow,
                     components: [
                         new SelectMenuBuilder()
-                            .setCustomId('helplist')
-                            .setPlaceholder(CommandLanguage['placeholder'])
+                            .setCustomId("helplist")
+                            .setPlaceholder(CommandLanguage["placeholder"])
                             .setMinValues(1)
                             .setMaxValues(1)
                             .addOptions(
                                 {
-                                    label: 'Settings',
-                                    description: CommandLanguage['type_settings'],
-                                    value: 'settings',
+                                    label: "Settings",
+                                    description: CommandLanguage["type_settings"],
+                                    value: "settings"
                                 },
                                 {
-                                    label: 'Infomation',
-                                    description: CommandLanguage['type_infomation'],
-                                    value: 'infomation',
+                                    label: "Infomation",
+                                    description: CommandLanguage["type_infomation"],
+                                    value: "infomation"
                                 },
                                 {
-                                    label: 'Valorant',
-                                    description: CommandLanguage['type_valorant'],
-                                    value: 'valorant',
+                                    label: "Valorant",
+                                    description: CommandLanguage["type_valorant"],
+                                    value: "valorant"
                                 },
                                 {
-                                    label: 'Miscellaneous',
-                                    description: CommandLanguage['type_miscellaneous'],
-                                    value: 'miscellaneous',
-                                },
-                            ),
-                    ],
-                },
-            ],
+                                    label: "Miscellaneous",
+                                    description: CommandLanguage["type_miscellaneous"],
+                                    value: "miscellaneous"
+                                }
+                            )
+                    ]
+                }
+            ]
         };
-    },
+    }
 };
 
 //export

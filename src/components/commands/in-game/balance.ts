@@ -1,24 +1,18 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import * as IngCore from "@ing3kth/core";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-import { ValorAccount } from '../../../utils/accounts';
+import { ValorAccount } from "../../../utils/accounts";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('balance')
-            .setDescription('Wallet')
-    ),
-    category: 'valorant',
+    command: new SlashCommandBuilder().setName("balance").setDescription("Wallet"),
+    category: "valorant",
     echo: {
-        data: [
-            'wallet'
-        ],
+        data: ["wallet"]
     },
     onlyGuild: true,
     async execute({ interaction, language, apiKey }) {
@@ -29,12 +23,12 @@ const __command: ICommandHandler.File = {
         const { WebClient, ValorantApiCom, isValorAccountFind } = await ValorAccount({
             userId,
             apiKey,
-            language: language.name,
+            language: language.name
         });
 
         if (isValorAccountFind === false) {
             return {
-                content: language.data.command['account']['not_account'],
+                content: language.data.command["account"]["not_account"]
             };
         }
 
@@ -49,13 +43,13 @@ const __command: ICommandHandler.File = {
 
         // currency
         const BalanceArray: Array<{
-            id: string,
-            name: string,
-            icon: string,
-            value: number,
+            id: string;
+            name: string;
+            icon: string;
+            value: number;
         }> = [];
 
-        if (GetCurrency.isError || !GetCurrency.data.data) {
+        if (GetCurrency.isRequestError || !GetCurrency.data.data) {
             return {
                 content: language.data.error
             };
@@ -67,25 +61,29 @@ const __command: ICommandHandler.File = {
                     id: ofCurrency.uuid,
                     name: ofCurrency.displayName as string,
                     icon: ofCurrency.displayIcon,
-                    value: Number(AllWallet[ofCurrency.uuid]),
+                    value: Number(AllWallet[ofCurrency.uuid])
                 });
             }
         }
 
         // send
-        const createEmbed = new EmbedBuilder()
-            .setThumbnail((BalanceArray.at(IngCore.Random(0, BalanceArray.length - 1) as number))?.icon as string);
+        const createEmbed = new EmbedBuilder().setThumbnail(
+            BalanceArray.at(IngCore.Random(0, BalanceArray.length - 1) as number)?.icon as string
+        );
 
         BalanceArray.forEach((item) => {
-            createEmbed.addFields({ name: item.name, value: `${item.value}` });
+            createEmbed.addFields({
+                name: item.name,
+                value: `${item.value}`
+            });
         });
 
         //return
 
         return {
-            embeds: [createEmbed],
+            embeds: [createEmbed]
         };
-    },
+    }
 };
 
 //export

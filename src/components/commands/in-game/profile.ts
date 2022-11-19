@@ -1,20 +1,16 @@
 //import
 
-import { SlashCommandBuilder, EmbedBuilder, time } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, time } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-import { ValorAccount } from '../../../utils/accounts';
-import { Region } from '@valapi/lib';
+import { ValorAccount } from "../../../utils/accounts";
+import { Region } from "@valapi/lib";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('profile')
-            .setDescription('My Profile')
-    ),
-    category: 'valorant',
+    command: new SlashCommandBuilder().setName("profile").setDescription("My Profile"),
+    category: "valorant",
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
         //load
@@ -24,21 +20,21 @@ const __command: ICommandHandler.File = {
         const { WebClient, ValorantApiCom, isValorAccountFind } = await ValorAccount({
             userId,
             apiKey,
-            language: language.name,
+            language: language.name
         });
 
         if (isValorAccountFind === false) {
             return {
-                content: language.data.command['account']['not_account'],
+                content: language.data.command["account"]["not_account"]
             };
         }
 
         //script
 
-        const ValorantUserInfo = await WebClient.Player.getUserInfo();
+        const ValorantUserInfo = await WebClient.getUserInfo();
         const puuid = ValorantUserInfo.data.sub;
 
-        const ValorantInventory = await WebClient.Player.loadout(puuid);
+        const ValorantInventory = await WebClient.Personalization.playerLoadoutUpdate(puuid);
 
         const PlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
         const PlayerCard = await ValorantApiCom.PlayerCards.getByUuid(PlayerCard_ID);
@@ -49,31 +45,63 @@ const __command: ICommandHandler.File = {
         const PlayerTitle = await ValorantApiCom.PlayerTitles.getByUuid(PlayerTitle_ID);
         const PlayerTitle_Title = String(PlayerTitle.data.data?.titleText);
 
-        const JsonWebClient = WebClient.toJSON();
-
         //return
 
         return {
-            content: language.data.command['profile']['default'],
+            content: language.data.command["profile"]["default"],
             embeds: [
                 new EmbedBuilder()
                     .setColor(`#0099ff`)
                     .addFields(
-                        { name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true },
-                        { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true },
-                        { name: '\u200B', value: '\u200B' },
-                        { name: `Region`, value: `${Region.fromString(JsonWebClient.region.live as Region.String).replace('_', ' ')}`, inline: true },
-                        { name: `Create`, value: time(new Date(ValorantUserInfo.data.acct.created_at)), inline: true },
-                        { name: '\u200B', value: '\u200B' },
-                        { name: `Card`, value: `${PlayerCard_Name}`, inline: true },
-                        { name: `Title`, value: `${PlayerTitle_Title}`, inline: true },
+                        {
+                            name: `Name`,
+                            value: `${ValorantUserInfo.data.acct.game_name}`,
+                            inline: true
+                        },
+                        {
+                            name: `Tag`,
+                            value: `${ValorantUserInfo.data.acct.tag_line}`,
+                            inline: true
+                        },
+                        {
+                            name: "\u200B",
+                            value: "\u200B"
+                        },
+                        {
+                            name: `Region`,
+                            value: `${Region.fromString(
+                                WebClient.region.live as Region.Identify
+                            ).replace("_", " ")}`,
+                            inline: true
+                        },
+                        {
+                            name: `Create`,
+                            value: time(new Date(ValorantUserInfo.data.acct.created_at)),
+                            inline: true
+                        },
+                        {
+                            name: "\u200B",
+                            value: "\u200B"
+                        },
+                        {
+                            name: `Card`,
+                            value: `${PlayerCard_Name}`,
+                            inline: true
+                        },
+                        {
+                            name: `Title`,
+                            value: `${PlayerTitle_Title}`,
+                            inline: true
+                        }
                     )
                     .setThumbnail(PlayerCard_Icon)
                     .setTimestamp(createdTime)
-                    .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` }),
-            ],
+                    .setFooter({
+                        text: `${interaction.user.username}#${interaction.user.discriminator}`
+                    })
+            ]
         };
-    },
+    }
 };
 
 //export

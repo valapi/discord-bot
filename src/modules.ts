@@ -1,9 +1,21 @@
 // import
 
-import type { Client, ClientEvents, Collection, SlashCommandBuilder, SelectMenuInteraction, SlashCommandSubcommandsOnlyBuilder, ChatInputCommandInteraction, WebhookEditMessageOptions, SlashCommandOptionsOnlyBuilder, PermissionResolvable, ModalSubmitInteraction, InteractionReplyOptions } from 'discord.js';
-import type { RESTPostAPIApplicationCommandsJSONBody } from 'discord-api-types/v10';
+import type {
+    Client,
+    ClientEvents,
+    Collection,
+    SlashCommandBuilder,
+    SelectMenuInteraction,
+    SlashCommandSubcommandsOnlyBuilder,
+    ChatInputCommandInteraction,
+    SlashCommandOptionsOnlyBuilder,
+    PermissionResolvable,
+    ModalSubmitInteraction,
+    InteractionReplyOptions
+} from "discord.js";
+import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
 
-import type { ILanguage } from './lang';
+import type { ILanguage } from "./lang";
 
 // interface
 
@@ -11,11 +23,11 @@ namespace IEventHandler {
     export interface Input {
         DiscordBot: Client;
         _SlashCommand: {
-            Collection: Collection<any, any>,
-            List: Array<RESTPostAPIApplicationCommandsJSONBody>,
+            Collection: Collection<any, any>;
+            List: Array<RESTPostAPIApplicationCommandsJSONBody>;
         };
-        _Menu: Collection<any, any>,
-        _Modal: Collection<any, any>,
+        _Menu: Collection<any, any>;
+        _Modal: Collection<any, any>;
         _DevelopmentMode: boolean;
     }
 
@@ -35,10 +47,14 @@ namespace ICommandHandler {
         apiKey: string;
     }
 
-    export type Category = 'settings' | 'infomation' | 'valorant' | 'miscellaneous';
+    export type Category = "settings" | "infomation" | "valorant" | "miscellaneous";
 
     export interface File {
-        command: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder | SlashCommandOptionsOnlyBuilder | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
+        command:
+            | SlashCommandBuilder
+            | SlashCommandSubcommandsOnlyBuilder
+            | SlashCommandOptionsOnlyBuilder
+            | Omit<SlashCommandBuilder, "addSubcommand" | "addSubcommandGroup">;
         category: ICommandHandler.Category;
         permissions?: PermissionResolvable;
         isPrivateMessage?: boolean;
@@ -46,14 +62,20 @@ namespace ICommandHandler {
         inDevlopment?: boolean;
         showDeferReply?: boolean;
         echo?: {
-            from?: string,
-            data: Array<string | { oldName: string, newName: string }>,
+            from?: string;
+            data: Array<
+                | string
+                | {
+                      oldName: string;
+                      newName: string;
+                  }
+            >;
             subCommand?: {
-                baseCommand: string,
-                isSubCommand: boolean,
-            },
-        },
-        execute: (input: ICommandHandler.Input) => Promise<WebhookEditMessageOptions>;
+                baseCommand: string;
+                isSubCommand: boolean;
+            };
+        };
+        execute: (input: ICommandHandler.Input) => Promise<InteractionReplyOptions>;
     }
 }
 
@@ -63,15 +85,15 @@ namespace IMenuHandler {
         DiscordBot: Client;
         language: ILanguage.File;
         _SlashCommand: {
-            Collection: Collection<any, any>,
-            List: Array<RESTPostAPIApplicationCommandsJSONBody>,
+            Collection: Collection<any, any>;
+            List: Array<RESTPostAPIApplicationCommandsJSONBody>;
         };
     }
 
     export interface File {
         customId: string;
-        replyMode?: 'new' | 'edit';
-        execute: (input: IMenuHandler.Input) => Promise<WebhookEditMessageOptions>;
+        replyMode?: "new" | "edit";
+        execute: (input: IMenuHandler.Input) => Promise<InteractionReplyOptions>;
     }
 }
 
@@ -90,9 +112,4 @@ namespace IModalHandler {
 
 // export
 
-export type {
-    IEventHandler,
-    ICommandHandler,
-    IMenuHandler,
-    IModalHandler
-};
+export type { IEventHandler, ICommandHandler, IMenuHandler, IModalHandler };

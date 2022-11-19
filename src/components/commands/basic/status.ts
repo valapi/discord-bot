@@ -1,18 +1,14 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import * as IngCore from "@ing3kth/core";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('status')
-            .setDescription('Bot Status')
-    ),
-    category: 'infomation',
+    command: new SlashCommandBuilder().setName("status").setDescription("Bot Status"),
+    category: "infomation",
     async execute({ createdTime, DiscordBot, interaction }) {
         //script
 
@@ -34,14 +30,31 @@ const __command: ICommandHandler.File = {
             embeds: [
                 new EmbedBuilder()
                     .setColor(`#0099ff`)
-                    .setAuthor({ name: `${DiscordBot.user?.tag}`, iconURL: DiscordBot.user?.displayAvatarURL() })
+                    .setAuthor({
+                        name: `${DiscordBot.user?.tag}`,
+                        iconURL: DiscordBot.user?.displayAvatarURL()
+                    })
                     .addFields(
-                        { name: 'Uptime', value: `${_uptime.data.day} Days\n${_uptime.data.hour} Hours\n${_uptime.data.minute} Minutes\n${_uptime.data.second} Seconds`, inline: _isInline },
-                        { name: 'Status', value: `${DiscordBot.user?.presence.status}`, inline: _isInline },
-                        { name: 'Ping', value: `${Math.round((DiscordPing + ClientPing) / 2)} ms`, inline: _isInline }
+                        {
+                            name: "Uptime",
+                            value: `${_uptime.data.day} Days\n${_uptime.data.hour} Hours\n${_uptime.data.minute} Minutes\n${_uptime.data.second} Seconds`,
+                            inline: _isInline
+                        },
+                        {
+                            name: "Status",
+                            value: `${DiscordBot.user?.presence.status}`,
+                            inline: _isInline
+                        },
+                        {
+                            name: "Ping",
+                            value: `${Math.round((DiscordPing + ClientPing) / 2)} ms`,
+                            inline: _isInline
+                        }
                     )
                     .setTimestamp(createdTime)
-                    .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` }),
+                    .setFooter({
+                        text: `${interaction.user.username}#${interaction.user.discriminator}`
+                    })
             ]
         };
     }

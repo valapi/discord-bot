@@ -1,40 +1,48 @@
 //import
 
-import mongoose from 'mongoose';
-import * as process from 'process';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as dotenv from 'dotenv';
-import * as IngCore from '@ing3kth/core';
+import mongoose from "mongoose";
+import * as process from "process";
+import * as path from "path";
+import * as fs from "fs";
+import * as dotenv from "dotenv";
+import * as IngCore from "@ing3kth/core";
 
-import { Client, GatewayIntentBits, Partials, ActivityType, Collection, RESTPostAPIApplicationCommandsJSONBody, SlashCommandBuilder } from 'discord.js';
-import { REST } from '@discordjs/rest';
-import { ApplicationCommandOptionType, Routes } from 'discord-api-types/v10';
+import {
+    Client,
+    GatewayIntentBits,
+    Partials,
+    ActivityType,
+    Collection,
+    RESTPostAPIApplicationCommandsJSONBody,
+    SlashCommandBuilder
+} from "discord.js";
+import { REST } from "@discordjs/rest";
+import { ApplicationCommandOptionType, Routes } from "discord-api-types/v10";
 
-import type { ICommandHandler, IEventHandler, IMenuHandler, IModalHandler } from './modules';
+import type { ICommandHandler, IEventHandler, IMenuHandler, IModalHandler } from "./modules";
 
 //script
 
 export async function StartDiscordBot(_DevelopmentMode = false) {
     //.env
     dotenv.config({
-        path: path.join(`${process.cwd()}/.env`),
+        path: path.join(`${process.cwd()}/.env`)
     });
 
     //database
-    mongoose.connection.on("error", (async (error) => {
-        IngCore.Logs.log(error, 'error');
-    }));
+    mongoose.connection.on("error", async (error) => {
+        IngCore.Logs.log(error, "error");
+    });
 
-    mongoose.connection.on("connected", (async () => {
-        IngCore.Logs.log('Successfully connected to database', 'system');
-    }));
+    mongoose.connection.on("connected", async () => {
+        IngCore.Logs.log("Successfully connected to database", "system");
+    });
 
-    mongoose.connection.on("disconnected", (async () => {
-        IngCore.Logs.log('Disconnected from database', 'warning');
-    }));
+    mongoose.connection.on("disconnected", async () => {
+        IngCore.Logs.log("Disconnected from database", "warning");
+    });
 
-    await mongoose.connect(String(process.env['MONGO_TOKEN']));
+    await mongoose.connect(String(process.env["MONGO_TOKEN"]));
 
     //client
     const DiscordBot = new Client({
@@ -45,67 +53,120 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
             GatewayIntentBits.GuildMessageReactions,
             GatewayIntentBits.DirectMessages,
             GatewayIntentBits.DirectMessageReactions,
-            GatewayIntentBits.GuildIntegrations,
+            GatewayIntentBits.GuildIntegrations
         ],
         partials: [
             Partials.Channel,
             Partials.GuildMember,
             Partials.Message,
             Partials.Reaction,
-            Partials.User,
+            Partials.User
         ],
         allowedMentions: {
-            parse: ['users', 'roles'],
-            repliedUser: true, //get ping or not?
+            parse: ["users", "roles"],
+            repliedUser: true //get ping or not?
         },
-        failIfNotExists: _DevelopmentMode,
+        failIfNotExists: _DevelopmentMode
     });
 
     //commands
     const _CommandCollection = new Collection();
     const _CommandList: Array<RESTPostAPIApplicationCommandsJSONBody> = [];
 
-    IngCore.Logs.log('Started refreshing application (/) commands', 'info');
+    IngCore.Logs.log("Started refreshing application (/) commands", "info");
 
     for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
-        for (const _file of fs.readdirSync(path.join(`${__dirname}/components/commands/${_folder}`))) {
-            const command: ICommandHandler.File = require(`./components/commands/${_folder}/${_file}`).default;
+        for (const _file of fs.readdirSync(
+            path.join(`${__dirname}/components/commands/${_folder}`)
+        )) {
+            const command: ICommandHandler.File =
+                require(`./components/commands/${_folder}/${_file}`).default;
 
             if (!command) {
-                IngCore.Logs.log(command, 'error');
-                
+                IngCore.Logs.log(command, "error");
+
                 continue;
             }
 
             if (command.echo && command.echo.data.length > 0) {
-                command.echo.data.forEach((cmd: string | { oldName: string, newName: string }) => {
-                    if (typeof cmd === 'string') {
-                        _CommandCollection.set(cmd, { ...command, ...{ data: { name: cmd }, echo: { from: command.command.name, data: [] } } });
-                        _CommandList.push({ ...command.command.toJSON(), ...{ name: cmd } });
-                    } else {
-                        const ofNewCommand: RESTPostAPIApplicationCommandsJSONBody = command.command.toJSON();
-
-                        if (ofNewCommand.options) {
-                            const OptionCommand = ofNewCommand.options.find(filterCmd => filterCmd.name === cmd.oldName);
-                            if (OptionCommand && OptionCommand.type === ApplicationCommandOptionType.Subcommand) {
-                                if (!OptionCommand.options) OptionCommand.options = [];
-
-                                const NewSlashCommand = {
-                                    ...ofNewCommand,
-                                    ...(new SlashCommandBuilder().setName(cmd.newName).setDescription(OptionCommand.description).toJSON()),
-                                    ...{
-                                        options: OptionCommand.options,
+                command.echo.data.forEach(
+                    (
+                        cmd:
+                            | string
+                            | {
+                                  oldName: string;
+                                  newName: string;
+                              }
+                    ) => {
+                        if (typeof cmd === "string") {
+                            _CommandCollection.set(cmd, {
+                                ...command,
+                                ...{
+                                    data: {
+                                        name: cmd
+                                    },
+                                    echo: {
+                                        from: command.command.name,
+                                        data: []
                                     }
-                                };
+                                }
+                            });
+                            _CommandList.push({
+                                ...command.command.toJSON(),
+                                ...{
+                                    name: cmd
+                                }
+                            });
+                        } else {
+                            const ofNewCommand: RESTPostAPIApplicationCommandsJSONBody =
+                                command.command.toJSON();
 
-                                _CommandCollection.set(NewSlashCommand.name, { ...command, ...{ data: NewSlashCommand, echo: { from: command.command.name, command: [], subCommand: { baseCommand: OptionCommand.name, isSubCommand: true } } } });
-                                _CommandList.push(NewSlashCommand);
-                            } else {
-                                IngCore.Logs.log(`<${_file}> option command [${cmd.oldName}] not found`, 'error');
+                            if (ofNewCommand.options) {
+                                const OptionCommand = ofNewCommand.options.find(
+                                    (filterCmd) => filterCmd.name === cmd.oldName
+                                );
+                                if (
+                                    OptionCommand &&
+                                    OptionCommand.type === ApplicationCommandOptionType.Subcommand
+                                ) {
+                                    if (!OptionCommand.options) OptionCommand.options = [];
+
+                                    const NewSlashCommand = {
+                                        ...ofNewCommand,
+                                        ...new SlashCommandBuilder()
+                                            .setName(cmd.newName)
+                                            .setDescription(OptionCommand.description)
+                                            .toJSON(),
+                                        ...{
+                                            options: OptionCommand.options
+                                        }
+                                    };
+
+                                    _CommandCollection.set(NewSlashCommand.name, {
+                                        ...command,
+                                        ...{
+                                            data: NewSlashCommand,
+                                            echo: {
+                                                from: command.command.name,
+                                                command: [],
+                                                subCommand: {
+                                                    baseCommand: OptionCommand.name,
+                                                    isSubCommand: true
+                                                }
+                                            }
+                                        }
+                                    });
+                                    _CommandList.push(NewSlashCommand);
+                                } else {
+                                    IngCore.Logs.log(
+                                        `<${_file}> option command [${cmd.oldName}] not found`,
+                                        "error"
+                                    );
+                                }
                             }
                         }
                     }
-                });
+                );
             }
 
             _CommandCollection.set(command.command.name, command);
@@ -113,21 +174,26 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
         }
     }
 
-    const rest = new REST({ version: '10' }).setToken(String(process.env['TOKEN']));
+    const rest = new REST({
+        version: "10"
+    }).setToken(String(process.env["TOKEN"]));
 
-    async function RestCommands(GlobalCommands: Array<RESTPostAPIApplicationCommandsJSONBody>, GuildCommands: Array<RESTPostAPIApplicationCommandsJSONBody>): Promise<void> {
+    async function RestCommands(
+        GlobalCommands: Array<RESTPostAPIApplicationCommandsJSONBody>,
+        GuildCommands: Array<RESTPostAPIApplicationCommandsJSONBody>
+    ): Promise<void> {
+        await rest.put(Routes.applicationCommands(String(process.env["CLIENT_ID"])), {
+            body: GlobalCommands
+        });
+
         await rest.put(
-            Routes.applicationCommands(String(process.env['CLIENT_ID'])),
+            Routes.applicationGuildCommands(
+                String(process.env["CLIENT_ID"]),
+                String(process.env["GUILD_ID"])
+            ),
             {
-                body: GlobalCommands,
+                body: GuildCommands
             }
-        );
-
-        await rest.put(
-            Routes.applicationGuildCommands(String(process.env['CLIENT_ID']), String(process.env['GUILD_ID'])),
-            {
-                body: GuildCommands,
-            },
         );
     }
 
@@ -138,9 +204,9 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
             await RestCommands(_CommandList, []);
         }
 
-        IngCore.Logs.log('Successfully reloaded application (/) commands', 'info');
+        IngCore.Logs.log("Successfully reloaded application (/) commands", "info");
     } catch (error) {
-        IngCore.Logs.log(error, 'error');
+        IngCore.Logs.log(error, "error");
     }
 
     //menu
@@ -150,7 +216,7 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
         const menu: IMenuHandler.File = require(`./components/menus/${_file}`).default;
 
         if (!menu) {
-            IngCore.Logs.log(menu, 'error');
+            IngCore.Logs.log(menu, "error");
             continue;
         }
 
@@ -164,7 +230,7 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
         const modal: IModalHandler.File = require(`./components/modals/${_file}`).default;
 
         if (!modal) {
-            IngCore.Logs.log(modal, 'error');
+            IngCore.Logs.log(modal, "error");
             continue;
         }
 
@@ -178,11 +244,11 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
         DiscordBot,
         _SlashCommand: {
             Collection: _CommandCollection,
-            List: _CommandList,
+            List: _CommandList
         },
         _Menu: _MenuCollection,
         _Modal: _ModalCollection,
-        _DevelopmentMode,
+        _DevelopmentMode
     };
 
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
@@ -193,35 +259,35 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
         }
 
         if (event.once) {
-            DiscordBot.once(event.name, (async (...args) => {
+            DiscordBot.once(event.name, async (...args) => {
                 try {
                     await event.execute(_EventInput, ...args);
                 } catch (error) {
-                    IngCore.Logs.log(error, 'error');
+                    IngCore.Logs.log(error, "error");
                 }
-            }));
+            });
         } else {
-            DiscordBot.on(event.name, (async (...args) => {
+            DiscordBot.on(event.name, async (...args) => {
                 try {
                     await event.execute(_EventInput, ...args);
                 } catch (error) {
-                    IngCore.Logs.log(error, 'error');
+                    IngCore.Logs.log(error, "error");
                 }
-            }));
+            });
         }
     }
 
     //login
-    await DiscordBot.login(process.env['TOKEN']);
+    await DiscordBot.login(process.env["TOKEN"]);
 
     if (_DevelopmentMode === true) {
-        DiscordBot.user?.setStatus('invisible');
+        DiscordBot.user?.setStatus("invisible");
     } else {
-        DiscordBot.user?.setStatus('online');
+        DiscordBot.user?.setStatus("online");
 
         DiscordBot.user?.setActivity({
             name: "ING PROJECT",
-            type: ActivityType.Playing,
+            type: ActivityType.Playing
         });
     }
 }

@@ -5,11 +5,14 @@ import * as CryptoJS from "crypto-js";
 //function
 
 function genarateApiKey(key1: string, key2: string, key3: string): string {
-    const _key1 = Buffer.from(key1 + key2).toString('binary');
-    const _key2 = Buffer.from(key3 + key1).toString('latin1');
-    const _key3 = Buffer.from(key2 + key3).toString('utf16le');
+    const _key1 = Buffer.from(key1 + key2).toString("binary");
+    const _key2 = Buffer.from(key3 + key1).toString("latin1");
+    const _key3 = Buffer.from(key2 + key3).toString("utf16le");
 
-    return CryptoJS.HmacSHA1(String(key1 + _key2 + key3).toUpperCase(), String(_key1 + key2 + _key3).toLocaleLowerCase()).toString(CryptoJS.enc.Hex);
+    return CryptoJS.HmacSHA1(
+        String(key1 + _key2 + key3).toUpperCase(),
+        String(_key1 + key2 + _key3).toLocaleLowerCase()
+    ).toString(CryptoJS.enc.Hex);
 }
 
 function encrypt(message: string, key: string): string {
@@ -29,8 +32,4 @@ function decrypt(message: string, key: string): string {
 
 //export
 
-export {
-    genarateApiKey,
-    encrypt,
-    decrypt
-};
+export { genarateApiKey, encrypt, decrypt };

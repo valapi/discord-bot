@@ -1,96 +1,115 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import * as IngCore from "@ing3kth/core";
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-import { encrypt, decrypt } from '../../../utils/crypto';
-import { ValorDatabase, ValorInterface } from '../../../utils/database';
+import { encrypt, decrypt } from "../../../utils/crypto";
+import { ValorDatabase, ValorInterface } from "../../../utils/database";
 
-import { Region } from '@valapi/lib';
-import { Client as ValWebClient } from '@valapi/web-client';
-import { Client as ValApiCom } from '@valapi/valorant-api.com';
+import { Region } from "@valapi/lib";
+import { Client as ValWebClient } from "@valapi/web-client";
+import { Client as ValApiCom } from "@valapi/valorant-api.com";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('account')
-            .setDescription('Manage Valorant Account')
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('add')
-                    .setDescription("Add Your Valorant Account")
-                    .addStringOption(option =>
-                        option
-                            .setName('username')
-                            .setDescription('Riot Account Username')
-                            .setRequired(true)
-                    )
-                    .addStringOption(option =>
-                        option
-                            .setName('password')
-                            .setDescription('Riot Account Password')
-                            .setRequired(true)
-                    )
-            )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('multifactor')
-                    .setDescription('Multi-Factor Authentication')
-                    .addNumberOption(option =>
-                        option
-                            .setName('verify_code')
-                            .setDescription('Verify Code')
-                            .setRequired(true)
-                    )
-            )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('reconnect')
-                    .setDescription('Reconnect Your Account')
-            )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('remove')
-                    .setDescription("Remove Your Valorant Account")
-            )
-            .addSubcommand(subCommand =>
-                subCommand
-                    .setName('settings')
-                    .setDescription('Account Settings')
-                    .addStringOption(option =>
-                        option
-                            .setName('region')
-                            .setDescription('Change Your Account Region')
-                            .addChoices(
-                                { name: Region.from.ap, value: Region.to.Asia_Pacific },
-                                { name: Region.from.br, value: Region.to.Brazil },
-                                { name: Region.from.eu, value: Region.to.Europe },
-                                { name: Region.from.kr, value: Region.to.Korea },
-                                { name: Region.from.latam, value: Region.to.Latin_America },
-                                { name: Region.from.na, value: Region.to.North_America },
-                                { name: Region.from.pbe, value: Region.to.Public_Beta_Environment },
-                            )
-                            .setRequired(true)
-                    )
-            )
-            .addSubcommand(subcommand =>
-                subcommand
-                    .setName('get')
-                    .setDescription("Get Your Valorant Account")
-            )
-    ),
-    category: 'settings',
+    command: new SlashCommandBuilder()
+        .setName("account")
+        .setDescription("Manage Valorant Account")
+        .addSubcommand((subcommand) =>
+            subcommand
+                .setName("add")
+                .setDescription("Add Your Valorant Account")
+                .addStringOption((option) =>
+                    option
+                        .setName("username")
+                        .setDescription("Riot Account Username")
+                        .setRequired(true)
+                )
+                .addStringOption((option) =>
+                    option
+                        .setName("password")
+                        .setDescription("Riot Account Password")
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand((subcommand) =>
+            subcommand
+                .setName("multifactor")
+                .setDescription("Multi-Factor Authentication")
+                .addNumberOption((option) =>
+                    option.setName("verify_code").setDescription("Verify Code").setRequired(true)
+                )
+        )
+        .addSubcommand((subcommand) =>
+            subcommand.setName("reconnect").setDescription("Reconnect Your Account")
+        )
+        .addSubcommand((subcommand) =>
+            subcommand.setName("remove").setDescription("Remove Your Valorant Account")
+        )
+        .addSubcommand((subCommand) =>
+            subCommand
+                .setName("settings")
+                .setDescription("Account Settings")
+                .addStringOption((option) =>
+                    option
+                        .setName("region")
+                        .setDescription("Change Your Account Region")
+                        .addChoices(
+                            {
+                                name: Region.Default.Asia_Pacific,
+                                value: Region.fromString(Region.Default.Asia_Pacific)
+                            },
+                            {
+                                name: Region.Default.Brazil,
+                                value: Region.fromString(Region.Default.Brazil)
+                            },
+                            {
+                                name: Region.Default.Europe,
+                                value: Region.fromString(Region.Default.Europe)
+                            },
+                            {
+                                name: Region.Default.Korea,
+                                value: Region.fromString(Region.Default.Korea)
+                            },
+                            {
+                                name: Region.Default.Latin_America,
+                                value: Region.fromString(Region.Default.Latin_America)
+                            },
+                            {
+                                name: Region.Default.North_America,
+                                value: Region.fromString(Region.Default.North_America)
+                            },
+                            {
+                                name: Region.Default.Public_Beta_Environment,
+                                value: Region.fromString(Region.Default.Public_Beta_Environment)
+                            }
+                        )
+                        .setRequired(true)
+                )
+        )
+        .addSubcommand((subcommand) =>
+            subcommand.setName("get").setDescription("Get Your Valorant Account")
+        ),
+    category: "settings",
     onlyGuild: true,
     isPrivateMessage: true,
     echo: {
         data: [
-            { oldName: 'add', newName: 'login' },
-            { oldName: 'multifactor', newName: 'verify' },
-            { oldName: 'remove', newName: 'logout' },
-        ],
+            {
+                oldName: "add",
+                newName: "login"
+            },
+            {
+                oldName: "multifactor",
+                newName: "verify"
+            },
+            {
+                oldName: "remove",
+                newName: "logout"
+            }
+        ]
     },
     async execute({ interaction, apiKey, createdTime, language }) {
         //load
@@ -100,86 +119,108 @@ const __command: ICommandHandler.File = {
 
         const CommandLanguage = language.data.command.account;
 
-        const _cache = new IngCore.Cache('authentications');
+        const _cache = new IngCore.Cache("authentications");
 
         const ValAccount = await ValorDatabase<ValorInterface.Account.Format>({
-            name: 'account',
+            name: "account",
             schema: ValorInterface.Account.Schema,
-            filter: { discordId: userId },
-            token: process.env['MONGO_TOKEN'],
+            filter: {
+                discordId: userId
+            },
+            token: process.env["MONGO_TOKEN"]
         });
 
         //valorant
 
         const ValorantApiCom = new ValApiCom({
-            language: language.name,
+            language: language.name
         });
 
         const WebClient = new ValWebClient();
 
         async function ValorSave(WebClient: ValWebClient) {
-            (new IngCore.Cache('accounts')).clear(userId);
+            new IngCore.Cache("accounts").clear(userId);
 
             if (ValAccount.isFind === true) {
-                await ValAccount.model.deleteMany({ discordId: userId });
+                await ValAccount.model.deleteMany({
+                    discordId: userId
+                });
             }
 
-            const _ClientData = WebClient.toJSON();
-
-            await (
-                new ValAccount.model({
-                    account: encrypt(_ClientData.cookie.ssid, apiKey),
-                    region: _ClientData.region.live,
-                    discordId: userId,
-                    createdAt: (ValAccount.data.at(0))?.createdAt || new Date(),
-                })
-            ).save();
+            await new ValAccount.model({
+                account: encrypt(WebClient.cookie.ssid, apiKey),
+                region: WebClient.region.live,
+                discordId: userId,
+                createdAt: ValAccount.data.at(0)?.createdAt || new Date()
+            }).save();
         }
 
         async function ValorSuccess(WebClient: ValWebClient, isSave: boolean) {
             if (isSave === true) {
                 _cache.clear(userId);
-                
+
                 await ValorSave(WebClient);
             }
 
-            const ValorantUserInfo = await WebClient.Player.getUserInfo();
+            const ValorantUserInfo = await WebClient.getUserInfo();
             const puuid = ValorantUserInfo.data.sub;
 
-            const ValorantInventory = await WebClient.Player.loadout(puuid);
-            const ValorantPlayerCard = await ValorantApiCom.PlayerCards.getByUuid(ValorantInventory.data.Identity.PlayerCardID);
+            const ValorantInventory = await WebClient.Personalization.getPlayerLoadout(puuid);
+            const ValorantPlayerCard = await ValorantApiCom.PlayerCards.getByUuid(
+                ValorantInventory.data.Identity.PlayerCardID
+            );
 
             //return
             return {
-                content: CommandLanguage['succes'],
+                content: CommandLanguage["succes"],
                 embeds: [
                     new EmbedBuilder()
                         .setColor(`#0099ff`)
                         .addFields(
-                            { name: `Name`, value: `${ValorantUserInfo.data.acct.game_name}`, inline: true },
-                            { name: `Tag`, value: `${ValorantUserInfo.data.acct.tag_line}`, inline: true },
-                            { name: '\u200B', value: '\u200B' },
-                            { name: `ID`, value: `${puuid}`, inline: true },
+                            {
+                                name: `Name`,
+                                value: `${ValorantUserInfo.data.acct.game_name}`,
+                                inline: true
+                            },
+                            {
+                                name: `Tag`,
+                                value: `${ValorantUserInfo.data.acct.tag_line}`,
+                                inline: true
+                            },
+                            {
+                                name: "\u200B",
+                                value: "\u200B"
+                            },
+                            {
+                                name: `ID`,
+                                value: `${puuid}`,
+                                inline: true
+                            }
                         )
                         .setThumbnail(String(ValorantPlayerCard.data.data?.displayIcon))
                         .setTimestamp(createdTime)
-                        .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` })
-                ],
+                        .setFooter({
+                            text: `${interaction.user.username}#${interaction.user.discriminator}`
+                        })
+                ]
             };
         }
 
         //script
 
-        if (thisSubCommand === 'add') {
+        if (thisSubCommand === "add") {
             //load
 
-            const _InputUsername = String(interaction.options.getString('username'));
+            const _InputUsername = interaction.options.getString("username", true);
 
             //script
 
-            await WebClient.login(_InputUsername, String(interaction.options.getString('password')));
+            await WebClient.login(
+                _InputUsername,
+                interaction.options.getString("password", true)
+            );
 
-            if (WebClient.isMultifactor === false) {
+            if (WebClient.isMultifactorAccount === false) {
                 return await ValorSuccess(WebClient, true);
             }
 
@@ -188,26 +229,28 @@ const __command: ICommandHandler.File = {
             //return
 
             return {
-                content: CommandLanguage['verify'],
+                content: CommandLanguage["verify"],
                 embeds: [
                     new EmbedBuilder()
                         .setColor(`#0099ff`)
                         .setTitle(`/${interaction.commandName} ${thisSubCommand}`)
                         .setDescription(`Username: **${_InputUsername}**`)
                         .setTimestamp(createdTime)
-                        .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` }),
-                ],
+                        .setFooter({
+                            text: `${interaction.user.username}#${interaction.user.discriminator}`
+                        })
+                ]
             };
         }
 
-        if (thisSubCommand === 'multifactor') {
+        if (thisSubCommand === "multifactor") {
             //load
 
             const _save = _cache.output(userId);
 
             if (!_save) {
                 return {
-                    content: CommandLanguage['not_account'],
+                    content: CommandLanguage["not_account"]
                 };
             }
 
@@ -222,96 +265,106 @@ const __command: ICommandHandler.File = {
             return await ValorSuccess(WebClient, true);
         }
 
-        if (thisSubCommand === 'reconnect') {
+        if (thisSubCommand === "reconnect") {
             //load
 
             if (ValAccount.isFind === false) {
                 return {
-                    content: CommandLanguage['not_account'],
+                    content: CommandLanguage["not_account"]
                 };
             }
 
             //script
 
-            await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
-            WebClient.setRegion((ValAccount.data[0]).region);
+            await WebClient.fromCookie(decrypt(ValAccount.data[0].account, apiKey));
+            WebClient.config = {
+                region: ValAccount.data[0].region
+            };
 
-            await WebClient.refresh(true);
+            await WebClient.refresh();
 
             await ValorSave(WebClient);
 
             //return
 
             return {
-                content: CommandLanguage['reconnect'],
+                content: CommandLanguage["reconnect"]
             };
         }
 
-        if (thisSubCommand === 'remove') {
+        if (thisSubCommand === "remove") {
             //load
 
             _cache.clear(userId);
 
-            (new IngCore.Cache('accounts')).clear(userId);
+            new IngCore.Cache("accounts").clear(userId);
 
             //script
 
             if (ValAccount.isFind === false) {
                 return {
-                    content: CommandLanguage['not_account'],
+                    content: CommandLanguage["not_account"]
                 };
             }
 
-            await ValAccount.model.deleteMany({ discordId: userId });
+            await ValAccount.model.deleteMany({
+                discordId: userId
+            });
 
             //return
 
             return {
-                content: CommandLanguage['remove'],
+                content: CommandLanguage["remove"]
             };
         }
 
-        if (thisSubCommand === 'settings') {
+        if (thisSubCommand === "settings") {
             //load
 
             if (ValAccount.isFind === false) {
                 return {
-                    content: CommandLanguage['not_account'],
+                    content: CommandLanguage["not_account"]
                 };
             }
 
             //script
 
-            await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
+            await WebClient.fromCookie(decrypt(ValAccount.data[0].account, apiKey));
 
-            const _choice = interaction.options.getString('region') as Region.String;
+            const _choice = interaction.options.getString("region") as Region.Identify;
 
-            WebClient.setRegion(_choice);
+            WebClient.config = {
+                region: _choice
+            };
 
             await ValorSave(WebClient);
 
             //return
 
             return {
-                content: `__*beta*__\n\nchanged region to **${String(Region.fromString(WebClient.toJSON().region.live as Region.String)).replace('_', ' ')}**\n\n`,
+                content: `__*beta*__\n\nchanged region to **${String(
+                    Region.fromString(WebClient.region.live as Region.Identify)
+                ).replace("_", " ")}**\n\n`
             };
         }
 
-        if (thisSubCommand === 'get') {
+        if (thisSubCommand === "get") {
             //load
 
             if (ValAccount.isFind === false) {
                 return {
-                    content: CommandLanguage['not_account'],
+                    content: CommandLanguage["not_account"]
                 };
             }
 
             //script
 
-            await WebClient.fromCookie(decrypt((ValAccount.data[0]).account, apiKey));
-            WebClient.setRegion((ValAccount.data[0]).region);
+            await WebClient.fromCookie(decrypt(ValAccount.data[0].account, apiKey));
+            WebClient.config = {
+                region: ValAccount.data[0].region
+            };
 
-            await WebClient.refresh(false);
+            await WebClient.refresh();
 
             //return
 
@@ -321,7 +374,7 @@ const __command: ICommandHandler.File = {
         return {
             content: language.data.error
         };
-    },
+    }
 };
 
 //export

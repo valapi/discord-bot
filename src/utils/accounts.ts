@@ -1,29 +1,33 @@
 //import
 
-import * as IngCore from '@ing3kth/core';
+import * as IngCore from "@ing3kth/core";
 
-import { ILanguage } from '../lang';
+import { ILanguage } from "../lang";
 
-import { encrypt, decrypt } from './crypto';
-import { ValorDatabase, ValorInterface } from './database';
+import { encrypt, decrypt } from "./crypto";
+import { ValorDatabase, ValorInterface } from "./database";
 
-import { Client as WebClient } from '@valapi/web-client';
-import { Client as ValorantApiCom } from '@valapi/valorant-api.com';
+import { Client as WebClient } from "@valapi/web-client";
+import { Client as ValorantApiCom } from "@valapi/valorant-api.com";
 
 //function
 
 async function ValorAccount(config: {
-    userId: string,
-    apiKey: string,
-    language?: ILanguage.Name,
-}): Promise<{ isValorAccountFind: boolean, ValorantApiCom: ValorantApiCom, WebClient: WebClient }> {
+    userId: string;
+    apiKey: string;
+    language?: ILanguage.Name;
+}): Promise<{
+    isValorAccountFind: boolean;
+    ValorantApiCom: ValorantApiCom;
+    WebClient: WebClient;
+}> {
     //load
 
     const MyValorantApiCom = new ValorantApiCom({
-        language: config.language || 'en-US',
+        language: config.language || "en-US"
     });
 
-    const _cache = new IngCore.Cache('accounts');
+    const _cache = new IngCore.Cache("accounts");
 
     //script
 
@@ -31,57 +35,65 @@ async function ValorAccount(config: {
 
     if (!_save) {
         const ValDatabase = await ValorDatabase<ValorInterface.Account.Format>({
-            name: 'account',
+            name: "account",
             schema: ValorInterface.Account.Schema,
-            filter: { discordId: config.userId },
+            filter: {
+                discordId: config.userId
+            }
         });
 
         if (ValDatabase.isFind === true) {
             const _OnlyOne = ValDatabase.data[0];
 
             if (ValDatabase.data[1]) {
-                await ValDatabase.model.deleteMany({ discordId: config.userId });
+                await ValDatabase.model.deleteMany({
+                    discordId: config.userId
+                });
 
-                await (
-                    new ValDatabase.model({
-                        account: _OnlyOne.account,
-                        region: _OnlyOne.region,
-                        discordId: config.userId,
-                        createdAt: _OnlyOne.createdAt,
-                    })
-                ).save();
+                await new ValDatabase.model({
+                    account: _OnlyOne.account,
+                    region: _OnlyOne.region,
+                    discordId: config.userId,
+                    createdAt: _OnlyOne.createdAt
+                }).save();
             }
 
-            const MyWebClient = await WebClient.fromCookie(decrypt(_OnlyOne.account, config.apiKey), { region: _OnlyOne.region });
+            const MyWebClient = await WebClient.fromCookie(
+                decrypt(_OnlyOne.account, config.apiKey),
+                {
+                    region: _OnlyOne.region
+                }
+            );
 
-            _cache.input(encrypt(JSON.stringify(MyWebClient.toJSON()), config.apiKey), config.userId);
+            _cache.input(
+                encrypt(JSON.stringify(MyWebClient.toJSON()), config.apiKey),
+                config.userId
+            );
 
             return {
                 isValorAccountFind: true,
                 ValorantApiCom: MyValorantApiCom,
-                WebClient: MyWebClient,
+                WebClient: MyWebClient
             };
         } else {
             return {
                 isValorAccountFind: false,
                 ValorantApiCom: MyValorantApiCom,
-                WebClient: new WebClient(),
+                WebClient: new WebClient()
             };
         }
     } else {
         const MyWebClient = WebClient.fromJSON(JSON.parse(decrypt(_save, config.apiKey)));
-        await MyWebClient.refresh(false);
+        await MyWebClient.refresh();
 
         return {
             isValorAccountFind: true,
             ValorantApiCom: MyValorantApiCom,
-            WebClient: MyWebClient,
+            WebClient: MyWebClient
         };
     }
 }
 
 //export
 
-export {
-    ValorAccount
-};
+export { ValorAccount };

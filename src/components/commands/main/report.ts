@@ -1,24 +1,18 @@
 //import
 
-import { ComponentType, ModalBuilder, SlashCommandBuilder, TextInputStyle } from 'discord.js';
+import { ComponentType, ModalBuilder, SlashCommandBuilder, TextInputStyle } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('report')
-            .setDescription('Report Bug To Developer')
-    ),
-    category: 'miscellaneous',
+    command: new SlashCommandBuilder().setName("report").setDescription("Report Bug To Developer"),
+    category: "miscellaneous",
     isPrivateMessage: true,
     inDevlopment: true,
     showDeferReply: false,
     echo: {
-        data: [
-            'reportbug',
-        ],
+        data: ["reportbug"]
     },
     async execute({ interaction, language }) {
         //load
@@ -28,38 +22,38 @@ const __command: ICommandHandler.File = {
         //script
 
         const MyModal = new ModalBuilder()
-            .setCustomId('reportbug')
-            .setTitle('Report Bug')
+            .setCustomId("reportbug")
+            .setTitle("Report Bug")
             .addComponents(
                 {
                     type: ComponentType.ActionRow,
                     components: [
                         {
                             type: ComponentType.TextInput,
-                            custom_id: 'reportbug_topic',
-                            label: `${CommandLanguage['topic_title']}`,
-                            placeholder: `${CommandLanguage['topic_placeholder']}`,
+                            custom_id: "reportbug_topic",
+                            label: `${CommandLanguage["topic_title"]}`,
+                            placeholder: `${CommandLanguage["topic_placeholder"]}`,
                             required: true,
                             style: TextInputStyle.Short,
                             min_length: 5,
-                            max_length: 75,
-                        },
-                    ],
+                            max_length: 75
+                        }
+                    ]
                 },
                 {
                     type: ComponentType.ActionRow,
                     components: [
                         {
                             type: ComponentType.TextInput,
-                            custom_id: 'reportbug_message',
-                            label: `${CommandLanguage['message_title']}`,
-                            placeholder: `${CommandLanguage['message_placeholder']}`,
+                            custom_id: "reportbug_message",
+                            label: `${CommandLanguage["message_title"]}`,
+                            placeholder: `${CommandLanguage["message_placeholder"]}`,
                             required: true,
                             style: TextInputStyle.Paragraph,
                             min_length: 10,
-                            max_length: 1000,
-                        },
-                    ],
+                            max_length: 1000
+                        }
+                    ]
                 }
             );
 
@@ -70,7 +64,7 @@ const __command: ICommandHandler.File = {
         return {
             content: language.data.error
         };
-    },
+    }
 };
 
 //export

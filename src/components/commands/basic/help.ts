@@ -1,17 +1,13 @@
 //import
 
-import { SlashCommandBuilder, EmbedBuilder, ComponentType, SelectMenuBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder, ComponentType, SelectMenuBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
 //script
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('help')
-            .setDescription('Show all Commands')
-    ),
-    category: 'infomation',
+    command: new SlashCommandBuilder().setName("help").setDescription("Show all Commands"),
+    category: "infomation",
     async execute({ language }) {
         //load
 
@@ -22,63 +18,63 @@ const __command: ICommandHandler.File = {
         return {
             embeds: [
                 new EmbedBuilder()
-                    .setTitle('Help')
-                    .setDescription(CommandLanguage['select_category'])
+                    .setTitle("Help")
+                    .setDescription(CommandLanguage["select_category"])
                     .addFields(
                         {
-                            name: '/reportbug',
-                            value: 'Report Bug To Developer',
-                            inline: true,
+                            name: "/reportbug",
+                            value: "Report Bug To Developer",
+                            inline: true
                         },
                         {
-                            name: '/account',
-                            value: 'Manage Valorant Account',
-                            inline: true,
+                            name: "/account",
+                            value: "Manage Valorant Account",
+                            inline: true
                         },
                         {
-                            name: '/language',
-                            value: 'Change Language',
-                            inline: true,
-                        },
+                            name: "/language",
+                            value: "Change Language",
+                            inline: true
+                        }
                     )
-                    .setColor('#0099ff'),
+                    .setColor("#0099ff")
             ],
             components: [
                 {
                     type: ComponentType.ActionRow,
                     components: [
                         new SelectMenuBuilder()
-                            .setCustomId('helplist')
-                            .setPlaceholder(CommandLanguage['placeholder'])
+                            .setCustomId("helplist")
+                            .setPlaceholder(CommandLanguage["placeholder"])
                             .setMinValues(1)
                             .setMaxValues(1)
                             .addOptions(
                                 {
-                                    label: 'Settings',
-                                    description: CommandLanguage['type_settings'],
-                                    value: 'settings',
+                                    label: "Settings",
+                                    description: CommandLanguage["type_settings"],
+                                    value: "settings"
                                 },
                                 {
-                                    label: 'Infomation',
-                                    description: CommandLanguage['type_infomation'],
-                                    value: 'infomation',
+                                    label: "Infomation",
+                                    description: CommandLanguage["type_infomation"],
+                                    value: "infomation"
                                 },
                                 {
-                                    label: 'Valorant',
-                                    description: CommandLanguage['type_valorant'],
-                                    value: 'valorant',
+                                    label: "Valorant",
+                                    description: CommandLanguage["type_valorant"],
+                                    value: "valorant"
                                 },
                                 {
-                                    label: 'Miscellaneous',
-                                    description: CommandLanguage['type_miscellaneous'],
-                                    value: 'miscellaneous',
-                                },
-                            ),
-                    ],
-                },
-            ],
+                                    label: "Miscellaneous",
+                                    description: CommandLanguage["type_miscellaneous"],
+                                    value: "miscellaneous"
+                                }
+                            )
+                    ]
+                }
+            ]
         };
-    },
+    }
 };
 
 //export

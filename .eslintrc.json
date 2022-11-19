@@ -35,7 +35,11 @@
         "no-var": "error",
         "prefer-arrow-callback": "error",
         "prefer-const": "error",
-        "prefer-template": "error"
+        "prefer-template": "error",
+
+        // better code
+        "comma-dangle": "warn",
+        "brace-style": "warn"
     },
     "settings": {
         "allowDefinitionFiles": true

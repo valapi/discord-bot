@@ -2,17 +2,17 @@
 
 import type { IEventHandler } from "../modules";
 
-import * as IngCore from '@ing3kth/core';
+import * as IngCore from "@ing3kth/core";
 
-import { EmbedBuilder, type TextChannel } from 'discord.js';
+import { EmbedBuilder, type TextChannel } from "discord.js";
 
 //script
 
-const __event: IEventHandler.File<'guildCreate'> = {
-    name: 'guildCreate',
+const __event: IEventHandler.File<"guildCreate"> = {
+    name: "guildCreate",
     once: false,
     async execute({ DiscordBot }, guild) {
-        IngCore.Logs.log(`<${guild.id}> join new guild`, 'info');
+        IngCore.Logs.log(`<${guild.id}> join new guild`, "info");
 
         //message
         let sendMessage = ``;
@@ -22,14 +22,31 @@ const __event: IEventHandler.File<'guildCreate'> = {
         const createEmbed = new EmbedBuilder()
             .setColor(`#0099ff`)
             .addFields(
-                { name: `Name`, value: `${String(DiscordBot.user?.tag)}`, inline: true },
-                { name: `ID`, value: `${String(DiscordBot.application?.id)}`, inline: true },
-                { name: '\u200B', value: '\u200B' },
-                { name: `Report Bug`, value: `${String((await DiscordBot.users.fetch('549231132382855189')).tag)}`, inline: true },
+                {
+                    name: `Name`,
+                    value: `${String(DiscordBot.user?.tag)}`,
+                    inline: true
+                },
+                {
+                    name: `ID`,
+                    value: `${String(DiscordBot.application?.id)}`,
+                    inline: true
+                },
+                {
+                    name: "\u200B",
+                    value: "\u200B"
+                },
+                {
+                    name: `Report Bug`,
+                    value: `${String((await DiscordBot.users.fetch("549231132382855189")).tag)}`,
+                    inline: true
+                }
             )
             .setThumbnail(String(DiscordBot.user?.avatarURL()))
             .setTimestamp(new Date())
-            .setFooter({ text: guild.name });
+            .setFooter({
+                text: guild.name
+            });
 
         if (guild.bannerURL()) {
             createEmbed.setImage(String(guild.bannerURL()));
@@ -53,16 +70,16 @@ const __event: IEventHandler.File<'guildCreate'> = {
 
             await CHANNEL?.send({
                 content: sendMessage,
-                embeds: [createEmbed],
+                embeds: [createEmbed]
             });
             return;
         }
 
         await SendGuildChannel?.send({
             content: sendMessage,
-            embeds: [createEmbed],
+            embeds: [createEmbed]
         });
-    },
+    }
 };
 
 //export

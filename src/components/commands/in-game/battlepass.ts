@@ -1,21 +1,17 @@
 //import
 
-import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
+import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-import { ValorAccount } from '../../../utils/accounts';
+import { ValorAccount } from "../../../utils/accounts";
 
 //script
 
 const _CurrentBattlePassContractId = "99ac9283-4dd3-5248-2e01-8baf778affb4";
 
 const __command: ICommandHandler.File = {
-    command: (
-        new SlashCommandBuilder()
-            .setName('battlepass')
-            .setDescription('Battle Pass')
-    ),
-    category: 'valorant',
+    command: new SlashCommandBuilder().setName("battlepass").setDescription("Battle Pass"),
+    category: "valorant",
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
         //load
@@ -25,12 +21,12 @@ const __command: ICommandHandler.File = {
         const { WebClient, ValorantApiCom, isValorAccountFind } = await ValorAccount({
             userId,
             apiKey,
-            language: language.name,
+            language: language.name
         });
 
         if (isValorAccountFind === false) {
             return {
-                content: language.data.command['account']['not_account'],
+                content: language.data.command["account"]["not_account"]
             };
         }
 
@@ -48,9 +44,11 @@ const __command: ICommandHandler.File = {
             };
             ProgressionLevelReached: number;
             ProgressionTowardsNextLevel: number;
-        }> = (await WebClient.Contract.fetch(puuid)).data.Contracts;
+        }> = (await WebClient.Contracts.fetch(puuid)).data.Contracts;
 
-        const BattlePassContract = AllContracts.find((item) => item.ContractDefinitionID === _CurrentBattlePassContractId);
+        const BattlePassContract = AllContracts.find(
+            (item) => item.ContractDefinitionID === _CurrentBattlePassContractId
+        );
 
         const BP_Id = BattlePassContract?.ContractDefinitionID;
         const BP_CurrentLevel = Number(BattlePassContract?.ProgressionLevelReached);
@@ -66,7 +64,7 @@ const __command: ICommandHandler.File = {
         let _Slot = 0;
 
         for (let i = 0; i < Number(TheBattlePass.data.data?.content.chapters.length); i++) {
-            if ((i * 5) + _ofSlot === BP_CurrentLevel) {
+            if (i * 5 + _ofSlot === BP_CurrentLevel) {
                 _Slot = i;
                 break;
             }
@@ -84,111 +82,126 @@ const __command: ICommandHandler.File = {
         let BP_Slot_Display = ``;
 
         switch (BP_LevelSlot?.reward.type) {
-            case 'EquippableSkinLevel': { //weapon skin
+            case "EquippableSkinLevel": {
+                //weapon skin
                 const SlotData_0 = await ValorantApiCom.Weapons.getSkinLevelByUuid(BP_Slot_ID);
-                if (SlotData_0.isError || !SlotData_0.data.data) {
-                    throw 'EquippableSkinLevel Not Found!';
+                if (SlotData_0.isRequestError || !SlotData_0.data.data) {
+                    throw "EquippableSkinLevel Not Found!";
                 }
                 BP_Slot_Name = SlotData_0.data.data.displayName as string;
                 BP_Slot_Display = SlotData_0.data.data.displayIcon;
                 break;
             }
-            case 'EquippableCharmLevel': { //buddy
+            case "EquippableCharmLevel": {
+                //buddy
                 const SlotData_1 = await ValorantApiCom.Buddies.getLevelByUuid(BP_Slot_ID);
-                if (SlotData_1.isError || !SlotData_1.data.data) {
-                    throw 'EquippableCharmLevel Not Found!';
+                if (SlotData_1.isRequestError || !SlotData_1.data.data) {
+                    throw "EquippableCharmLevel Not Found!";
                 }
                 BP_Slot_Name = SlotData_1.data.data.displayName as string;
                 BP_Slot_Display = SlotData_1.data.data.displayIcon;
                 break;
             }
-            case 'Currency': {
+            case "Currency": {
                 const SlotData_2 = await ValorantApiCom.Currencies.getByUuid(BP_Slot_ID);
-                if (SlotData_2.isError || !SlotData_2.data.data) {
-                    throw 'Currency Not Found!';
+                if (SlotData_2.isRequestError || !SlotData_2.data.data) {
+                    throw "Currency Not Found!";
                 }
                 BP_Slot_Name = SlotData_2.data.data.displayName as string;
                 BP_Slot_Display = SlotData_2.data.data.displayIcon;
                 break;
             }
-            case 'PlayerCard': {
+            case "PlayerCard": {
                 const SlotData_3 = await ValorantApiCom.PlayerCards.getByUuid(BP_Slot_ID);
-                if (SlotData_3.isError || !SlotData_3.data.data) {
-                    throw 'PlayerCard Not Found!';
+                if (SlotData_3.isRequestError || !SlotData_3.data.data) {
+                    throw "PlayerCard Not Found!";
                 }
                 BP_Slot_Name = SlotData_3.data.data.displayName as string;
                 BP_Slot_Display = SlotData_3.data.data.displayIcon;
                 break;
             }
-            case 'Spray': {
+            case "Spray": {
                 const SlotData_4 = await ValorantApiCom.Sprays.getByUuid(BP_Slot_ID);
-                if (SlotData_4.isError || !SlotData_4.data.data) {
-                    throw 'Spray Not Found!';
+                if (SlotData_4.isRequestError || !SlotData_4.data.data) {
+                    throw "Spray Not Found!";
                 }
                 BP_Slot_Name = SlotData_4.data.data.displayName as string;
                 BP_Slot_Display = SlotData_4.data.data.displayIcon;
                 break;
             }
-            case 'Title': {
+            case "Title": {
                 const SlotData_5 = await ValorantApiCom.PlayerTitles.getByUuid(BP_Slot_ID);
-                if (SlotData_5.isError || !SlotData_5.data.data) {
-                    throw 'Title Not Found!';
+                if (SlotData_5.isRequestError || !SlotData_5.data.data) {
+                    throw "Title Not Found!";
                 }
                 BP_Slot_Name = SlotData_5.data.data.displayName as string;
                 BP_Slot_Description = SlotData_5.data.data.titleText as string;
                 break;
             }
             default: {
-                throw 'Type of slot Not Found!';
+                throw "Type of slot Not Found!";
             }
         }
 
         let ShowSlot = `${_Slot + 1}`;
-        if (_Slot >= 11) ShowSlot = 'Epilogue';
+        if (_Slot >= 11) ShowSlot = "Epilogue";
 
         const createEmbed = new EmbedBuilder()
-            .setColor('#0099ff')
+            .setColor("#0099ff")
             .setTimestamp(createdTime)
             .addFields(
-                { name: '\u200B', value: '\u200B' },
                 {
-                    name: 'Level',
+                    name: "\u200B",
+                    value: "\u200B"
+                },
+                {
+                    name: "Level",
                     value: `${BP_CurrentLevel + 1}`,
-                    inline: true,
+                    inline: true
                 },
                 {
-                    name: 'Chapter',
+                    name: "Chapter",
                     value: `${ShowSlot}`,
-                    inline: true,
+                    inline: true
                 },
                 {
-                    name: 'Name',
+                    name: "Name",
                     value: `${BP_Slot_Name}`,
-                    inline: true,
+                    inline: true
                 },
-                { name: '\u200B', value: '\u200B' },
                 {
-                    name: 'XP (level)',
+                    name: "\u200B",
+                    value: "\u200B"
+                },
+                {
+                    name: "XP (level)",
                     value: `**${BP_XpAtNow}** */* ${BP_Slot_XpNeed}`,
-                    inline: true,
+                    inline: true
                 },
                 {
-                    name: 'XP (total)',
+                    name: "XP (total)",
                     value: `${BP_TotalEarnedXp}`,
-                    inline: true,
+                    inline: true
                 },
-                { name: '\u200B', value: '\u200B' },
+                {
+                    name: "\u200B",
+                    value: "\u200B"
+                }
             )
-            .setAuthor({ name: `${BP_Name}` })
-            .setFooter({ text: `${interaction.user.username}#${interaction.user.discriminator}` });
+            .setAuthor({
+                name: `${BP_Name}`
+            })
+            .setFooter({
+                text: `${interaction.user.username}#${interaction.user.discriminator}`
+            });
 
         if (BP_Slot_Display) createEmbed.setThumbnail(BP_Slot_Display);
         if (BP_Slot_Description) createEmbed.setDescription(BP_Slot_Description);
 
         return {
-            embeds: [createEmbed],
+            embeds: [createEmbed]
         };
-    },
+    }
 };
 
 //export
