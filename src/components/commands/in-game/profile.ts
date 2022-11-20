@@ -34,7 +34,7 @@ const __command: ICommandHandler.File = {
         const ValorantUserInfo = await WebClient.getUserInfo();
         const puuid = ValorantUserInfo.data.sub;
 
-        const ValorantInventory = await WebClient.Personalization.playerLoadoutUpdate(puuid);
+        const ValorantInventory = await WebClient.Personalization.getPlayerLoadout(puuid);
 
         const PlayerCard_ID = ValorantInventory.data.Identity.PlayerCardID;
         const PlayerCard = await ValorantApiCom.PlayerCards.getByUuid(PlayerCard_ID);

@@ -20,32 +20,32 @@ const __command: ICommandHandler.File = {
                 .setDescription("Queue Mode")
                 .addChoices(
                     {
-                        name: QueueId.fromString("competitive"),
-                        value: QueueId.fromName("Competitive")
+                        name: QueueId.fromString(QueueId.Default.Competitive),
+                        value: QueueId.Default.Competitive
                     },
                     {
-                        name: QueueId.Default.Deathmatch,
-                        value: QueueId.fromString(QueueId.Default.Deathmatch)
+                        name: QueueId.fromString(QueueId.Default.Deathmatch),
+                        value: QueueId.Default.Deathmatch
                     },
                     {
-                        name: QueueId.Default.Escalation,
-                        value: QueueId.fromString(QueueId.Default.Escalation)
+                        name: QueueId.fromString(QueueId.Default.Escalation),
+                        value: QueueId.Default.Escalation
                     },
                     {
-                        name: QueueId.Default.Replication,
-                        value: QueueId.fromString(QueueId.Default.Replication)
+                        name: QueueId.fromString(QueueId.Default.Replication),
+                        value: QueueId.Default.Replication
                     },
                     {
-                        name: QueueId.Default.Snowball_Fight,
-                        value: QueueId.fromString(QueueId.Default.Snowball_Fight)
+                        name: QueueId.fromString(QueueId.Default.Snowball_Fight),
+                        value: QueueId.Default.Snowball_Fight
                     },
                     {
-                        name: QueueId.Default.Spikerush,
-                        value: QueueId.fromString(QueueId.Default.Spikerush)
+                        name: QueueId.fromString(QueueId.Default.Spikerush),
+                        value: QueueId.Default.Spikerush
                     },
                     {
-                        name: QueueId.Default.Unrated,
-                        value: QueueId.fromString(QueueId.Default.Unrated)
+                        name: QueueId.fromString(QueueId.Default.Unrated),
+                        value: QueueId.Default.Unrated
                     }
                 )
         ),

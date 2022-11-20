@@ -5,11 +5,6 @@
 loadout bug
 
 - /account
-- /balance
-- /collection
-- /match
-- /profile
-- /rank
 
 # For Better Bot
 

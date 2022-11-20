@@ -58,32 +58,32 @@ const __command: ICommandHandler.File = {
                         .setDescription("Change Your Account Region")
                         .addChoices(
                             {
-                                name: Region.Default.Asia_Pacific,
-                                value: Region.fromString(Region.Default.Asia_Pacific)
+                                name: Region.fromString(Region.Default.Asia_Pacific),
+                                value: Region.Default.Asia_Pacific
                             },
                             {
-                                name: Region.Default.Brazil,
-                                value: Region.fromString(Region.Default.Brazil)
+                                name: Region.fromString(Region.Default.Brazil),
+                                value: Region.Default.Brazil
                             },
                             {
-                                name: Region.Default.Europe,
-                                value: Region.fromString(Region.Default.Europe)
+                                name: Region.fromString(Region.Default.Europe),
+                                value: Region.Default.Europe
                             },
                             {
-                                name: Region.Default.Korea,
-                                value: Region.fromString(Region.Default.Korea)
+                                name: Region.fromString(Region.Default.Korea),
+                                value: Region.Default.Korea
                             },
                             {
-                                name: Region.Default.Latin_America,
-                                value: Region.fromString(Region.Default.Latin_America)
+                                name: Region.fromString(Region.Default.Latin_America),
+                                value: Region.Default.Latin_America
                             },
                             {
-                                name: Region.Default.North_America,
-                                value: Region.fromString(Region.Default.North_America)
+                                name: Region.fromString(Region.Default.North_America),
+                                value: Region.Default.North_America
                             },
                             {
-                                name: Region.Default.Public_Beta_Environment,
-                                value: Region.fromString(Region.Default.Public_Beta_Environment)
+                                name: Region.fromString(Region.Default.Public_Beta_Environment),
+                                value: Region.Default.Public_Beta_Environment
                             }
                         )
                         .setRequired(true)
