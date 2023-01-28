@@ -1,4 +1,4 @@
-//import
+// import
 
 import * as IngCore from "@ing3kth/core";
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
@@ -8,10 +8,10 @@ import { encrypt, decrypt } from "../../../utils/crypto";
 import { ValorDatabase, ValorInterface } from "../../../utils/database";
 
 import { Region } from "@valapi/lib";
-import { Client as ValWebClient } from "@valapi/web-client";
-import { Client as ValApiCom } from "@valapi/valorant-api.com";
+import { WebClient as ValWebClient } from "@valapi/web-client";
+import { ValorantApiCom as ValApiCom } from "@valapi/valorant-api.com";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder()
@@ -112,14 +112,15 @@ const __command: ICommandHandler.File = {
         ]
     },
     async execute({ interaction, apiKey, createdTime, language }) {
-        //load
+        // load
 
         const userId = interaction.user.id;
         const thisSubCommand = interaction.options.getSubcommand();
 
         const CommandLanguage = language.data.command.account;
 
-        const _cache = new IngCore.Cache("authentications");
+        const _cache = new IngCore.BasicTemp("authentications");
+        await _cache.build();
 
         const ValAccount = await ValorDatabase<ValorInterface.Account.Format>({
             name: "account",
@@ -130,16 +131,20 @@ const __command: ICommandHandler.File = {
             token: process.env["MONGO_TOKEN"]
         });
 
-        //valorant
+        // valorant
 
         const ValorantApiCom = new ValApiCom({
             language: language.name
         });
 
-        const WebClient = new ValWebClient();
+        const WebClient = new ValWebClient({
+            region: Region.Default.Asia_Pacific
+        });
 
         async function ValorSave(WebClient: ValWebClient) {
-            new IngCore.Cache("accounts").clear(userId);
+            const ___cache = new IngCore.BasicTemp("accounts");
+            await ___cache.build();
+            ___cache.remove(userId);
 
             if (ValAccount.isFind === true) {
                 await ValAccount.model.deleteMany({
@@ -157,7 +162,7 @@ const __command: ICommandHandler.File = {
 
         async function ValorSuccess(WebClient: ValWebClient, isSave: boolean) {
             if (isSave === true) {
-                _cache.clear(userId);
+                _cache.remove(userId);
 
                 await ValorSave(WebClient);
             }
@@ -170,7 +175,7 @@ const __command: ICommandHandler.File = {
                 ValorantInventory.data.Identity.PlayerCardID
             );
 
-            //return
+            // return
             return {
                 content: CommandLanguage["succes"],
                 embeds: [
@@ -206,14 +211,14 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         if (thisSubCommand === "add") {
-            //load
+            // load
 
             const _InputUsername = interaction.options.getString("username", true);
 
-            //script
+            // script
 
             await WebClient.login(
                 _InputUsername,
@@ -224,9 +229,9 @@ const __command: ICommandHandler.File = {
                 return await ValorSuccess(WebClient, true);
             }
 
-            _cache.input(encrypt(JSON.stringify(WebClient.toJSON()), apiKey), userId);
+            _cache.add(encrypt(JSON.stringify(WebClient.toJSON()), apiKey), userId);
 
-            //return
+            // return
 
             return {
                 content: CommandLanguage["verify"],
@@ -244,9 +249,9 @@ const __command: ICommandHandler.File = {
         }
 
         if (thisSubCommand === "multifactor") {
-            //load
+            // load
 
-            const _save = _cache.output(userId);
+            const _save = _cache.get(userId);
 
             if (!_save) {
                 return {
@@ -254,19 +259,19 @@ const __command: ICommandHandler.File = {
                 };
             }
 
-            //script
+            // script
 
             WebClient.fromJSON(JSON.parse(decrypt(_save, apiKey)));
 
             await WebClient.verify(Number(interaction.options.getNumber("verify_code")));
 
-            //return
+            // return
 
             return await ValorSuccess(WebClient, true);
         }
 
         if (thisSubCommand === "reconnect") {
-            //load
+            // load
 
             if (ValAccount.isFind === false) {
                 return {
@@ -274,7 +279,7 @@ const __command: ICommandHandler.File = {
                 };
             }
 
-            //script
+            // script
 
             await WebClient.fromCookie(decrypt(ValAccount.data[0].account, apiKey));
             WebClient.config = {
@@ -285,7 +290,7 @@ const __command: ICommandHandler.File = {
 
             await ValorSave(WebClient);
 
-            //return
+            // return
 
             return {
                 content: CommandLanguage["reconnect"]
@@ -293,13 +298,15 @@ const __command: ICommandHandler.File = {
         }
 
         if (thisSubCommand === "remove") {
-            //load
+            // load
 
-            _cache.clear(userId);
+            _cache.remove(userId);
 
-            new IngCore.Cache("accounts").clear(userId);
+            const ___cache = new IngCore.BasicTemp("accounts");
+            await ___cache.build();
+            ___cache.remove(userId);
 
-            //script
+            // script
 
             if (ValAccount.isFind === false) {
                 return {
@@ -311,7 +318,7 @@ const __command: ICommandHandler.File = {
                 discordId: userId
             });
 
-            //return
+            // return
 
             return {
                 content: CommandLanguage["remove"]
@@ -319,7 +326,7 @@ const __command: ICommandHandler.File = {
         }
 
         if (thisSubCommand === "settings") {
-            //load
+            // load
 
             if (ValAccount.isFind === false) {
                 return {
@@ -327,7 +334,7 @@ const __command: ICommandHandler.File = {
                 };
             }
 
-            //script
+            // script
 
             await WebClient.fromCookie(decrypt(ValAccount.data[0].account, apiKey));
 
@@ -339,7 +346,7 @@ const __command: ICommandHandler.File = {
 
             await ValorSave(WebClient);
 
-            //return
+            // return
 
             return {
                 content: `__*beta*__\n\nchanged region to **${String(
@@ -349,7 +356,7 @@ const __command: ICommandHandler.File = {
         }
 
         if (thisSubCommand === "get") {
-            //load
+            // load
 
             if (ValAccount.isFind === false) {
                 return {
@@ -357,7 +364,7 @@ const __command: ICommandHandler.File = {
                 };
             }
 
-            //script
+            // script
 
             await WebClient.fromCookie(decrypt(ValAccount.data[0].account, apiKey));
             WebClient.config = {
@@ -366,7 +373,7 @@ const __command: ICommandHandler.File = {
 
             await WebClient.refresh();
 
-            //return
+            // return
 
             return await ValorSuccess(WebClient, false);
         }
@@ -377,6 +384,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

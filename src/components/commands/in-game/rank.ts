@@ -1,18 +1,18 @@
-//import
+// import
 
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
 import { ValorAccount } from "../../../utils/accounts";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("rank").setDescription("Competitive Rank"),
     category: "valorant",
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
-        //load
+        // load
 
         const userId = interaction.user.id;
 
@@ -28,7 +28,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const puuid = WebClient.getSubject();
 
@@ -67,7 +67,7 @@ const __command: ICommandHandler.File = {
             }
         }
 
-        //return
+        // return
 
         return {
             embeds: [
@@ -94,6 +94,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

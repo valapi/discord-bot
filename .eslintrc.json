@@ -24,11 +24,11 @@
         "no-extra-semi": "warn",
         "semi": "warn",
         "no-empty-pattern": "off",
-        "no-console": "warn",
+        "no-console": "error",
 
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/no-unused-vars": "off", // <--- change to "warn" for checking
+        "@typescript-eslint/no-unused-vars": "warn", // <--- change to "warn" for checking
         "@typescript-eslint/no-var-requires": "off", // <--- for handler command
 
         "no-debugger": "error",
@@ -38,6 +38,7 @@
         "prefer-template": "error",
 
         // better code
+        "spaced-comment": "warn", // <-- Need Space before comment
         "comma-dangle": "warn",
         "brace-style": "warn"
     },

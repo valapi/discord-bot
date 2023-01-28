@@ -1,4 +1,4 @@
-//import
+// import
 
 import * as IngCore from "@ing3kth/core";
 
@@ -7,10 +7,10 @@ import { ILanguage } from "../lang";
 import { encrypt, decrypt } from "./crypto";
 import { ValorDatabase, ValorInterface } from "./database";
 
-import { Client as WebClient } from "@valapi/web-client";
-import { Client as ValorantApiCom } from "@valapi/valorant-api.com";
+import { WebClient } from "@valapi/web-client";
+import { ValorantApiCom } from "@valapi/valorant-api.com";
 
-//function
+// function
 
 async function ValorAccount(config: {
     userId: string;
@@ -21,17 +21,17 @@ async function ValorAccount(config: {
     ValorantApiCom: ValorantApiCom;
     WebClient: WebClient;
 }> {
-    //load
+    // load
 
     const MyValorantApiCom = new ValorantApiCom({
         language: config.language || "en-US"
     });
 
-    const _cache = new IngCore.Cache("accounts");
+    const _cache = new IngCore.BasicTemp("accounts");
 
-    //script
+    // script
 
-    const _save = await _cache.output(config.userId);
+    const _save = await _cache.get(config.userId);
 
     if (!_save) {
         const ValDatabase = await ValorDatabase<ValorInterface.Account.Format>({
@@ -65,7 +65,7 @@ async function ValorAccount(config: {
                 }
             );
 
-            _cache.input(
+            _cache.add(
                 encrypt(JSON.stringify(MyWebClient.toJSON()), config.apiKey),
                 config.userId
             );
@@ -94,6 +94,6 @@ async function ValorAccount(config: {
     }
 }
 
-//export
+// export
 
 export { ValorAccount };

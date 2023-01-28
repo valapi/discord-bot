@@ -1,4 +1,4 @@
-//import
+// import
 
 import * as IngCore from "@ing3kth/core";
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
@@ -6,14 +6,14 @@ import type { ICommandHandler } from "../../../modules";
 
 import { ValorAccount } from "../../../utils/accounts";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("collection").setDescription("Items Collection"),
     category: "valorant",
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
-        //load
+        // load
 
         const userId = interaction.user.id;
 
@@ -29,7 +29,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const puuid = WebClient.getSubject();
 
@@ -57,7 +57,7 @@ const __command: ICommandHandler.File = {
             PreferredLevelBorderID: string;
             HideAccountLevel: boolean;
         } = GetLoadout.data.Identity;
-        //const ThisIncognito: boolean = GetLoadout.data.Incognito;
+        // const ThisIncognito: boolean = GetLoadout.data.Incognito;
 
         const createEmbed: EmbedBuilder = new EmbedBuilder();
 
@@ -93,8 +93,8 @@ const __command: ICommandHandler.File = {
             const SprayName = GetSprayData.data.data.displayName;
             sendSprayMessage += ` ${SprayName}\n`;
 
-            //extra
-            if (_DISPLAY && IngCore.Random(0, 2) >= 1) {
+            // extra
+            if (_DISPLAY && IngCore.random(0, 2) >= 1) {
                 continue;
             }
 
@@ -152,7 +152,7 @@ const __command: ICommandHandler.File = {
                 text: `${interaction.user.username}#${interaction.user.discriminator}`
             });
 
-        //return
+        // return
 
         return {
             embeds: [createEmbed]
@@ -160,6 +160,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

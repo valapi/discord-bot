@@ -1,12 +1,9 @@
-//import
+// import
 
-import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
+import { SlashCommandBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-import { Crosshair } from "valorant.ts";
-import { CrosshairColor } from "@valapi/lib";
-
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder()
@@ -16,12 +13,14 @@ const __command: ICommandHandler.File = {
             option.setName("code").setDescription("Crosshair Code").setRequired(true)
         ),
     category: "valorant",
-    async execute({ interaction }) {
-        //load
+    async execute({ }) {
+        /*
+
+        // load
 
         const MyCrosshair = Crosshair.fromStringToJson(interaction.options.getString("code", true));
 
-        //script
+        // script
 
         const sendMessageArray: Array<EmbedBuilder> = [];
 
@@ -162,7 +161,7 @@ const __command: ICommandHandler.File = {
             );
         }
 
-        //return
+        // return
 
         if (sendMessageArray.length === 0) {
             return {
@@ -173,9 +172,15 @@ const __command: ICommandHandler.File = {
         return {
             embeds: sendMessageArray
         };
+
+        */
+
+        return {
+            content: "Work-In-Progress"
+        };
     }
 };
 
-//export
+// export
 
 export default __command;

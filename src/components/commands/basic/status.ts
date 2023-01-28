@@ -1,29 +1,29 @@
-//import
+// import
 
 import * as IngCore from "@ing3kth/core";
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("status").setDescription("Bot Status"),
     category: "infomation",
     async execute({ createdTime, DiscordBot, interaction }) {
-        //script
+        // script
 
-        const DiscordPing = IngCore.DifferenceMillisecond(new Date(), createdTime);
+        const DiscordPing = IngCore.Milliseconds.difference(new Date(), createdTime);
         const ClientPing = Math.round(DiscordBot.ws.ping);
 
-        const _uptime = IngCore.ToMilliseconds(process.uptime() * 1000);
+        const _uptime = IngCore.Milliseconds.toJson(process.uptime() * 1000);
 
         let _isInline = false;
 
-        if (IngCore.Random(0, 10) >= 5) {
+        if (IngCore.random(0, 10) >= 5) {
             _isInline = true;
         }
 
-        //return
+        // return
 
         return {
             content: `Invite Link: **https://valapi.github.io/url/bot**\nDiscord: **https://valapi.github.io/url/discord**\n`,
@@ -60,6 +60,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

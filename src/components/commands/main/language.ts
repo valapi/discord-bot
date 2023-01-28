@@ -1,4 +1,4 @@
-//import
+// import
 
 import * as IngCore from "@ing3kth/core";
 import { PermissionsBitField, SlashCommandBuilder } from "discord.js";
@@ -6,7 +6,7 @@ import type { ICommandHandler } from "../../../modules";
 
 import { getLanguage, ILanguage } from "../../../lang";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder()
@@ -14,8 +14,8 @@ const __command: ICommandHandler.File = {
         .setDescription("Change Language")
         .addStringOption((option) =>
             option.setName("language").setDescription("Language").setRequired(true).addChoices(
-                //name is displayName
-                //value is data of choice (can get from { .options.getString(); } function)
+                // name is displayName
+                // value is data of choice (can get from { .options.getString(); } function)
                 {
                     name: "English",
                     value: "en-US"
@@ -33,17 +33,18 @@ const __command: ICommandHandler.File = {
     },
     onlyGuild: true,
     async execute({ interaction }) {
-        //load
+        // load
 
         const _choice = interaction.options.getString("language") as ILanguage.Name;
         const guildId = String(interaction.guild?.id);
 
-        const _cache = new IngCore.Cache("languages");
+        const _cache = new IngCore.BasicTemp("languages");
+        await _cache.build();
 
-        //script
+        // script
 
-        const _old_language = getLanguage(await _cache.output(guildId));
-        const _language = getLanguage(_choice);
+        const _old_language = await getLanguage(await _cache.get(guildId));
+        const _language = await getLanguage(_choice);
 
         if (!_language) {
             if (!_old_language) {
@@ -57,9 +58,9 @@ const __command: ICommandHandler.File = {
             }
         } else {
             if (_language.name !== ILanguage.DefaultLanguage) {
-                _cache.input(String(_language.name), guildId);
+                _cache.add(String(_language.name), guildId);
             } else {
-                _cache.clear(guildId);
+                _cache.remove(guildId);
             }
 
             return {
@@ -69,6 +70,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

@@ -1,11 +1,11 @@
-//import
+// import
 
 import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
 import { ValorAccount } from "../../../utils/accounts";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder()
@@ -38,7 +38,7 @@ const __command: ICommandHandler.File = {
     },
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
-        //load
+        // load
 
         const userId = interaction.user.id;
         const thisSubCommand = interaction.options.getSubcommand();
@@ -55,7 +55,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const puuid = WebClient.getSubject();
 
@@ -132,11 +132,11 @@ const __command: ICommandHandler.File = {
             Store_ContentTier_Name = String(GetContentTier.data.data?.devName);
             Store_ContentTier_Display = String(GetContentTier.data.data?.displayIcon);
 
-            //color
+            // color
             const ContentTiersColor = String(GetContentTier.data.data?.highlightColor);
             const _Color = ContentTiersColor.substring(0, ContentTiersColor.length - 2);
 
-            //display
+            // display
 
             let Store_Display_Name = "";
             let Store_Display_Icon = "";
@@ -175,7 +175,7 @@ const __command: ICommandHandler.File = {
         }
 
         if (thisSubCommand === "offers") {
-            //load
+            // load
 
             const TimeLeft = Number(
                 ValorantStore.data.SkinsPanelLayout.SingleItemOffersRemainingDurationInSeconds
@@ -184,7 +184,7 @@ const __command: ICommandHandler.File = {
 
             const sendMessageArray: Array<EmbedBuilder> = [];
 
-            //script
+            // script
 
             for (const ofItemID in AllOffers) {
                 const ItemID = AllOffers[ofItemID];
@@ -207,7 +207,7 @@ const __command: ICommandHandler.File = {
                 sendMessageArray.push(createEmbed);
             }
 
-            //return
+            // return
 
             return {
                 content: `Time Left: **${time(
@@ -219,11 +219,11 @@ const __command: ICommandHandler.File = {
         }
 
         if (thisSubCommand === "collection") {
-            //load
+            // load
 
             const sendMessageArray = [];
 
-            //script
+            // script
 
             for (const ofTheBundle in ValorantStore.data.FeaturedBundle.Bundles) {
                 const TheBundle = ValorantStore.data.FeaturedBundle.Bundles[ofTheBundle];
@@ -238,7 +238,7 @@ const __command: ICommandHandler.File = {
 
                 const TimeLeft = Number(TheBundle.DurationRemainingInSeconds);
 
-                //const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
+                // const isNeedToBuyWholesaleOnly = Boolean(TheBundle.WholesaleOnly);
 
                 // price
                 let Price_Base = 0;
@@ -314,7 +314,7 @@ const __command: ICommandHandler.File = {
                 sendMessageArray.push(createEmbed);
             }
 
-            //return
+            // return
 
             return {
                 embeds: sendMessageArray
@@ -322,7 +322,7 @@ const __command: ICommandHandler.File = {
         }
 
         if (thisSubCommand === "bonus_store") {
-            //load
+            // load
 
             if (!ValorantStore.data.BonusStore) {
                 return {
@@ -339,13 +339,13 @@ const __command: ICommandHandler.File = {
 
             const sendMessageArray: Array<EmbedBuilder> = [];
 
-            //script
+            // script
 
             for (const ofItem in _BonusStore) {
                 const ThisBonusStore = _BonusStore[ofItem];
                 const ItemId = ThisBonusStore.Offer.Rewards[0].ItemID;
 
-                //script
+                // script
                 const DiscountPercent = ThisBonusStore.DiscountPercent;
                 const IsSeen = Boolean(ThisBonusStore.IsSeen);
 
@@ -379,7 +379,7 @@ const __command: ICommandHandler.File = {
                 _message += `\n\n${language.data.command["store"]["no_nightmarket"]}`;
             }
 
-            //return
+            // return
 
             return {
                 content: _message,
@@ -393,6 +393,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

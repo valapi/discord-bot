@@ -1,11 +1,11 @@
-//import
+// import
 
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
 import { ValorAccount } from "../../../utils/accounts";
 
-//script
+// script
 
 const _CurrentBattlePassContractId = "99ac9283-4dd3-5248-2e01-8baf778affb4";
 
@@ -14,7 +14,7 @@ const __command: ICommandHandler.File = {
     category: "valorant",
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
-        //load
+        // load
 
         const userId = interaction.user.id;
 
@@ -30,7 +30,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const puuid = WebClient.getSubject();
 
@@ -83,7 +83,7 @@ const __command: ICommandHandler.File = {
 
         switch (BP_LevelSlot?.reward.type) {
             case "EquippableSkinLevel": {
-                //weapon skin
+                // weapon skin
                 const SlotData_0 = await ValorantApiCom.Weapons.getSkinLevelByUuid(BP_Slot_ID);
                 if (SlotData_0.isRequestError || !SlotData_0.data.data) {
                     throw "EquippableSkinLevel Not Found!";
@@ -93,7 +93,7 @@ const __command: ICommandHandler.File = {
                 break;
             }
             case "EquippableCharmLevel": {
-                //buddy
+                // buddy
                 const SlotData_1 = await ValorantApiCom.Buddies.getLevelByUuid(BP_Slot_ID);
                 if (SlotData_1.isRequestError || !SlotData_1.data.data) {
                     throw "EquippableCharmLevel Not Found!";
@@ -204,6 +204,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

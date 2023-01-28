@@ -1,14 +1,14 @@
-//import
+// import
 
-import { EmbedBuilder, Formatters, ComponentType, SelectMenuBuilder } from "discord.js";
+import { EmbedBuilder, Formatters, ComponentType, StringSelectMenuBuilder } from "discord.js";
 import type { IMenuHandler, ICommandHandler } from "../../modules";
 
-//script
+// script
 
 const __menu: IMenuHandler.File = {
     customId: "helplist",
     async execute({ interaction, _SlashCommand, language }) {
-        //load
+        // load
 
         const CommandLanguage = language.data.command.help;
 
@@ -18,7 +18,7 @@ const __menu: IMenuHandler.File = {
             .setTitle(`Help - ${_CommandType}`)
             .setColor("#0099ff");
 
-        //script
+        // script
 
         let sendMessage = ``;
 
@@ -48,7 +48,7 @@ const __menu: IMenuHandler.File = {
 
         createEmbed.setDescription(sendMessage);
 
-        //return
+        // return
 
         return {
             embeds: [createEmbed],
@@ -56,7 +56,7 @@ const __menu: IMenuHandler.File = {
                 {
                     type: ComponentType.ActionRow,
                     components: [
-                        new SelectMenuBuilder()
+                        new StringSelectMenuBuilder()
                             .setCustomId("helplist")
                             .setPlaceholder(CommandLanguage["placeholder"])
                             .setMinValues(1)
@@ -90,6 +90,6 @@ const __menu: IMenuHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __menu;

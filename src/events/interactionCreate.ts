@@ -1,4 +1,4 @@
-//import
+// import
 
 import type { IEventHandler, ICommandHandler, IMenuHandler, IModalHandler } from "../modules";
 
@@ -8,17 +8,17 @@ import * as IngCore from "@ing3kth/core";
 import { getLanguageAndUndefined } from "../lang";
 import {
     type CommandInteraction,
-    type SelectMenuInteraction,
+    type StringSelectMenuInteraction,
     type ModalSubmitInteraction,
     InteractionType,
     SlashCommandBuilder,
-    WebhookEditMessageOptions,
     InteractionReplyOptions
 } from "discord.js";
 
 import { genarateApiKey } from "../utils/crypto";
+import logger from "../utils/logger";
 
-//script
+// script
 
 const __event: IEventHandler.File<"interactionCreate"> = {
     name: "interactionCreate",
@@ -33,16 +33,18 @@ const __event: IEventHandler.File<"interactionCreate"> = {
 
         const createdTime = new Date();
 
-        const language = getLanguageAndUndefined(
-            IngCore.Cache.output({
+        const language = await getLanguageAndUndefined(
+            IngCore.BasicTemp.get({
+                path: "/temp/",
                 name: "languages",
+                unicode: "base64",
                 interactionId: String(interaction.guildId)
             })
         );
 
         let _isInteractionReplied = false;
         async function interactionReply(
-            interaction: CommandInteraction | SelectMenuInteraction | ModalSubmitInteraction,
+            interaction: CommandInteraction | StringSelectMenuInteraction | ModalSubmitInteraction,
             data: InteractionReplyOptions
         ) {
             if (_isInteractionReplied === false) {
@@ -84,7 +86,7 @@ const __event: IEventHandler.File<"interactionCreate"> = {
                 ..._SlashCommand.Collection.get(interaction.commandName)
             };
 
-            //load
+            // load
 
             if (command.showDeferReply === true) {
                 await interaction.deferReply({
@@ -143,11 +145,10 @@ const __event: IEventHandler.File<"interactionCreate"> = {
                     return;
                 }
 
-                //execute
+                // execute
 
-                IngCore.Logs.log(
-                    `<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`,
-                    "info"
+                logger.info(
+                    `<${interaction.user.id}> <command> ${interaction.commandName}\x1b[0m`
                 );
 
                 const TheCommand = await command.execute({
@@ -165,23 +166,22 @@ const __event: IEventHandler.File<"interactionCreate"> = {
                 if (TheCommand) {
                     await interactionReply(interaction, TheCommand);
                 } else {
-                    await IngCore.Wait(10 * 1000);
+                    await IngCore.wait(10 * 1000);
                 }
 
-                IngCore.Logs.log(
+                logger.info(
                     `<${interaction.user.id}> <command> ${
                         interaction.commandName
-                    } [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`,
-                    "info"
+                    } [${IngCore.Milliseconds.difference(new Date().getTime(), createdTime)}]\x1b[0m`
                 );
             } catch (error) {
-                //error
+                // error
 
                 if (_DevelopmentMode === true) {
-                    IngCore.Logs.log(error, "error");
-                } else {
-                    IngCore.Logs.log(error, "error");
+                    // eslint-disable-next-line no-console
+                    console.error(error);
                 }
+                logger.error(error);
 
                 await interactionReply(interaction, {
                     content:
@@ -208,7 +208,7 @@ const __event: IEventHandler.File<"interactionCreate"> = {
                 ..._Menu.get(interaction.customId)
             };
 
-            //load
+            // load
 
             if (menu.replyMode === "edit") {
                 await interaction.deferUpdate({
@@ -223,11 +223,10 @@ const __event: IEventHandler.File<"interactionCreate"> = {
             }
 
             try {
-                //execute
+                // execute
 
-                IngCore.Logs.log(
-                    `<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`,
-                    "info"
+                logger.info(
+                    `<${interaction.user.id}> <menu> ${interaction.customId}\x1b[0m`
                 );
 
                 const TheMenu = await menu.execute({
@@ -239,20 +238,19 @@ const __event: IEventHandler.File<"interactionCreate"> = {
 
                 await interactionReply(interaction, TheMenu);
 
-                IngCore.Logs.log(
+                logger.info(
                     `<${interaction.user.id}> <menu> ${
                         interaction.customId
-                    } [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`,
-                    "info"
+                    } [${IngCore.Milliseconds.difference(new Date().getTime(), createdTime)}]\x1b[0m`
                 );
             } catch (error) {
-                //error
+                // error
 
                 if (_DevelopmentMode === true) {
-                    IngCore.Logs.log(error, "error");
-                } else {
-                    IngCore.Logs.log(error, "error");
+                    // eslint-disable-next-line no-console
+                    console.error(error);
                 }
+                logger.error(error);
 
                 await interactionReply(interaction, {
                     content:
@@ -280,14 +278,13 @@ const __event: IEventHandler.File<"interactionCreate"> = {
                 ..._Modal.get(interaction.customId)
             };
 
-            //load
+            // load
 
             try {
-                //execute
+                // execute
 
-                IngCore.Logs.log(
-                    `<${interaction.user.id}> <modal> ${interaction.customId}\x1b[0m`,
-                    "info"
+                logger.info(
+                    `<${interaction.user.id}> <modal> ${interaction.customId}\x1b[0m`
                 );
 
                 if (_isInteractionReplied === true) {
@@ -314,20 +311,19 @@ const __event: IEventHandler.File<"interactionCreate"> = {
                 });
                 _isInteractionReplied = true;
 
-                IngCore.Logs.log(
+                logger.info(
                     `<${interaction.user.id}> <modal> ${
                         interaction.customId
-                    } [${IngCore.DifferenceMillisecond(new Date().getTime(), createdTime)}]\x1b[0m`,
-                    "info"
+                    } [${IngCore.Milliseconds.difference(new Date().getTime(), createdTime)}]\x1b[0m`
                 );
             } catch (error) {
-                //error
+                // error
 
                 if (_DevelopmentMode === true) {
-                    IngCore.Logs.log(error, "error");
-                } else {
-                    IngCore.Logs.log(error, "error");
+                    // eslint-disable-next-line no-console
+                    console.error(error);
                 }
+                logger.error(error);
 
                 await interactionReply(interaction, {
                     content:
@@ -341,6 +337,6 @@ const __event: IEventHandler.File<"interactionCreate"> = {
     }
 };
 
-//export
+// export
 
 export default __event;

@@ -1,15 +1,15 @@
-//import
+// import
 
 import { SlashCommandBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("ping").setDescription("Replies with Pong!"),
     category: "miscellaneous",
     async execute({ language }) {
-        //return
+        // return
 
         return {
             content: language.data.command["ping"].default
@@ -17,6 +17,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

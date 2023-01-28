@@ -1,4 +1,4 @@
-//import
+// import
 
 import mongoose from "mongoose";
 import * as process from "process";
@@ -68,7 +68,7 @@ namespace ValorInterface {
     }
 }
 
-//function
+// function
 
 async function ValorDatabase<CollectionInterface>(config: {
     name: ValorInterface.CollectionName;
@@ -80,7 +80,7 @@ async function ValorDatabase<CollectionInterface>(config: {
     data: Array<CollectionInterface>;
     model: mongoose.Model<CollectionInterface, any, any, any>;
 }> {
-    //login
+    // login
 
     if (!config.token) {
         if (process.env["MONGO_TOKEN"]) {
@@ -92,7 +92,7 @@ async function ValorDatabase<CollectionInterface>(config: {
 
     await mongoose.connect(config.token);
 
-    //model
+    // model
 
     let MyModel: mongoose.Model<CollectionInterface, any, any, any>;
 
@@ -102,7 +102,7 @@ async function ValorDatabase<CollectionInterface>(config: {
         MyModel = mongoose.model<CollectionInterface>(config.name);
     }
 
-    //find
+    // find
 
     const MyData: Array<CollectionInterface> = await MyModel.find(config.filter || {});
 
@@ -113,6 +113,6 @@ async function ValorDatabase<CollectionInterface>(config: {
     };
 }
 
-//export
+// export
 
 export { ValorDatabase, ValorInterface };

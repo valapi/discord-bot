@@ -1,29 +1,32 @@
-//import
+// import
 
 import express from "express";
 import * as IngCore from "@ing3kth/core";
+import logger from "./utils/logger";
 
 import { StartDiscordBot } from "./app";
 
-//script
+// script
 
-const PORT = IngCore.Random(3000, 4000);
+const PORT = Math.floor(IngCore.random(3000, 4000));
 const app = express();
 
 app.get("/", (req: express.Request, res: express.Response, next: express.NextFunction) => {
     res.send(
         JSON.stringify({
-            uptime: IngCore.ToMilliseconds(process.uptime() * 1000)
+            uptime: IngCore.Milliseconds.toJson(process.uptime() * 1000)
         })
     );
+
+    next;
 });
 
 app.listen(PORT, () => {
-    IngCore.Logs.log(`Server is running on PORT ${PORT}`);
+    logger.info(`Server is running on PORT ${PORT}`);
 });
 
 (async () => {
-    const _DevelopmentMode = false;
+    const _DevelopmentMode = true;
 
     await StartDiscordBot(_DevelopmentMode);
 })();

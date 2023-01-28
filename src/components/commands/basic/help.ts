@@ -1,19 +1,19 @@
-//import
+// import
 
-import { SlashCommandBuilder, EmbedBuilder, ComponentType, SelectMenuBuilder } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, ComponentType, StringSelectMenuBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("help").setDescription("Show all Commands"),
     category: "infomation",
     async execute({ language }) {
-        //load
+        // load
 
         const CommandLanguage = language.data.command.help;
 
-        //return
+        // return
 
         return {
             embeds: [
@@ -43,7 +43,7 @@ const __command: ICommandHandler.File = {
                 {
                     type: ComponentType.ActionRow,
                     components: [
-                        new SelectMenuBuilder()
+                        new StringSelectMenuBuilder()
                             .setCustomId("helplist")
                             .setPlaceholder(CommandLanguage["placeholder"])
                             .setMinValues(1)
@@ -77,6 +77,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

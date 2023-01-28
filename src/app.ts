@@ -1,11 +1,10 @@
-//import
+// import
 
 import mongoose from "mongoose";
 import * as process from "process";
 import * as path from "path";
 import * as fs from "fs";
 import * as dotenv from "dotenv";
-import * as IngCore from "@ing3kth/core";
 
 import {
     Client,
@@ -20,31 +19,34 @@ import { REST } from "@discordjs/rest";
 import { ApplicationCommandOptionType, Routes } from "discord-api-types/v10";
 
 import type { ICommandHandler, IEventHandler, IMenuHandler, IModalHandler } from "./modules";
+import logger from "./utils/logger";
 
-//script
+// script
 
 export async function StartDiscordBot(_DevelopmentMode = false) {
-    //.env
+    // .env
     dotenv.config({
         path: path.join(`${process.cwd()}/.env`)
     });
 
-    //database
+    // database
+    mongoose.set('strictQuery', true);
+
     mongoose.connection.on("error", async (error) => {
-        IngCore.Logs.log(error, "error");
+        logger.error(error, "error");
     });
 
     mongoose.connection.on("connected", async () => {
-        IngCore.Logs.log("Successfully connected to database", "system");
+        logger.info("Successfully connected to database");
     });
 
     mongoose.connection.on("disconnected", async () => {
-        IngCore.Logs.log("Disconnected from database", "warning");
+        logger.warn("Disconnected from database");
     });
 
     await mongoose.connect(String(process.env["MONGO_TOKEN"]));
 
-    //client
+    // client
     const DiscordBot = new Client({
         intents: [
             GatewayIntentBits.Guilds,
@@ -64,26 +66,26 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
         ],
         allowedMentions: {
             parse: ["users", "roles"],
-            repliedUser: true //get ping or not?
+            repliedUser: true // get ping or not?
         },
         failIfNotExists: _DevelopmentMode
     });
 
-    //commands
+    // commands
     const _CommandCollection = new Collection();
     const _CommandList: Array<RESTPostAPIApplicationCommandsJSONBody> = [];
 
-    IngCore.Logs.log("Started refreshing application (/) commands", "info");
+    logger.info("Started refreshing application (/) commands");
 
     for (const _folder of fs.readdirSync(path.join(`${__dirname}/components/commands`))) {
         for (const _file of fs.readdirSync(
             path.join(`${__dirname}/components/commands/${_folder}`)
         )) {
             const command: ICommandHandler.File =
-                require(`./components/commands/${_folder}/${_file}`).default;
+                await require(`./components/commands/${_folder}/${_file}`).default;
 
             if (!command) {
-                IngCore.Logs.log(command, "error");
+                logger.error(command);
 
                 continue;
             }
@@ -158,9 +160,8 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
                                     });
                                     _CommandList.push(NewSlashCommand);
                                 } else {
-                                    IngCore.Logs.log(
-                                        `<${_file}> option command [${cmd.oldName}] not found`,
-                                        "error"
+                                    logger.error(
+                                        `<${_file}> option command [${cmd.oldName}] not found`
                                     );
                                 }
                             }
@@ -204,40 +205,40 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
             await RestCommands(_CommandList, []);
         }
 
-        IngCore.Logs.log("Successfully reloaded application (/) commands", "info");
+        logger.info("Successfully reloaded application (/) commands");
     } catch (error) {
-        IngCore.Logs.log(error, "error");
+        logger.error(error);
     }
 
-    //menu
+    // menu
     const _MenuCollection = new Collection();
 
     for (const _file of fs.readdirSync(path.join(`${__dirname}/components/menus`))) {
-        const menu: IMenuHandler.File = require(`./components/menus/${_file}`).default;
+        const menu: IMenuHandler.File = await require(`./components/menus/${_file}`).default;
 
         if (!menu) {
-            IngCore.Logs.log(menu, "error");
+            logger.error(menu);
             continue;
         }
 
         _MenuCollection.set(menu.customId, menu);
     }
 
-    //modal
+    // modal
     const _ModalCollection = new Collection();
 
     for (const _file of fs.readdirSync(path.join(`${__dirname}/components/modals`))) {
-        const modal: IModalHandler.File = require(`./components/modals/${_file}`).default;
+        const modal: IModalHandler.File = await require(`./components/modals/${_file}`).default;
 
         if (!modal) {
-            IngCore.Logs.log(modal, "error");
+            logger.error(modal);
             continue;
         }
 
         _ModalCollection.set(modal.customId, modal);
     }
 
-    //events
+    // events
     DiscordBot.setMaxListeners(50);
 
     const _EventInput: IEventHandler.Input = {
@@ -252,7 +253,7 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
     };
 
     for (const _file of fs.readdirSync(path.join(`${__dirname}/events`))) {
-        const event: IEventHandler.File<any> = require(`./events/${_file}`).default;
+        const event: IEventHandler.File<any> = await require(`./events/${_file}`).default;
 
         if (!event) {
             continue;
@@ -263,7 +264,7 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
                 try {
                     await event.execute(_EventInput, ...args);
                 } catch (error) {
-                    IngCore.Logs.log(error, "error");
+                    logger.error(error);
                 }
             });
         } else {
@@ -271,13 +272,13 @@ export async function StartDiscordBot(_DevelopmentMode = false) {
                 try {
                     await event.execute(_EventInput, ...args);
                 } catch (error) {
-                    IngCore.Logs.log(error, "error");
+                    logger.error(error);
                 }
             });
         }
     }
 
-    //login
+    // login
     await DiscordBot.login(process.env["TOKEN"]);
 
     if (_DevelopmentMode === true) {

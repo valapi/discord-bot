@@ -1,4 +1,4 @@
-//import
+// import
 
 import * as IngCore from "@ing3kth/core";
 import { SlashCommandBuilder, EmbedBuilder, time } from "discord.js";
@@ -7,7 +7,7 @@ import type { ICommandHandler } from "../../../modules";
 import { ValorAccount } from "../../../utils/accounts";
 import { QueueId } from "@valapi/lib";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder()
@@ -54,8 +54,8 @@ const __command: ICommandHandler.File = {
         data: ["matchhistory"]
     },
     onlyGuild: true,
-    async execute({ interaction, language, apiKey, createdTime }) {
-        //load
+    async execute({ interaction, language, apiKey }) {
+        // load
 
         const userId = interaction.user.id;
 
@@ -71,7 +71,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const puuid = WebClient.getSubject();
 
@@ -90,7 +90,7 @@ const __command: ICommandHandler.File = {
 
         const sendMessageArray: Array<EmbedBuilder> = [];
 
-        //script
+        // script
         const Match_ID = _MatchHistory.MatchID;
 
         const AllMatchData = await WebClient.Match.fetchMatchDetails(Match_ID);
@@ -105,17 +105,17 @@ const __command: ICommandHandler.File = {
 
         const Match_Type = AllMatchData.data.matchInfo.queueID as QueueId.Identify;
         const Match_Name = String(QueueId.fromString(Match_Type)).replace("_", " ");
-        //const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
+        // const Match_isRankGame = AllMatchData.data.matchInfo.isRanked;
 
-        //time
+        // time
         const Match_StartTimeStamp = new Date(AllMatchData.data.matchInfo.gameStartMillis);
 
-        const Match_LongInMillisecondFormat = IngCore.ToMilliseconds(
+        const Match_LongInMillisecondFormat = IngCore.Milliseconds.toJson(
             AllMatchData.data.matchInfo.gameLengthMillis
         );
         const _time = `**${Match_LongInMillisecondFormat.data.hour}** hour(s)\n**${Match_LongInMillisecondFormat.data.minute}** minute(s)\n**${Match_LongInMillisecondFormat.data.second}** second(s)`;
 
-        //map
+        // map
         const GetMap = await ValorantApiCom.Maps.get();
         if (GetMap.isRequestError || !GetMap.data.data) {
             throw new Error(GetMap.data.error);
@@ -127,7 +127,7 @@ const __command: ICommandHandler.File = {
 
         const Match_Display: string = ThisMap?.listViewIcon as string;
 
-        //season
+        // season
         const GetSeason = await ValorantApiCom.Seasons.getByUuid(
             AllMatchData.data.matchInfo.seasonId
         );
@@ -196,7 +196,7 @@ const __command: ICommandHandler.File = {
         const Player_Level: number = ThisPlayer?.accountLevel as number;
         const Player_Team: string = ThisPlayer?.teamId as string;
 
-        //rank
+        // rank
         let Player_Rank = ``;
 
         const AllRanks = await ValorantApiCom.CompetitiveTiers.get();
@@ -217,7 +217,7 @@ const __command: ICommandHandler.File = {
             }
         }
 
-        //agent
+        // agent
         const GetAgent = await ValorantApiCom.Agents.getByUuid(ThisPlayer?.characterId as string);
         if (GetAgent.isRequestError || !GetAgent.data.data) {
             throw new Error(GetAgent.data.error);
@@ -325,7 +325,7 @@ const __command: ICommandHandler.File = {
             }
         }
 
-        //return
+        // return
 
         return {
             embeds: sendMessageArray
@@ -333,6 +333,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

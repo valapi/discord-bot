@@ -1,19 +1,19 @@
-//import
+// import
 
 import type { IEventHandler } from "../modules";
 
-import * as IngCore from "@ing3kth/core";
+import logger from "../utils/logger";
 
-//script
+// script
 
 const __event: IEventHandler.File<"error"> = {
     name: "error",
     once: false,
     async execute({}, error) {
-        IngCore.Logs.log(error, "error");
+        logger.error(error);
     }
 };
 
-//export
+// export
 
 export default __event;

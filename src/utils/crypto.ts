@@ -1,8 +1,8 @@
-//import
+// import
 
 import * as CryptoJS from "crypto-js";
 
-//function
+// function
 
 function genarateApiKey(key1: string, key2: string, key3: string): string {
     const _key1 = Buffer.from(key1 + key2).toString("binary");
@@ -30,6 +30,6 @@ function decrypt(message: string, key: string): string {
     return step1.toString(CryptoJS.enc.Utf8);
 }
 
-//export
+// export
 
 export { genarateApiKey, encrypt, decrypt };

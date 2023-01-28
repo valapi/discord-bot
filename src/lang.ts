@@ -3,7 +3,7 @@
 import * as fs from "fs";
 import * as path from "path";
 
-import type { Client as ValorantApiCom } from "@valapi/valorant-api.com";
+import type { ValorantApiCom } from "@valapi/valorant-api.com";
 
 // interface
 
@@ -12,6 +12,7 @@ namespace ILanguage {
 
     export interface File {
         name: ILanguage.Name;
+        displayName: string;
         data: {
             not_guild: string;
             not_permission: string;
@@ -73,9 +74,9 @@ namespace ILanguage {
 
 // function
 
-function getLanguage(language: ILanguage.Name = ILanguage.DefaultLanguage): ILanguage.File | void {
+async function getLanguage(language: ILanguage.Name = ILanguage.DefaultLanguage): Promise<ILanguage.File | void> {
     for (const _file of fs.readdirSync(path.join(`${__dirname}/language`))) {
-        const _language: ILanguage.File = require(`./language/${_file}`).default;
+        const _language: ILanguage.File = await require(`./language/${_file}`).default;
 
         if (!_language) {
             continue;
@@ -87,17 +88,15 @@ function getLanguage(language: ILanguage.Name = ILanguage.DefaultLanguage): ILan
     }
 }
 
-function getLanguageAndUndefined(
+async function getLanguageAndUndefined(
     language: ILanguage.Name = ILanguage.DefaultLanguage
-): ILanguage.File {
-    const _language = getLanguage(language);
-
+): Promise<ILanguage.File> {
+    const _language = await getLanguage(language);
     if (_language) {
         return _language;
     }
 
-    const _default = getLanguage(ILanguage.DefaultLanguage);
-
+    const _default = await getLanguage(ILanguage.DefaultLanguage);
     if (_default) {
         return _default;
     }

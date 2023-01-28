@@ -5,7 +5,7 @@ import type {
     ClientEvents,
     Collection,
     SlashCommandBuilder,
-    SelectMenuInteraction,
+    StringSelectMenuInteraction,
     SlashCommandSubcommandsOnlyBuilder,
     ChatInputCommandInteraction,
     SlashCommandOptionsOnlyBuilder,
@@ -81,7 +81,7 @@ namespace ICommandHandler {
 
 namespace IMenuHandler {
     export interface Input {
-        interaction: SelectMenuInteraction;
+        interaction: StringSelectMenuInteraction;
         DiscordBot: Client;
         language: ILanguage.File;
         _SlashCommand: {

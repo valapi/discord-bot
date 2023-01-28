@@ -1,9 +1,9 @@
-//import
+// import
 
 import { ComponentType, ModalBuilder, SlashCommandBuilder, TextInputStyle } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("report").setDescription("Report Bug To Developer"),
@@ -15,11 +15,11 @@ const __command: ICommandHandler.File = {
         data: ["reportbug"]
     },
     async execute({ interaction, language }) {
-        //load
+        // load
 
         const CommandLanguage = language.data.command.report;
 
-        //script
+        // script
 
         const MyModal = new ModalBuilder()
             .setCustomId("reportbug")
@@ -59,7 +59,7 @@ const __command: ICommandHandler.File = {
 
         await interaction.showModal(MyModal);
 
-        //return
+        // return
 
         return {
             content: language.data.error
@@ -67,6 +67,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

@@ -1,11 +1,12 @@
-//import
+// import
 
 import type { ILanguage } from "../lang";
 
-//script
+// script
 
 const _language: ILanguage.File = {
     name: `en-US`,
+    displayName: "English",
     data: {
         not_guild: `This command can only be used in a guild.`,
         not_permission: `You don't have permission to use this command.`,
@@ -62,6 +63,6 @@ const _language: ILanguage.File = {
     }
 };
 
-//export
+// export
 
 export default _language;

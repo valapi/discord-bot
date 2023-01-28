@@ -1,19 +1,19 @@
-//import
+// import
 
 import type { IEventHandler } from "../modules";
 
-import * as IngCore from "@ing3kth/core";
+import logger from "../utils/logger";
 
-//script
+// script
 
 const __event: IEventHandler.File<"ready"> = {
     name: "ready",
     once: true,
     async execute({}, client) {
-        IngCore.Logs.log(`Ready! Logged in as ${client.user.tag}`, "system");
+        logger.info(`Ready! Logged in as ${client.user.tag}`);
     }
 };
 
-//export
+// export
 
 export default __event;

@@ -1,4 +1,4 @@
-//import
+// import
 
 import { SlashCommandBuilder, EmbedBuilder, time } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
@@ -6,14 +6,14 @@ import type { ICommandHandler } from "../../../modules";
 import { ValorAccount } from "../../../utils/accounts";
 import { Region } from "@valapi/lib";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("profile").setDescription("My Profile"),
     category: "valorant",
     onlyGuild: true,
     async execute({ interaction, language, apiKey, createdTime }) {
-        //load
+        // load
 
         const userId = interaction.user.id;
 
@@ -29,7 +29,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const ValorantUserInfo = await WebClient.getUserInfo();
         const puuid = ValorantUserInfo.data.sub;
@@ -45,7 +45,7 @@ const __command: ICommandHandler.File = {
         const PlayerTitle = await ValorantApiCom.PlayerTitles.getByUuid(PlayerTitle_ID);
         const PlayerTitle_Title = String(PlayerTitle.data.data?.titleText);
 
-        //return
+        // return
 
         return {
             content: language.data.command["profile"]["default"],
@@ -104,6 +104,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

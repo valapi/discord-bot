@@ -1,11 +1,12 @@
-//import
+// import
 
 import type { ILanguage } from "../lang";
 
-//script
+// script
 
 const _language: ILanguage.File = {
     name: `th-TH`,
+    displayName: "Thai (ไทย)",
     data: {
         not_guild: `คำสั่งนี้สามารถใช้ได้เฉพาะในเซิฟเวอร์`,
         not_permission: `คุณไม่มีสิทธิ์ใช้คำสั่งนี้`,
@@ -62,6 +63,6 @@ const _language: ILanguage.File = {
     }
 };
 
-//export
+// export
 
 export default _language;

@@ -1,4 +1,4 @@
-//import
+// import
 
 import * as IngCore from "@ing3kth/core";
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
@@ -6,7 +6,7 @@ import type { ICommandHandler } from "../../../modules";
 
 import { ValorAccount } from "../../../utils/accounts";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("balance").setDescription("Wallet"),
@@ -16,7 +16,7 @@ const __command: ICommandHandler.File = {
     },
     onlyGuild: true,
     async execute({ interaction, language, apiKey }) {
-        //load
+        // load
 
         const userId = interaction.user.id;
 
@@ -32,7 +32,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const puuid = WebClient.getSubject();
 
@@ -68,7 +68,7 @@ const __command: ICommandHandler.File = {
 
         // send
         const createEmbed = new EmbedBuilder().setThumbnail(
-            BalanceArray.at(IngCore.Random(0, BalanceArray.length - 1) as number)?.icon as string
+            BalanceArray.at(IngCore.random(0, BalanceArray.length - 1) as number)?.icon as string
         );
 
         BalanceArray.forEach((item) => {
@@ -78,7 +78,7 @@ const __command: ICommandHandler.File = {
             });
         });
 
-        //return
+        // return
 
         return {
             embeds: [createEmbed]
@@ -86,6 +86,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

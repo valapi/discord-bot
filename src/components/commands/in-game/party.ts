@@ -1,4 +1,4 @@
-//import
+// import
 
 import { SlashCommandBuilder, EmbedBuilder } from "discord.js";
 import type { ICommandHandler } from "../../../modules";
@@ -6,15 +6,15 @@ import type { ICommandHandler } from "../../../modules";
 import { ValorAccount } from "../../../utils/accounts";
 import { QueueId } from "@valapi/lib";
 
-//script
+// script
 
 const __command: ICommandHandler.File = {
     command: new SlashCommandBuilder().setName("party").setDescription("Party"),
     category: "valorant",
     onlyGuild: true,
-    inDevlopment: true, //<--- command are bugg :(
-    async execute({ interaction, language, apiKey, createdTime }) {
-        //load
+    inDevlopment: true, // <--- command are bugg :(
+    async execute({ interaction, language, apiKey }) {
+        // load
 
         const userId = interaction.user.id;
 
@@ -30,7 +30,7 @@ const __command: ICommandHandler.File = {
             };
         }
 
-        //script
+        // script
 
         const puuid = WebClient.getSubject();
 
@@ -124,7 +124,7 @@ const __command: ICommandHandler.File = {
             sendMessageArray.at(1)?.setColor("#00ff00");
         }
 
-        //return
+        // return
 
         return {
             embeds: sendMessageArray
@@ -132,6 +132,6 @@ const __command: ICommandHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __command;

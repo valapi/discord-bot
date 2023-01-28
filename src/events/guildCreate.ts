@@ -1,20 +1,20 @@
-//import
+// import
 
 import type { IEventHandler } from "../modules";
 
-import * as IngCore from "@ing3kth/core";
+import logger from "../utils/logger";
 
 import { EmbedBuilder, type TextChannel } from "discord.js";
 
-//script
+// script
 
 const __event: IEventHandler.File<"guildCreate"> = {
     name: "guildCreate",
     once: false,
     async execute({ DiscordBot }, guild) {
-        IngCore.Logs.log(`<${guild.id}> join new guild`, "info");
+        logger.info(`<${guild.id}> join new guild`);
 
-        //message
+        // message
         let sendMessage = ``;
         sendMessage += `Joined __**${guild.name}**__!\n`;
         sendMessage += `\nUse **/help** to see all commands.`;
@@ -56,7 +56,7 @@ const __event: IEventHandler.File<"guildCreate"> = {
             createEmbed.setImage(String(guild.splashURL()));
         }
 
-        //send
+        // send
         let SendGuildChannel: TextChannel | null;
 
         if (guild.publicUpdatesChannelId != null) {
@@ -82,6 +82,6 @@ const __event: IEventHandler.File<"guildCreate"> = {
     }
 };
 
-//export
+// export
 
 export default __event;

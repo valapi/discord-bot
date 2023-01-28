@@ -1,18 +1,18 @@
-//import
+// import
 
 import { Formatters } from "discord.js";
 import type { IModalHandler } from "../../modules";
 
-//script
+// script
 
 const __modal: IModalHandler.File = {
     customId: "reportbug",
     async execute({ interaction, DiscordBot, language }) {
-        //load
+        // load
 
         const CommandLanguage = language.data.command.report;
 
-        //script
+        // script
 
         const _Content = `Topic:\n**${interaction.fields.getTextInputValue(
             "reportbug_topic"
@@ -36,6 +36,6 @@ const __modal: IModalHandler.File = {
     }
 };
 
-//export
+// export
 
 export default __modal;
