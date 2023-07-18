@@ -1,7 +1,5 @@
 {
-    "root": true,
     "env": {
-        "es6": true,
         "es2021": true,
         "node": true
     },
@@ -14,35 +12,10 @@
         "ecmaVersion": "latest",
         "sourceType": "module"
     },
-    "ignorePatterns": [
-        "/dist/**/*" // Ignore built files.
-    ],
     "plugins": [
         "@typescript-eslint"
     ],
     "rules": {
-        "no-extra-semi": "warn",
-        "semi": "warn",
-        "no-empty-pattern": "off",
-        "no-console": "error",
-
-        "@typescript-eslint/no-explicit-any": "off",
-        "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/no-unused-vars": "warn", // <--- change to "warn" for checking
-        "@typescript-eslint/no-var-requires": "off", // <--- for handler command
-
-        "no-debugger": "error",
-        "no-var": "error",
-        "prefer-arrow-callback": "error",
-        "prefer-const": "error",
-        "prefer-template": "error",
-
-        // better code
-        "spaced-comment": "warn", // <-- Need Space before comment
-        "comma-dangle": "warn",
-        "brace-style": "warn"
-    },
-    "settings": {
-        "allowDefinitionFiles": true
+        "@typescript-eslint/no-namespace": "off"
     }
 }

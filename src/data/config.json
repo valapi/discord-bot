@@ -1,0 +1,4 @@
+{
+    "rateLimit": 20,
+    "databaseName": "VALAPI_DISCORD_BOT"
+}
