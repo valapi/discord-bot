@@ -1,4 +1,6 @@
 {
     "rateLimit": 20,
-    "databaseName": "VALAPI_DISCORD_BOT"
+    "database": {
+        "name": "VALAPI_DISCORD_BOT"
+    }
 }

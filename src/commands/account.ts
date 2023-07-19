@@ -136,7 +136,7 @@ export default new Command(
                             .setDescription(
                                 `UUID: ${bold(account.client.getSubject())}\nRegion: ${bold(
                                     Region.fromString(account.client.region.live).replace("_", " ")
-                                )}\nToken Expiration: ${bold(time(account.client.getExpirationDate() / 1000, TimestampStyles.RelativeTime))}`
+                                )}\nToken Expiration: ${bold(time(Math.round(account.client.getExpirationDate() / 1000), TimestampStyles.RelativeTime))}`
                             )
                             .setColor(Colors.Aqua)
                     ],

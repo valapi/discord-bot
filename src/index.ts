@@ -1,3 +1,26 @@
+import os from "node:os";
+import * as process from "node:process";
+
+import { open } from "lmdb";
+import type { RootDatabase, Key } from "lmdb";
+import type { AuthCore } from "valorant.ts";
+
+import config from "./data/config.json";
+
+declare global {
+    // eslint-disable-next-line no-var
+    var database: RootDatabase<AuthCore.Json, Key>;
+}
+
+global.database = open<AuthCore.Json>({
+    commitDelay: 250,
+    compression: true,
+    dupSort: false,
+    encoding: "json",
+    name: config.database.name,
+    path: os.tmpdir()
+});
+
 import { GatewayIntentBits, Partials, REST, Routes } from "discord.js";
 import type { RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord.js";
 
@@ -25,7 +48,6 @@ global.client = new Client({
     partials: [Partials.Channel, Partials.GuildMember, Partials.Message, Partials.Reaction, Partials.User]
 });
 
-import * as process from "node:process";
 import * as path from "node:path";
 
 import * as fs from "fs-extra";

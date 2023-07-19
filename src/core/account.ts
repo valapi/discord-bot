@@ -1,8 +1,6 @@
 import { AuthClient } from "valorant.ts";
 import type { AuthCore } from "valorant.ts";
 
-import database from "./database";
-
 export default class Account {
     public userId: string;
     public client: AuthClient;
