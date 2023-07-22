@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, Colors } from "discord.js";
 
-import { WebClient, ValorantApiCom } from "valorant.ts";
+import { WebClient, ValorantApiCom, Locale } from "valorant.ts";
 
 import Command from "../core/command";
 import Account from "../core/account";
@@ -12,7 +12,9 @@ export default new Command(
 
         if (saved) {
             const webClient = WebClient.fromJSON(saved);
-            const valorantApiCom = new ValorantApiCom();
+            const valorantApiCom = new ValorantApiCom({
+                language: Locale.Default.English_United_States
+            });
 
             const subject = webClient.getSubject();
 
@@ -49,7 +51,7 @@ export default new Command(
                                 .addFields(
                                     {
                                         name: "Rank",
-                                        value: tier.tierName.toString()
+                                        value: tier.tierName
                                     },
                                     {
                                         name: "\u200B",

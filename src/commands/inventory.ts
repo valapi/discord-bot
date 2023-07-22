@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, Colors } from "discord.js";
 
-import { WebClient, ValorantApiCom } from "valorant.ts";
+import { WebClient, ValorantApiCom, Locale } from "valorant.ts";
 
 import Command from "../core/command";
 import Account from "../core/account";
@@ -12,7 +12,9 @@ export default new Command(
 
         if (saved) {
             const webClient = WebClient.fromJSON(saved);
-            const valorantApiCom = new ValorantApiCom();
+            const valorantApiCom = new ValorantApiCom({
+                language: Locale.Default.English_United_States
+            });
 
             const subject = webClient.getSubject();
 
@@ -27,7 +29,7 @@ export default new Command(
             if (cardData.data.data) {
                 inventoryEmbed.addFields({
                     name: "Player Card",
-                    value: cardData.data.data.displayName.toString(),
+                    value: cardData.data.data.displayName,
                     inline: true
                 });
                 inventoryEmbed.setImage(cardData.data.data.wideArt);
@@ -38,7 +40,7 @@ export default new Command(
             if (titleData.data.data) {
                 inventoryEmbed.addFields({
                     name: "Player Title",
-                    value: `${titleData.data.data.displayName.toString()} - ${titleData.data.data.titleText.toString()}`,
+                    value: `${titleData.data.data.displayName} - ${titleData.data.data.titleText}`,
                     inline: true
                 });
             }
@@ -54,7 +56,7 @@ export default new Command(
             for (const gun of inventory.data.Guns) {
                 const gunData = await valorantApiCom.Weapons.getSkinByUuid(gun.SkinID);
                 if (gunData.data.data) {
-                    gunNames.push(gunData.data.data.displayName.toString());
+                    gunNames.push(gunData.data.data.displayName);
                 }
             }
             inventoryEmbed.addFields({
@@ -69,7 +71,7 @@ export default new Command(
             for (const spray of inventory.data.Sprays) {
                 const sprayData = await valorantApiCom.Sprays.getByUuid(spray.SprayID);
                 if (sprayData.data.data) {
-                    sprayNames.push(sprayData.data.data.displayName.toString());
+                    sprayNames.push(sprayData.data.data.displayName);
                     sprayIcon.push(sprayData.data.data.displayIcon);
                 }
             }

@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, SlashCommandSubcommandBuilder, SlashCommandBooleanOption, EmbedBuilder, Colors, bold, time, TimestampStyles, strikethrough, italic } from "discord.js";
 
-import { WebClient, ValorantApiCom } from "valorant.ts";
+import { WebClient, ValorantApiCom, Locale } from "valorant.ts";
 
 import Command from "../core/command";
 import Account from "../core/account";
@@ -34,7 +34,9 @@ export default new Command(
 
         if (saved) {
             const webClient = WebClient.fromJSON(saved);
-            const valorantApiCom = new ValorantApiCom();
+            const valorantApiCom = new ValorantApiCom({
+                language: Locale.Default.English_United_States
+            });
 
             const subject = webClient.getSubject();
 
@@ -63,10 +65,10 @@ export default new Command(
                                 const currency = await valorantApiCom.Currencies.getByUuid(currencyId);
 
                                 items.push({
-                                    name: weaponSkin.displayName.toString(),
+                                    name: weaponSkin.displayName,
                                     icon: weaponSkin.displayIcon,
                                     contentTier: {
-                                        name: contentTier.data.data?.displayName.toString(),
+                                        name: contentTier.data.data?.displayName,
                                         icon: contentTier.data.data?.displayIcon,
                                         color: contentTier.data.data?.highlightColor
                                     },
@@ -111,13 +113,13 @@ export default new Command(
 
                     bundleEmbeds.push(
                         new EmbedBuilder()
-                            .setTitle(bundleData.data.data?.displayName.toString() || null)
-                            .setDescription(bundleData.data.data?.extraDescription ? String(bundleData.data.data.extraDescription) : bundleData.data.data?.description ? String(bundleData.data.data.description) : null)
+                            .setTitle(bundleData.data.data?.displayName || null)
+                            .setDescription(bundleData.data.data?.extraDescription ? bundleData.data.data.extraDescription : bundleData.data.data?.description ? bundleData.data.data.description : null)
                             .addFields([
                                 {
                                     name: "Price",
-                                    value: bundle.TotalBaseCost === bundle.TotalDiscountedCost 
-                                        ? bundle.TotalBaseCost[bundle.CurrencyID].toString() 
+                                    value: bundle.WholesaleOnly || bundle.TotalBaseCost[bundle.CurrencyID] === bundle.TotalDiscountedCost[bundle.CurrencyID]
+                                        ? `${bundle.TotalBaseCost[bundle.CurrencyID].toString()} ${currency.data.data?.displayName}`
                                         : `${strikethrough(bundle.TotalBaseCost[bundle.CurrencyID].toString())} ${italic("-->")} ${bold(`${bundle.TotalDiscountedCost[bundle.CurrencyID]} ${currency.data.data?.displayName} (-${bundle.TotalDiscountPercent * 100}%)`)}`,
                                     inline: true
                                 },

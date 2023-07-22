@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, EmbedBuilder, Colors, time, TimestampStyles } from "discord.js";
 
-import { WebClient, ValorantApiCom, Region } from "valorant.ts";
+import { WebClient, ValorantApiCom, Locale, Region } from "valorant.ts";
 
 import Command from "../core/command";
 import Account from "../core/account";
@@ -12,7 +12,9 @@ export default new Command(
 
         if (saved) {
             const webClient = WebClient.fromJSON(saved);
-            const valorantApiCom = new ValorantApiCom();
+            const valorantApiCom = new ValorantApiCom({
+                language: Locale.Default.English_United_States
+            });
 
             const subject = webClient.getSubject();
 
@@ -29,12 +31,12 @@ export default new Command(
                         .addFields(
                             {
                                 name: `Name`,
-                                value: `${userInfo.data.acct.game_name}`,
+                                value: userInfo.data.acct.game_name,
                                 inline: true
                             },
                             {
                                 name: `Tag`,
-                                value: `${userInfo.data.acct.tag_line}`,
+                                value: userInfo.data.acct.tag_line,
                                 inline: true
                             },
                             {
@@ -57,16 +59,16 @@ export default new Command(
                             },
                             {
                                 name: `Card`,
-                                value: `${playerCard.data.data?.displayName.toString()}`,
+                                value: String(playerCard.data.data?.displayName),
                                 inline: true
                             },
                             {
                                 name: `Title`,
-                                value: `${playerTitle.data.data?.titleText.toString()}`,
+                                value: String(playerTitle.data.data?.titleText),
                                 inline: true
                             }
                         )
-                        .setThumbnail(playerCard.data.data?.displayIcon.toString() || null)
+                        .setThumbnail(playerCard.data.data?.displayIcon || null)
                 ]
             });
         } else {
