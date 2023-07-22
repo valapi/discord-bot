@@ -25,10 +25,16 @@ export default new Command(
                 .setName("login")
                 .setDescription("add account")
                 .addStringOption(
-                    new SlashCommandStringOption().setName("username").setDescription("Riot Username").setRequired(true)
+                    new SlashCommandStringOption()
+                        .setName("username")
+                        .setDescription("Riot Username")
+                        .setRequired(true)
                 )
                 .addStringOption(
-                    new SlashCommandStringOption().setName("password").setDescription("password").setRequired(true)
+                    new SlashCommandStringOption()
+                        .setName("password")
+                        .setDescription("password")
+                        .setRequired(true)
                 )
         )
         .addSubcommand(
@@ -44,8 +50,12 @@ export default new Command(
                         .setRequired(true)
                 )
         )
-        .addSubcommand(new SlashCommandSubcommandBuilder().setName("get").setDescription("check account"))
-        .addSubcommand(new SlashCommandSubcommandBuilder().setName("remove").setDescription("remove account")),
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder().setName("get").setDescription("check account")
+        )
+        .addSubcommand(
+            new SlashCommandSubcommandBuilder().setName("remove").setDescription("remove account")
+        ),
     async (interaction) => {
         const _subcommand = interaction.options.getSubcommand();
 
@@ -62,7 +72,11 @@ export default new Command(
                 embeds: [
                     new EmbedBuilder()
                         .setTitle("Success !!")
-                        .setDescription(`your account was add to database\n\nUUID: ${bold(account.client.getSubject())}`)
+                        .setDescription(
+                            `your account was add to database\n\nUUID: ${bold(
+                                account.client.getSubject()
+                            )}`
+                        )
                         .setColor(Colors.Green)
                 ],
                 ephemeral: true
@@ -94,7 +108,9 @@ export default new Command(
                         new EmbedBuilder()
                             .setTitle("Multi-Factor Authentication")
                             .setDescription(
-                                `multi-factor is enable please do ${inlineCode("/account verify code:")} after this`
+                                `multi-factor is enable please do ${inlineCode(
+                                    "/account verify code:"
+                                )} after this`
                             )
                             .setColor(Colors.Yellow)
                     ],
@@ -136,7 +152,12 @@ export default new Command(
                             .setDescription(
                                 `UUID: ${bold(account.client.getSubject())}\nRegion: ${bold(
                                     Region.fromString(account.client.region.live).replace("_", " ")
-                                )}\nToken Expiration: ${bold(time(Math.round(account.client.getExpirationDate() / 1000), TimestampStyles.RelativeTime))}`
+                                )}\nToken Expiration: ${bold(
+                                    time(
+                                        Math.round(account.client.getExpirationDate() / 1000),
+                                        TimestampStyles.RelativeTime
+                                    )
+                                )}`
                             )
                             .setColor(Colors.Aqua)
                     ],

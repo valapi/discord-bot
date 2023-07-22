@@ -21,8 +21,12 @@ export default new Command(
             const userInfo = await webClient.getUserInfo();
             const inventory = await webClient.Personalization.getPlayerLoadout(subject);
 
-            const playerCard = await valorantApiCom.PlayerCards.getByUuid(inventory.data.Identity.PlayerCardID);
-            const playerTitle = await valorantApiCom.PlayerTitles.getByUuid(inventory.data.Identity.PlayerTitleID);
+            const playerCard = await valorantApiCom.PlayerCards.getByUuid(
+                inventory.data.Identity.PlayerCardID
+            );
+            const playerTitle = await valorantApiCom.PlayerTitles.getByUuid(
+                inventory.data.Identity.PlayerTitleID
+            );
 
             await interaction.reply({
                 embeds: [
@@ -45,12 +49,18 @@ export default new Command(
                             },
                             {
                                 name: `Region`,
-                                value: `${Region.fromString(webClient.region.live).replace("_", " ")}`,
+                                value: `${Region.fromString(webClient.region.live).replace(
+                                    "_",
+                                    " "
+                                )}`,
                                 inline: true
                             },
                             {
                                 name: `Create`,
-                                value: time(userInfo.data.acct.created_at, TimestampStyles.LongDate),
+                                value: time(
+                                    userInfo.data.acct.created_at,
+                                    TimestampStyles.LongDate
+                                ),
                                 inline: true
                             },
                             {

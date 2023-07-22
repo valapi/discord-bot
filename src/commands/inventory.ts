@@ -22,10 +22,12 @@ export default new Command(
 
             const inventory = await webClient.Personalization.getPlayerLoadout(subject);
 
-            const inventoryEmbed = new EmbedBuilder();
+            const inventoryEmbed = new EmbedBuilder().setColor(Colors.Aqua);
 
             // card
-            const cardData = await valorantApiCom.PlayerCards.getByUuid(inventory.data.Identity.PlayerCardID);
+            const cardData = await valorantApiCom.PlayerCards.getByUuid(
+                inventory.data.Identity.PlayerCardID
+            );
             if (cardData.data.data) {
                 inventoryEmbed.addFields({
                     name: "Player Card",
@@ -36,7 +38,9 @@ export default new Command(
             }
 
             // title
-            const titleData = await valorantApiCom.PlayerTitles.getByUuid(inventory.data.Identity.PlayerTitleID);
+            const titleData = await valorantApiCom.PlayerTitles.getByUuid(
+                inventory.data.Identity.PlayerTitleID
+            );
             if (titleData.data.data) {
                 inventoryEmbed.addFields({
                     name: "Player Title",
@@ -75,7 +79,9 @@ export default new Command(
                     sprayIcon.push(sprayData.data.data.displayIcon);
                 }
             }
-            const sprayIconId = Math.floor((interaction.createdAt.getSeconds() / 60) * sprayIcon.length);
+            const sprayIconId = Math.floor(
+                (interaction.createdAt.getSeconds() / 60) * sprayIcon.length
+            );
             inventoryEmbed.setThumbnail(sprayIcon.at(sprayIconId) || null);
             inventoryEmbed.addFields({
                 name: "Sprays",
@@ -84,7 +90,7 @@ export default new Command(
             });
 
             await interaction.editReply({
-                embeds: [ inventoryEmbed ]
+                embeds: [inventoryEmbed]
             });
         } else {
             await interaction.reply({

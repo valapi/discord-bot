@@ -7,7 +7,7 @@ export default class Account {
 
     public constructor(userId: string) {
         this.userId = userId;
-        this.client = new AuthClient()
+        this.client = new AuthClient();
     }
 
     public setTmp() {

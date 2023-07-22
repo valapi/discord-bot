@@ -19,7 +19,9 @@ export default new Command(
             const subject = webClient.getSubject();
 
             const competitiveUpdate = await webClient.MMR.fetchCompetitiveUpdates(subject);
-            const lastCompetitiveUpdate = competitiveUpdate.data.Matches.find((match) => match.RankedRatingEarned !== 0)
+            const lastCompetitiveUpdate = competitiveUpdate.data.Matches.find(
+                (match) => match.RankedRatingEarned !== 0
+            );
             if (!lastCompetitiveUpdate) {
                 await interaction.reply({
                     embeds: [
@@ -38,8 +40,11 @@ export default new Command(
                 return;
             }
 
-            const playerTier = lastCompetitiveUpdate.TierAfterUpdate || lastCompetitiveUpdate.TierBeforeUpdate;
-            const playerRank = lastCompetitiveUpdate.RankedRatingAfterUpdate || lastCompetitiveUpdate.RankedRatingBeforeUpdate;
+            const playerTier =
+                lastCompetitiveUpdate.TierAfterUpdate || lastCompetitiveUpdate.TierBeforeUpdate;
+            const playerRank =
+                lastCompetitiveUpdate.RankedRatingAfterUpdate ||
+                lastCompetitiveUpdate.RankedRatingBeforeUpdate;
 
             const rankEmbed = new EmbedBuilder();
 

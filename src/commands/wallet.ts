@@ -26,10 +26,12 @@ export default new Command(
                 return;
             }
 
-            const ThumbnailId = Math.floor((interaction.createdAt.getSeconds() / 60) * currencies.data.data.length);
-            const walletEmbed = new EmbedBuilder().setThumbnail(
-                currencies.data.data.at(ThumbnailId)?.displayIcon || null
+            const ThumbnailId = Math.floor(
+                (interaction.createdAt.getSeconds() / 60) * currencies.data.data.length
             );
+            const walletEmbed = new EmbedBuilder()
+                .setThumbnail(currencies.data.data.at(ThumbnailId)?.displayIcon || null)
+                .setColor(Colors.Aqua);
 
             for (const currency of currencies.data.data) {
                 const currencyValue = wallet.data.Balances[currency.uuid];
