@@ -76,6 +76,8 @@ declare global {
 }
 
 (async () => {
+    client.setMaxListeners(50)
+
     // command
 
     const rest = new REST().setToken(process.env.TOKEN);

@@ -5,7 +5,7 @@ import Command from "./command";
 
 import config from "../data/config.json";
 
-export default class Client extends DiscordClient<true> {
+export default class Client extends DiscordClient {
     public command: Collection<string, Command> = new Collection();
 
     public userRateLimit: Record<string, number> = {};

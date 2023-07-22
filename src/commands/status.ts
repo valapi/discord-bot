@@ -1,6 +1,6 @@
 import process from "node:process";
 
-import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles, Colors } from "discord.js";
+import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles, Colors, PresenceUpdateStatus } from "discord.js";
 
 import Command from "../core/command";
 
@@ -21,7 +21,7 @@ export default new Command(
                         },
                         {
                             name: "Status",
-                            value: client.user.presence.status
+                            value: client.user?.presence.status || PresenceUpdateStatus.Online
                         },
                         {
                             name: "Ping",
