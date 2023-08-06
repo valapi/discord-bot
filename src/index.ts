@@ -76,16 +76,16 @@ declare global {
 }
 
 (async () => {
-    client.setMaxListeners(50)
+    client.setMaxListeners(50);
 
     // command
 
     const rest = new REST().setToken(process.env.TOKEN);
     const commands: Array<RESTPostAPIChatInputApplicationCommandsJSONBody> = [];
 
-    const commandDir = path.join(__dirname, "commands");
-    for (const commandName of fs.readdirSync(commandDir)) {
-        const command: Command = (await import(path.join(commandDir, commandName))).default;
+    const commandDirectory = path.join(__dirname, "commands");
+    for (const commandName of fs.readdirSync(commandDirectory)) {
+        const command: Command = (await import(path.join(commandDirectory, commandName))).default;
 
         commands.push(command.command);
         client.command.set(command.command.name, command);
@@ -100,9 +100,9 @@ declare global {
 
     // event
 
-    const eventDir = path.join(__dirname, "events");
-    for (const eventName of fs.readdirSync(eventDir)) {
-        const event: Event = (await import(path.join(eventDir, eventName))).default;
+    const eventDirectory = path.join(__dirname, "events");
+    for (const eventName of fs.readdirSync(eventDirectory)) {
+        const event: Event = (await import(path.join(eventDirectory, eventName))).default;
 
         if (event.option.once === true) {
             client.once(event.name, event.callback);

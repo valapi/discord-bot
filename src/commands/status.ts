@@ -1,6 +1,13 @@
 import process from "node:process";
 
-import { SlashCommandBuilder, EmbedBuilder, time, TimestampStyles, Colors, PresenceUpdateStatus } from "discord.js";
+import {
+    SlashCommandBuilder,
+    EmbedBuilder,
+    time,
+    TimestampStyles,
+    Colors,
+    PresenceUpdateStatus
+} from "discord.js";
 
 import Command from "../core/command";
 
