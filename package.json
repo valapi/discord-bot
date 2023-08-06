@@ -2,7 +2,7 @@
   "private": true,
   "name": "@valapi/discord-bot",
   "version": "1.0.0",
-  "description": "Valorant Discord Bot By ING3_",
+  "description": "Valorant Discord Bot",
   "keywords": [
     "riot",
     "api",
@@ -51,6 +51,7 @@
     "format:check": "prettier --config ./.prettierrc --ignore-path ./.prettierignore --check \"src/**/*\"",
     "lint": "npx eslint src",
     "build": "npm run format && npm run lint && npm run compile:clean",
-    "test": "ts-node src/index.ts"
+    "test": "ts-node src/index.ts",
+    "start": "node build/src/index.js"
   }
 }

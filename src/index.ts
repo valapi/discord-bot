@@ -68,7 +68,6 @@ declare global {
             readonly CLIENT_ID: string;
             readonly CLIENT_SECRET: string;
             readonly GUILD_ID: string;
-            readonly MONGO_TOKEN: string;
             readonly PUBLIC_KEY: string;
             readonly TOKEN: string;
         }
