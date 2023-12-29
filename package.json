@@ -12,8 +12,7 @@
     "bot"
   ],
   "engines": {
-    "node": "18.x",
-    "npm": "9.x"
+    "node": "20.x"
   },
   "main": "build/index.js",
   "repository": {
@@ -27,21 +26,21 @@
   },
   "homepage": "https://github.com/valapi/discord-bot#readme",
   "dependencies": {
-    "@types/fs-extra": "^11.0.1",
-    "discord.js": "^14.11.0",
-    "fs-extra": "^11.1.1",
-    "lmdb": "^2.8.3",
-    "tslib": "^2.6.0",
+    "@types/fs-extra": "^11.0.4",
+    "discord.js": "^14.14.1",
+    "fs-extra": "^11.2.0",
+    "lmdb": "^2.9.2",
+    "tslib": "^2.6.2",
     "valorant.ts": "^3.2.0"
   },
   "devDependencies": {
-    "@types/node": "^20.4.2",
-    "@typescript-eslint/eslint-plugin": "^6.1.0",
-    "@typescript-eslint/parser": "^6.1.0",
+    "@types/node": "^20.10.5",
+    "@typescript-eslint/eslint-plugin": "^6.16.0",
+    "@typescript-eslint/parser": "^6.16.0",
     "dotenv": "^16.3.1",
-    "eslint": "^8.45.0",
-    "rimraf": "^5.0.1",
-    "typescript": "^5.1.6"
+    "eslint": "^8.56.0",
+    "rimraf": "^5.0.5",
+    "typescript": "^5.3.3"
   },
   "scripts": {
     "clean": "npm exec -- npx rimraf \"build\" \"tsconfig.tsbuildinfo\"",
@@ -52,6 +51,6 @@
     "lint": "npx eslint src",
     "build": "npm run format && npm run lint && npm run compile:clean",
     "test": "ts-node src/index.ts",
-    "start": "node build/src/index.js"
+    "start": "node build/index.js"
   }
 }

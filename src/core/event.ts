@@ -9,11 +9,7 @@ export default class Event<T extends keyof ClientEvents = keyof ClientEvents> {
     public callback: (...args: ClientEvents[T]) => Promise<void>;
     public option: Required<EventOption>;
 
-    public constructor(
-        name: T,
-        callback: (...args: ClientEvents[T]) => Promise<void>,
-        option?: EventOption
-    ) {
+    public constructor(name: T, callback: (...args: ClientEvents[T]) => Promise<void>, option?: EventOption) {
         this.name = name;
         this.callback = callback;
         this.option = {

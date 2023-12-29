@@ -18,10 +18,7 @@ export default new Event(Events.InteractionCreate, async (interaction) => {
             return;
         }
 
-        if (
-            command.option.adminOnly === true &&
-            !admin.find((value) => value === interaction.user.id)
-        ) {
+        if (command.option.adminOnly === true && !admin.find((value) => value === interaction.user.id)) {
             await interaction.reply(Command.adminReply);
             return;
         }

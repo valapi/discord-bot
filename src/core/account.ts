@@ -10,29 +10,29 @@ export default class Account {
         this.client = new AuthClient();
     }
 
-    public setTmp() {
+    public set() {
         return database.put(this.userId, this.client.toJSON());
     }
 
-    public getTmp() {
+    public get() {
         return database.get(this.userId);
     }
 
-    public async loadTmp(saved: AuthCore.Json = this.getTmp() || this.client.toJSON()) {
+    public async load(saved: AuthCore.Json = this.get() || this.client.toJSON()) {
         this.client.fromJSON(saved);
 
         if (Date.now() >= this.client.getExpirationDate()) {
             await this.client.refresh();
 
-            await this.setTmp();
+            await this.set();
         }
     }
 
-    public async fetchTmp() {
-        const saved = this.getTmp();
+    public async fetch() {
+        const saved = this.get();
 
         if (saved) {
-            await this.loadTmp(saved);
+            await this.load(saved);
 
             return this.client.toJSON();
         } else {
@@ -40,13 +40,13 @@ export default class Account {
         }
     }
 
-    public removeTmp() {
+    public remove() {
         return database.remove(this.userId, this.client.toJSON());
     }
 
-    public static fetchTmp(userId: string) {
+    public static fetch(userId: string) {
         const account = new Account(userId);
 
-        return account.fetchTmp();
+        return account.fetch();
     }
 }

@@ -45,13 +45,7 @@ global.client = new Client({
         GatewayIntentBits.GuildPresences,
         GatewayIntentBits.MessageContent
     ],
-    partials: [
-        Partials.Channel,
-        Partials.GuildMember,
-        Partials.Message,
-        Partials.Reaction,
-        Partials.User
-    ]
+    partials: [Partials.Channel, Partials.GuildMember, Partials.Message, Partials.Reaction, Partials.User]
 });
 
 import * as path from "node:path";
@@ -90,12 +84,9 @@ declare global {
         client.command.set(command.command.name, command);
     }
 
-    await rest.put(
-        Routes.applicationGuildCommands(process.env.APPLICATION_ID, process.env.GUILD_ID),
-        {
-            body: commands
-        }
-    );
+    await rest.put(Routes.applicationGuildCommands(process.env.APPLICATION_ID, process.env.GUILD_ID), {
+        body: commands
+    });
 
     // event
 

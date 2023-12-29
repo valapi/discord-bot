@@ -1,6 +1,6 @@
 {
     "embeddedLanguageFormatting": "auto",
-    "printWidth": 100,
+    "printWidth": 160,
     "requirePragma": false,
     "semi": true,
     "singleQuote": false,

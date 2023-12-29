@@ -16,10 +16,7 @@ export default class Command {
     public option: Required<CommandOption>;
 
     public constructor(
-        command:
-            | SlashCommandBuilder
-            | SlashCommandSubcommandsOnlyBuilder
-            | Omit<SlashCommandBuilder, "addSubcommandGroup" | "addSubcommand">,
+        command: SlashCommandBuilder | SlashCommandSubcommandsOnlyBuilder | Omit<SlashCommandBuilder, "addSubcommandGroup" | "addSubcommand">,
         callback: (interaction: ChatInputCommandInteraction) => Promise<void>,
         option?: CommandOption
     ) {
